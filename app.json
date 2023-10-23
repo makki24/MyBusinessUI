@@ -28,6 +28,11 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "mybusinessui"
+    "scheme": "mybusinessui",
+    "extra": {
+      "eas": {
+        "projectId": "18005f4e-2007-4392-8512-60da76e2c661"
+      }
+    }
   }
 }
