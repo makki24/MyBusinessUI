@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Button, Image } from "react-native";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {url} from './app.config'
+import {url} from './app-env.config'
 
 export default function App() {
 
