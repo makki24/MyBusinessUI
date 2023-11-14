@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "73959098373",
+    "project_id": "mybusiness-7478f",
+    "storage_bucket": "mybusiness-7478f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:73959098373:android:8d1487eaba54d7b8ac346c",
+        "android_client_info": {
+          "package_name": "com.syedsons.mybusiness"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "73959098373-gng8bhdibcmampu0aad2641fe5e3uvab.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwN2SKaJVDsFsYw4947KoF5qFGHM_bb_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "73959098373-gng8bhdibcmampu0aad2641fe5e3uvab.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

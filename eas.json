@@ -7,7 +7,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_URL": "http://129.213.146.93:8085/login"
+        "EXPO_PUBLIC_URL": "http://129.213.146.93:8085"
       }
     },
     "preview": {
@@ -15,7 +15,7 @@
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_URL": "http://129.213.146.93:8085/login"
+        "EXPO_PUBLIC_URL": "http://129.213.146.93:8085"
       },
       "android": {
         "buildType": "apk"

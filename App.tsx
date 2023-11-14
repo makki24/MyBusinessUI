@@ -1,95 +1,117 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Button, Image } from "react-native";
+import { StyleSheet, Text, View, Button, Image, ToastAndroid, TextInput } from "react-native";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {url} from './app-env.config'
+import crashlytics from '@react-native-firebase/crashlytics';
+import {url,androidClientId, expoClientId} from './app-env.config'
 
 export default function App() {
-
   const apiUrl = url;
 
-  const [token, setToken] = useState("");
   const [userInfo, setUserInfo] = useState(null);
+  const [helloMessage, setHelloMessage] = useState(null);
+  const [urlInput, setUrlInput] = useState('');
+  const [getResponse, setGetResponse] = useState('');
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: "82740835529-o5ahaetmhfilc8ot561hp8hnhmvtfpp2.apps.googleusercontent.com",
-    expoClientId: '82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com'
+    androidClientId,expoClientId
   });
 
   useEffect(() => {
-    handleEffect();
-  }, [response, token]);
+    fetch(`${apiUrl}/hello`)
+        .then(response => response.text())
+        .then(data => setHelloMessage(data))
+        .catch(error => setHelloMessage(`Error: ${error.message}`));
+  }, []);
 
-  async function handleEffect() {
-    const user = await getLocalUser();
-    if (!user) {
-      if (response?.type === "success") {
-        getUserInfo(response.authentication.accessToken);
-      }
-    } else {
-      setUserInfo(user);
-      console.log("loaded locally");
-    }
-  }
-
-  const getLocalUser = async () => {
-    const data = await AsyncStorage.getItem("@user");
-    if (!data) return null;
-    return JSON.parse(data);
-  };
-
-  let error;
-  const getUserInfo = async (token: string) => {
+  const getUserInfo = async (token) => {
     if (!token) return;
     try {
-      const response = await fetch(
-          apiUrl,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-      );
-
+      const response = await fetch(`${apiUrl}/login`, {
+        method: 'GET', // Ensure that the method is a valid HTTP method like GET, POST, PUT, DELETE, etc.
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
+      });
       const user = await response.json();
       await AsyncStorage.setItem("@user", JSON.stringify(user));
       setUserInfo(user);
-    } catch (e) {
-      // Add your own error handler here
-      error = e;
-      console.log("error connecting", e)
+    } catch (err) {
+      // Handle error
+      console.log('after connecting', err);
+      console.log("Failed to fetch user data " + err ? JSON.stringify(err) : '' );
+      crashlytics().recordError(err);
+      ToastAndroid.show("Failed to fetch user data " + err ? JSON.stringify(err) : '' , ToastAndroid.LONG);
+      ToastAndroid.show(err.message, ToastAndroid.LONG);
     }
   };
-  const a = JSON.stringify(process.env);
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      getUserInfo(response.authentication.accessToken);
+    }
+  }, [response]);
+
+  const signOut = async () => {
+    await AsyncStorage.removeItem("@user");
+    setUserInfo(null);
+  };
+
+  const createCustomCrashEvent = () => {
+    try {
+      const user = [];
+      console.log(user[0].hello);
+    } catch (error) {
+      console.log(error)
+      crashlytics().recordError(error);
+      ToastAndroid.show("Custom Crash Event Triggered", ToastAndroid.LONG);
+    }
+  };
+
+  const handleGetRequest = async () => {
+    try {
+      const res = await fetch(urlInput);
+      const data = await res.json();
+      setGetResponse(JSON.stringify(data, null, 2));
+    } catch (error) {
+      setGetResponse(error.message);
+    }
+  };
+
   return (
       <View style={styles.container}>
+        {helloMessage && <Text>{helloMessage}</Text>}
         {!userInfo ? (
             <View>
-              <Text style={styles.text}> helloe : {JSON.stringify(process.env) + apiUrl}</Text>
-            <Button
-                title="Sign in with Google"
-                disabled={!request}
-                onPress={() => {
-                  promptAsync();
-                }}
-            />
-              <Text>{ error ? JSON.stringify(error) : ''}</Text>
+              <Button
+                  title="Sign in with Google"
+                  disabled={!request}
+                  onPress={() => {
+                    console.log("After press")
+                    promptAsync();
+                  }}
+              />
             </View>
-
         ) : (
             <View style={styles.card}>
-              {userInfo?.picture && (
-                  <Image source={{ uri: userInfo?.picture }} style={styles.image} />
-              )}
-              <Text style={styles.text}>Email: {userInfo.email}</Text>
-              <Text style={styles.text}>
-                Verified: {userInfo.verified_email ? "yes" : "no"}
-              </Text>
-              <Text style={styles.text}>Name: {userInfo.name}</Text>
+              {/* Display user information */}
+              <Text>Email: {userInfo.email}</Text>
+              <Text>Verified: {userInfo.verified_email ? "yes" : "no"}</Text>
+              <Text>Name: {userInfo.name}</Text>
+
+              <Button title="Sign Out" onPress={signOut} />
             </View>
         )}
-        <Button
-            title="remove local store"
-            onPress={async () => await AsyncStorage.removeItem("@user")}
+        <Button title="Trigger Custom Crash Event" onPress={createCustomCrashEvent} />
+        <TextInput
+            style={styles.input}
+            onChangeText={setUrlInput}
+            value={urlInput}
+            placeholder="Enter URL"
         />
+        <Button title="Submit" onPress={handleGetRequest} />
+        <Text>{getResponse}</Text>
       </View>
   );
 }
@@ -101,18 +123,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  text: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
   card: {
     borderWidth: 1,
     borderRadius: 15,
     padding: 15,
+    marginTop: 20,
   },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    width: '80%'
   },
 });
