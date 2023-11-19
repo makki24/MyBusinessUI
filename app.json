@@ -19,14 +19,6 @@
       "bundleIdentifier": "com.syedsons.mybusiness",
       "googleServicesFile": "./assets/GoogleService-Info.plist"
     },
-    "android": {
-      "googleServicesFile": "./assets/google-services.json",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.syedsons.mybusiness"
-    },
     "plugins": ["@react-native-firebase/app", "@react-native-firebase/crashlytics", "./plugins/withNetworkStatePermission.js", "./plugins/withNetworkSecurityConfig.js", "./plugins/withCustomConfig.js"],
     "web": {
       "favicon": "./assets/favicon.png"
