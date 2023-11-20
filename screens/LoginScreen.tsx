@@ -40,6 +40,7 @@ const LoginScreen = ({ navigation }) => {
                 },
             });
             if (!response.ok) {
+                console.log(response);
                 throw new Error('Token is invalid or expired');
             }
             const user = await response.json();

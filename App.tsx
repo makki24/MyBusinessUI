@@ -4,17 +4,24 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
+import RolesScreen from "./screens/RolesScreen";
+import AddRoleScreen from "./screens/AddRoleScreen";
+import {RecoilRoot} from "recoil";
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Login">
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <RecoilRoot>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Login">
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="Home" component={HomeScreen} />
+              <Stack.Screen name="Roles" component={RolesScreen} />
+              <Stack.Screen name="AddRole" component={AddRoleScreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+      </RecoilRoot>
   );
 };
 
