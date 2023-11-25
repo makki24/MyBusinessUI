@@ -33,6 +33,31 @@ const RolesService = {
         }
     },
 
+    getUsersAssigned: async (id: any) => {
+        try {
+            const response = await axios.get(`${apiUrl}/api/users/byRole/${id}`);
+
+            if (!response.data) {
+                throw new Error(`Error getting users: ${response.statusText}`);
+            }
+
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    deleteRole: async (id: any) => {
+        try {
+            const response = await axios.delete(`${apiUrl}/api/roles/${id}`);
+
+            // No response data for DELETE requests
+            return null;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     // Add other role-related API functions here
 };
 
