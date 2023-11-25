@@ -50,7 +50,6 @@ const LoginScreen = ({ navigation }) => {
         } catch (error) {
             console.error('Failed to fetch user data:', error);
             setError(error.message);
-            AsyncStorage.removeItem('@token');
             setUserInfo(null);
         }
     };
