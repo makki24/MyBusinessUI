@@ -9,6 +9,8 @@ import AddRoleScreen from "./screens/AddRoleScreen";
 import {RecoilRoot} from "recoil";
 import { Provider as PaperProvider } from 'react-native-paper';
 import EditRoleScreen from "./screens/EditRoleScreen";
+import AddExpenseTypeScreen from "./screens/AddExpenseTypeScreen";
+import ExpenseTypesScreen from "./screens/ExpenseTypesScreen";
 
 const Stack = createStackNavigator();
 
@@ -23,6 +25,8 @@ const App = () => {
                   <Stack.Screen name="Roles" component={RolesScreen} />
                   <Stack.Screen name="AddRole" component={AddRoleScreen} />
                   <Stack.Screen name="EditRole" component={EditRoleScreen} />
+                  <Stack.Screen name="ExpenseTypes" component={ExpenseTypesScreen} />
+                  <Stack.Screen name="AddExpenseType" component={AddExpenseTypeScreen} />
                 </Stack.Navigator>
               </NavigationContainer>
           </PaperProvider>

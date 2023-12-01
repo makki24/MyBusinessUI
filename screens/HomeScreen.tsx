@@ -4,9 +4,10 @@ import { Card, Title } from 'react-native-paper';
 
 const HomeScreen = ({ navigation }) => {
     const images = [
-        { uri: 'https://via.placeholder.com/300', interval: 5000 }, // 5 seconds
-        { uri: 'https://via.placeholder.com/300/FF5733/FFFFFF', interval: 3000 }, // 3 seconds
-        { uri: 'https://via.placeholder.com/300/33FF57/FFFFFF', interval: 7000 }, // 7 seconds
+        { uri: 'https://via.placeholder.com/300', interval: 5000 },
+        { uri: 'https://via.placeholder.com/300/FF5733/FFFFFF', interval: 3000 },
+        { uri: 'https://via.placeholder.com/300/33FF57/FFFFFF', interval: 7000 },
+        { uri: 'https://via.placeholder.com/300/5733FF/FFFFFF', interval: 4000 }
         // Add more image URLs with different intervals as needed
     ];
 
@@ -32,13 +33,8 @@ const HomeScreen = ({ navigation }) => {
         <ScrollView contentContainerStyle={styles.container}>
             {/* Two Cards in One Row */}
             <View style={styles.cardsContainer}>
-                <Card
-                    style={styles.card}
-                    onPress={() => navigation.navigate('Roles')}
-                >
-                    <Card.Cover
-                        source={{ uri: images[currentImageIndex[0]].uri }}
-                    />
+                <Card style={styles.card} onPress={() => navigation.navigate('Roles')}>
+                    <Card.Cover source={{ uri: images[currentImageIndex[0]].uri }} />
                     <View style={styles.textOverlay}>
                         <Title style={styles.cardTitle}>Manage Roles</Title>
                     </View>
@@ -49,32 +45,30 @@ const HomeScreen = ({ navigation }) => {
 
                 <View style={styles.gap} />
 
-                <Card
-                    style={styles.card}
-                    onPress={() => navigation.navigate('Manager')}
-                >
-                    <Card.Cover
-                        source={{ uri: images[currentImageIndex[1]].uri }}
-                    />
+                <Card style={styles.card} onPress={() => navigation.navigate('Manager')}>
+                    <Card.Cover source={{ uri: images[currentImageIndex[1]].uri }} />
                     <View style={styles.textOverlay}>
                         <Title style={styles.cardTitle}>Manage Manager</Title>
                     </View>
                 </Card>
+
+
+                <Card style={styles.card} onPress={() => navigation.navigate('ExpenseTypes')}>
+                    <Card.Cover source={{ uri: images[currentImageIndex[2]].uri }} />
+                    <View style={styles.textOverlay}>
+                        <Title style={styles.cardTitle}>Expense Types</Title>
+                    </View>
+                </Card>
+                <View style={styles.gap} />
+
+                <Card style={styles.card} onPress={() => navigation.navigate('User')}>
+                    <Card.Cover source={{ uri: images[currentImageIndex[3]].uri }} />
+                    <View style={styles.textOverlay}>
+                        <Title style={styles.cardTitle}>Manage User</Title>
+                    </View>
+                </Card>
+
             </View>
-
-            {/* Third Card Below the First Card */}
-            <Card
-                style={styles.card}
-                onPress={() => navigation.navigate('User')}
-            >
-                <Card.Cover
-                    source={{ uri: images[currentImageIndex[2]].uri }}
-                />
-                <View style={styles.textOverlay}>
-                    <Title style={styles.cardTitle}>Manage User</Title>
-                </View>
-            </Card>
-
             {/* Display amountToReceive and amountHolding */}
             <View style={styles.amountContainer}>
                 <Text style={styles.amountText}>Amount To Receive: $100.00</Text>
@@ -90,13 +84,13 @@ const styles = StyleSheet.create({
     },
     cardsContainer: {
         flexDirection: 'row',
-        flexWrap: 'wrap', // Allow cards to wrap to the next line
+        flexWrap: 'wrap',
         justifyContent: 'space-between',
         marginBottom: 16,
     },
     card: {
         width: '48%',
-        height: 175, // Adjust the height as needed
+        height: 175,
         marginBottom: 16,
         borderRadius: 10,
         overflow: 'hidden',
@@ -113,10 +107,10 @@ const styles = StyleSheet.create({
     cardTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#fff', // Text color for overlay
+        color: '#fff',
     },
     gap: {
-        width: '4%', // Adjust the gap width as needed
+        width: '4%',
     },
     amountContainer: {
         marginTop: 24,

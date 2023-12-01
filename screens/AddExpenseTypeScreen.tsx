@@ -1,43 +1,45 @@
-// src/screens/AddRoleScreen.tsx
+// src/screens/AddExpenseTypeScreen.tsx
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { useRecoilState } from 'recoil';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
-import RolesService from "../services/RolesService";
-import { rolesState } from '../recoil/atom'; // Adjust the path accordingly
-import { Role } from '../types';
+import ExpenseTypesService from '../services/ExpenseTypesService'; // Adjust the path accordingly
+import { expenseTypesState } from '../recoil/atom'; // Adjust the path accordingly
+import { ExpenseType } from '../types';
 
-interface AddRoleScreenProps {
+interface AddExpenseTypeScreenProps {
     navigation: any; // Adjust the type based on your navigation prop type
 }
 
-const AddRoleScreen: React.FC<AddRoleScreenProps> = ({ navigation }) => {
-    const [roleName, setRoleName] = useState('');
-    const [roles, setRoles] = useRecoilState(rolesState);
+const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({ navigation }) => {
+    const [expenseTypeName, setExpenseTypeName] = useState('');
+    const [expenseTypes, setExpenseTypes] = useRecoilState(expenseTypesState);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleAddRole = async () => {
+    const handleAddExpenseType = async () => {
         try {
-            if (!roleName) {
-                setError('Role name cannot be empty'); // Set the error message
+            if (!expenseTypeName) {
+                setError('Expense type name is required'); // Set the error message
                 return;
             }
 
             setIsLoading(true); // Set loading to true
 
-            // Call your API service to add a new role
-            const newRole = await RolesService.addRole({ roleName });
+            // Call your API service to add a new expense type
+            const newExpenseType = await ExpenseTypesService.addExpenseType({
+                expenseTypeName,
+            });
 
-            // Update Recoil state with the new role
-            setRoles((prevRoles) => [...prevRoles, newRole]);
+            // Update Recoil state with the new expense type
+            setExpenseTypes((prevExpenseTypes) => [...prevExpenseTypes, newExpenseType]);
 
-            // Navigate back to the Roles screen
+            // Navigate back to the previous screen
             navigation.goBack();
         } catch (error) {
-            console.error('Error adding role:', error);
-            setError(error.response?.data || 'An error occurred'); // Set the error message
+            console.error('Error adding expense type:', error.response.data);
+            setError(error.response.data?.error || error.response?.data || 'An error occurred'); // Set the error message
         } finally {
             setIsLoading(false); // Set loading to false regardless of success or failure
         }
@@ -60,11 +62,11 @@ const AddRoleScreen: React.FC<AddRoleScreenProps> = ({ navigation }) => {
             )}
 
             <Input
-                placeholder="Enter role name"
-                value={roleName}
-                onChangeText={setRoleName}
+                placeholder="Enter expense type name"
+                value={expenseTypeName}
+                onChangeText={setExpenseTypeName}
             />
-            <Button title="Add Role" onPress={handleAddRole} />
+            <Button title="Add Expense Type" onPress={handleAddExpenseType} />
         </View>
     );
 };
@@ -92,4 +94,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AddRoleScreen;
+export default AddExpenseTypeScreen;
