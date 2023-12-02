@@ -7,7 +7,8 @@ const HomeScreen = ({ navigation }) => {
         { uri: 'https://via.placeholder.com/300', interval: 5000 },
         { uri: 'https://via.placeholder.com/300/FF5733/FFFFFF', interval: 3000 },
         { uri: 'https://via.placeholder.com/300/33FF57/FFFFFF', interval: 7000 },
-        { uri: 'https://via.placeholder.com/300/5733FF/FFFFFF', interval: 4000 }
+        { uri: 'https://via.placeholder.com/300/5733FF/FFFFFF', interval: 4000 },
+        { uri: 'https://via.placeholder.com/300/FF33FF/FFFFFF', interval: 6000 }, // New Expense Card Image
         // Add more image URLs with different intervals as needed
     ];
 
@@ -65,6 +66,13 @@ const HomeScreen = ({ navigation }) => {
                     <Card.Cover source={{ uri: images[currentImageIndex[3]].uri }} />
                     <View style={styles.textOverlay}>
                         <Title style={styles.cardTitle}>Manage User</Title>
+                    </View>
+                </Card>
+
+                <Card style={styles.card} onPress={() => navigation.navigate('Expenses')}>
+                    <Card.Cover source={{ uri: images[currentImageIndex[4]].uri }} />
+                    <View style={styles.textOverlay}>
+                        <Title style={styles.cardTitle}>Manage Expenses</Title>
                     </View>
                 </Card>
 

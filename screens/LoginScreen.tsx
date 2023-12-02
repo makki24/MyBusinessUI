@@ -1,12 +1,14 @@
 // LoginScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import * as Google from 'expo-auth-session/providers/google';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {apiUrl,androidClientId, expoClientId} from  '../app-env.config';
+import { useRecoilState } from 'recoil';
+import {userState} from "../recoil/atom";
 
 const LoginScreen = ({ navigation }) => {
-    const [userInfo, setUserInfo] = useState(null);
+    const [userInfo, setUserInfo] = useRecoilState(userState);
     const [error, setError] = useState(null);
     const [request, response, promptAsync] = Google.useAuthRequest({
         androidClientId,expoClientId
@@ -44,7 +46,6 @@ const LoginScreen = ({ navigation }) => {
                 throw new Error('Token is invalid or expired');
             }
             const user = await response.json();
-            await AsyncStorage.setItem('@user', JSON.stringify(user));
             setUserInfo(user);
             navigation.navigate('Home');
         } catch (error) {
@@ -52,6 +53,11 @@ const LoginScreen = ({ navigation }) => {
             setError(error.message);
             setUserInfo(null);
         }
+    };
+
+    const logout = async () => {
+        await AsyncStorage.removeItem('@token');
+        setUserInfo(null);
     };
 
     return (
@@ -70,15 +76,29 @@ const LoginScreen = ({ navigation }) => {
             ) : (
                 <View>
                     <Text>Email: {userInfo.email}</Text>
-                    <Text>Name: {userInfo.name}</Text>
-                    <Button
-                        title="Continue to Home"
-                        onPress={() => navigation.navigate('Home')}
-                    />
+                    <Text>Name: {userInfo.username}</Text>
+                    <View style={styles.button}>
+                        <Button
+                            title="Continue to Home"
+                            onPress={() => navigation.navigate('Home')}
+                        />
+                    </View>
+                    <View style={styles.button}>
+                        <Button
+                            title="Logout"
+                            onPress={logout}
+                        />
+                    </View>
                 </View>
             )}
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    button: {
+        marginTop: 10,
+    },
+});
 
 export default LoginScreen;

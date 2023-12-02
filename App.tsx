@@ -11,6 +11,8 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import EditRoleScreen from "./screens/EditRoleScreen";
 import AddExpenseTypeScreen from "./screens/AddExpenseTypeScreen";
 import ExpenseTypesScreen from "./screens/ExpenseTypesScreen";
+import ExpenseScreen from "./screens/ExpenseScreen";
+import AddExpenseScreen from "./screens/AddExpenseScreen";
 
 const Stack = createStackNavigator();
 
@@ -27,6 +29,8 @@ const App = () => {
                   <Stack.Screen name="EditRole" component={EditRoleScreen} />
                   <Stack.Screen name="ExpenseTypes" component={ExpenseTypesScreen} />
                   <Stack.Screen name="AddExpenseType" component={AddExpenseTypeScreen} />
+                  <Stack.Screen name="Expenses" component={ExpenseScreen} />
+                  <Stack.Screen name={"AddExpense"} component={AddExpenseScreen} />
                 </Stack.Navigator>
               </NavigationContainer>
           </PaperProvider>
