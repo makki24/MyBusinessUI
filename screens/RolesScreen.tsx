@@ -8,6 +8,8 @@ import { rolesState } from '../recoil/atom';
 import RolesService from '../services/RolesService';
 import RoleItem from '../components/RoleItem';
 import { Role } from '../types';
+import {StackActions, useNavigation} from "@react-navigation/native";
+import {DrawerNavigationProp} from "@react-navigation/drawer";
 
 const RolesScreen = ({ navigation }) => {
     const [roles, setRoles] = useRecoilState(rolesState);
@@ -38,8 +40,9 @@ const RolesScreen = ({ navigation }) => {
     }, []);
 
     const handleEditRole = (role) => {
-        navigation.navigate('EditRole', { role });
+        navigation.push('EditRole', { role });
     };
+
 
     const handleDeleteRole = async (role) => {
         setSelectedRole(role);
