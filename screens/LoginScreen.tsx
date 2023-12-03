@@ -1,17 +1,18 @@
 // LoginScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import * as Google from 'expo-auth-session/providers/google';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {apiUrl,androidClientId, expoClientId} from  '../app-env.config';
+import { apiUrl, androidClientId, expoClientId } from '../app-env.config';
 import { useRecoilState } from 'recoil';
-import {userState} from "../recoil/atom";
+import { userState } from '../recoil/atom';
 
 const LoginScreen = ({ navigation }) => {
     const [userInfo, setUserInfo] = useRecoilState(userState);
     const [error, setError] = useState(null);
     const [request, response, promptAsync] = Google.useAuthRequest({
-        androidClientId,expoClientId
+        androidClientId,
+        expoClientId,
     });
 
     useEffect(() => {
@@ -61,7 +62,7 @@ const LoginScreen = ({ navigation }) => {
     };
 
     return (
-        <View>
+        <View style={styles.container}>
             {!userInfo ? (
                 <View>
                     <Button
@@ -74,20 +75,19 @@ const LoginScreen = ({ navigation }) => {
                     {error && <Text>{error}</Text>}
                 </View>
             ) : (
-                <View>
-                    <Text>Email: {userInfo.email}</Text>
-                    <Text>Name: {userInfo.username}</Text>
-                    <View style={styles.button}>
-                        <Button
-                            title="Continue to Home"
-                            onPress={() => navigation.navigate('Home')}
-                        />
-                    </View>
-                    <View style={styles.button}>
-                        <Button
-                            title="Logout"
-                            onPress={logout}
-                        />
+                <View style={styles.loggedInContainer}>
+                    <TouchableOpacity onPress={() => navigation.toggleDrawer()} style={styles.profileImageContainer}>
+                        <Image source={{ uri: userInfo?.picture || 'placeholder_image_url' }} style={styles.profileImage} />
+                    </TouchableOpacity>
+                    <View>
+                        <Text>Email: {userInfo.email}</Text>
+                        <Text>Name: {userInfo.username}</Text>
+                        <View style={styles.button}>
+                            <Button title="Continue to Home" onPress={() => navigation.navigate('Home')} />
+                        </View>
+                        <View style={styles.button}>
+                            <Button title="Logout" onPress={logout} />
+                        </View>
                     </View>
                 </View>
             )}
@@ -96,6 +96,23 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loggedInContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    profileImageContainer: {
+        marginRight: 10,
+    },
+    profileImage: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+    },
     button: {
         marginTop: 10,
     },

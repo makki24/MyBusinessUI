@@ -34,7 +34,7 @@ const HomeScreen = ({ navigation }) => {
         <ScrollView contentContainerStyle={styles.container}>
             {/* Two Cards in One Row */}
             <View style={styles.cardsContainer}>
-                <Card style={styles.card} onPress={() => navigation.navigate('Roles')}>
+                <Card style={styles.card} onPress={() => navigation.navigate('RolesStack', { screen: 'Roles' })}>
                     <Card.Cover source={{ uri: images[currentImageIndex[0]].uri }} />
                     <View style={styles.textOverlay}>
                         <Title style={styles.cardTitle}>Manage Roles</Title>
@@ -54,7 +54,7 @@ const HomeScreen = ({ navigation }) => {
                 </Card>
 
 
-                <Card style={styles.card} onPress={() => navigation.navigate('ExpenseTypes')}>
+                <Card style={styles.card} onPress={() => navigation.navigate('ExpenseTypeStack', { screen: 'ExpenseTypes' })}>
                     <Card.Cover source={{ uri: images[currentImageIndex[2]].uri }} />
                     <View style={styles.textOverlay}>
                         <Title style={styles.cardTitle}>Expense Types</Title>
@@ -69,7 +69,7 @@ const HomeScreen = ({ navigation }) => {
                     </View>
                 </Card>
 
-                <Card style={styles.card} onPress={() => navigation.navigate('Expenses')}>
+                <Card style={styles.card} onPress={() => navigation.navigate('ExpenseStack', { screen: 'Expenses' })}>
                     <Card.Cover source={{ uri: images[currentImageIndex[4]].uri }} />
                     <View style={styles.textOverlay}>
                         <Title style={styles.cardTitle}>Manage Expenses</Title>
