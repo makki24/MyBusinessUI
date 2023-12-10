@@ -7,6 +7,7 @@ import Button from '../components/common/Button';
 import ExpenseTypesService from '../services/ExpenseTypesService'; // Adjust the path accordingly
 import { expenseTypesState } from '../recoil/atom'; // Adjust the path accordingly
 import { ExpenseType } from '../types';
+import SwitchInput from "../components/common/SwitchInput";
 
 interface AddExpenseTypeScreenProps {
     navigation: any; // Adjust the type based on your navigation prop type
@@ -14,6 +15,7 @@ interface AddExpenseTypeScreenProps {
 
 const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({ navigation }) => {
     const [expenseTypeName, setExpenseTypeName] = useState('');
+    const [isReceivingUser, setIsReceivingUser] = useState(false); // New state for the switch
     const [expenseTypes, setExpenseTypes] = useRecoilState(expenseTypesState);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -21,27 +23,25 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({ navigation 
     const handleAddExpenseType = async () => {
         try {
             if (!expenseTypeName) {
-                setError('Expense type name is required'); // Set the error message
+                setError('Expense type name is required');
                 return;
             }
 
-            setIsLoading(true); // Set loading to true
+            setIsLoading(true);
 
-            // Call your API service to add a new expense type
+            // Call your API service to add a new expense type with isReceivingUser parameter
             const newExpenseType = await ExpenseTypesService.addExpenseType({
                 expenseTypeName,
+                isReceivingUser,
             });
 
-            // Update Recoil state with the new expense type
             setExpenseTypes((prevExpenseTypes) => [...prevExpenseTypes, newExpenseType]);
-
-            // Navigate back to the previous screen
             navigation.goBack();
         } catch (error) {
             console.error('Error adding expense type:', error.response.data);
-            setError(error.response.data?.error || error.response?.data || 'An error occurred'); // Set the error message
+            setError(error.response.data?.error || error.response?.data || 'An error occurred');
         } finally {
-            setIsLoading(false); // Set loading to false regardless of success or failure
+            setIsLoading(false);
         }
     };
 
@@ -49,9 +49,7 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({ navigation 
         <View style={styles.container}>
             {isLoading && (
                 <View style={styles.loadingContainer}>
-                    <Text>
-                        <ActivityIndicator size="large" color="#0000ff" /> {/* Show spinner if loading */}
-                    </Text>
+                    <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
 
@@ -66,6 +64,14 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({ navigation 
                 value={expenseTypeName}
                 onChangeText={setExpenseTypeName}
             />
+
+            {/* Switch button for isReceivingUser */}
+            <SwitchInput
+                label="Is Receiving User"
+                value={isReceivingUser}
+                onValueChange={(value) => setIsReceivingUser(value)}
+            />
+
             <Button title="Add Expense Type" onPress={handleAddExpenseType} />
         </View>
     );
