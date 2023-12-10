@@ -1,6 +1,7 @@
 // ExpenseTypesService.ts
 import { apiUrl } from '../app-env.config';
-import axios from './NetworkInterceptor'; // Adjust the path accordingly
+import axios from './NetworkInterceptor';
+import {ExpenseType} from "../types"; // Adjust the path accordingly
 
 const ExpenseTypesService = {
     getExpenseTypes: async () => {
@@ -17,7 +18,7 @@ const ExpenseTypesService = {
         }
     },
 
-    addExpenseType: async (expenseTypeData: any) => {
+    addExpenseType: async (expenseTypeData: ExpenseType) => {
         try {
             const response = await axios.post(`${apiUrl}/api/expenseTypes`, expenseTypeData);
 

@@ -1,8 +1,9 @@
 import {User} from "./users";
 
 export interface ExpenseType {
-    id: string;
+    id?: string;
     expenseTypeName: string;
+    isReceivingUser?: boolean
 }
 
 export interface Expense {
@@ -12,4 +13,5 @@ export interface Expense {
     amount: number;
     additionalInfo?: string;
     expenseType: ExpenseType;
+    receivingUser?: User;
 }

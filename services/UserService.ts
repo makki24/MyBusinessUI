@@ -1,5 +1,6 @@
 import axios from "./NetworkInterceptor";
 import {apiUrl} from "../app-env.config";
+import {User} from "../types";
 
 const UserService = {
     getUsers: async () => {
@@ -39,6 +40,34 @@ const UserService = {
                 userId,
                 roleId,
             });
+
+            if (!response.data) {
+                throw new Error(`Error removing role: ${response.statusText}`);
+            }
+
+            return response.data;
+        } catch (error) {
+            throw error; // You can handle the error further or let the caller handle it
+        }
+    },
+
+    updateContribution: async (user: User) => {
+        try {
+            const response = await axios.put(`${apiUrl}/api/users/updateContribution`, user);
+
+            if (!response.data) {
+                throw new Error(`Error removing role: ${response.statusText}`);
+            }
+
+            return response.data;
+        } catch (error) {
+            throw error; // You can handle the error further or let the caller handle it
+        }
+    },
+
+    updateLoan: async (user: User) => {
+        try {
+            const response = await axios.put(`${apiUrl}/api/users/updateLoan`, user);
 
             if (!response.data) {
                 throw new Error(`Error removing role: ${response.statusText}`);

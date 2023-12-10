@@ -14,7 +14,9 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({ expense, onPress, onDelete })
     <TouchableOpacity onPress={onPress}>
         <Card style={styles.expenseCard}>
             <Card.Content>
-                <Title>{expense.expenseType.expenseTypeName}</Title>
+                <Title>
+                    {expense.expenseType.isReceivingUser ? `${expense.expenseType.expenseTypeName} to ${expense.receivingUser.username}` : expense.expenseType.expenseTypeName}
+                </Title>
                 <Paragraph>{`Date: ${expense.date.toDateString()}`}</Paragraph>
                 <Paragraph>{`Time: ${expense.date.toLocaleTimeString()}`}</Paragraph>
                 <Paragraph>{`User: ${expense.user.username}`}</Paragraph>

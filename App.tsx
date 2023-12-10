@@ -1,11 +1,11 @@
 // App.tsx
 import React from 'react';
 import { View, Image, TouchableOpacity, Text } from 'react-native';
-import { NavigationContainer, useRoute } from '@react-navigation/native';
+import {NavigationContainer, RouteProp, useRoute} from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
-import { IconButton, Provider as PaperProvider } from 'react-native-paper';
-import { RecoilRoot, useRecoilValue } from 'recoil';
+import {Caption, IconButton, Provider as PaperProvider,Avatar} from 'react-native-paper';
+import {RecoilRoot, useRecoilState, useRecoilValue} from 'recoil';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import RolesScreen from "./screens/RolesScreen";
@@ -19,9 +19,15 @@ import { userState } from "./recoil/atom";
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {DEFAULT_AVATAR_URL} from "./constants/mybusiness.constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import ManageAmountsScreen from "./screens/ManageAmountsScreen";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
+
+interface RouteParams {
+    title?: string;
+}
 
 const RoleStack = () => {
     return (
@@ -59,6 +65,16 @@ const HomeStack = () => {
     );
 };
 
+const ProfileStack = () => {
+    return (
+        <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+            <Stack.Screen name="ManageAmounts" component={ManageAmountsScreen}
+                          options={{title: 'Title', headerTitle: 'title'}}
+            />
+        </Stack.Navigator>
+    );
+};
+
 const AppContent = () => {
     const userInfo = useRecoilValue(userState);
 
@@ -75,6 +91,7 @@ const AppContent = () => {
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Roles' }} name="RolesStack" component={RoleStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Expenses' }} name="ExpenseStack" component={ExpenseStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Expense Types' }} name="ExpenseTypeStack" component={ExpenseTypeStack} />
+                    <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Manage profile' }} name="ProfileStack" component={ProfileStack} />
                     {/* Other screens */}
                 </Drawer.Navigator>
             ) : (
@@ -98,28 +115,54 @@ const App = () => {
 
 const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
     const userInfo = props.userInfo;
+    const [_, setUserInfo] = useRecoilState(userState);
 
     const toggleDrawer = () => {
         navigation.toggleDrawer();
     };
 
+    const handleLogout = async () => {
+        await AsyncStorage.removeItem('@token');
+        setUserInfo(null);
+    };
+
+    const navigateToManageAmounts = () => {
+        navigation.navigate('ProfileStack', { screen: 'ManageAmounts', params: { title: 'Manage Amounts' }})
+    };
+
     return (
         <DrawerContentScrollView {...props}>
-            <View style={{ flexDirection: 'row', marginLeft: 10 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
                 <TouchableOpacity onPress={toggleDrawer}>
-                    <Image source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }} style={{ width: 40, height: 40, borderRadius: 20 }} />
+                    <Avatar.Image source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }} size={60} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={navigateToManageAmounts} style={{ marginLeft: 'auto', marginRight: 10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <IconButton icon="wallet" style={{ margin: 0, padding: 0 }}/>
+                        <Caption>{userInfo?.amountHolding}</Caption>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <IconButton icon="hand-extended" style={{ margin: 0, padding: 0, }}/>
+                        <Caption>{userInfo?.amountToReceive}</Caption>
+                    </View>
                 </TouchableOpacity>
             </View>
             <DrawerItemList state={state} descriptors={descriptors} navigation={navigation} {...props} />
+            <TouchableOpacity onPress={handleLogout}>
+                <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: '#ccc' }}>
+                    <Text>Logout</Text>
+                </View>
+            </TouchableOpacity>
         </DrawerContentScrollView>
     );
 };
 
 const CustomHeader = () => {
     const navigation = useNavigation<DrawerNavigationProp<any>>();
-    const route = useRoute();
+    const route = useRoute<RouteProp<Record<string, RouteParams>, string>>();
     const userInfo = useRecoilValue(userState);
-
+    const title = route.params?.title || route.name;
     const goBack = () => {
         navigation.goBack();
     };
@@ -130,7 +173,7 @@ const CustomHeader = () => {
                 {navigation.canGoBack() ? (
                     <IconButton icon="arrow-left" size={20} onPress={() => goBack()} />
                 ) : null}
-                <Text style={{ fontSize: 20 }}>{route.name}</Text>
+                <Text style={{ fontSize: 20 }}>{title ?? route.name}</Text>
             </View>
             <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
                 <Image source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }}  style={{ width: 40, height: 40, borderRadius: 20 }} />

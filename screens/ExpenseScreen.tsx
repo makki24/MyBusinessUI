@@ -25,7 +25,6 @@ const ExpenseScreen = ({ navigation }) => {
                 ...expense,
                 date: new Date(expense.date)
             }))
-            console.log("got the expenses", expensesData);
             setExpenses(expensesData);
         } catch (error) {
             console.error('Error fetching expenses:', error.response?.data || 'Unknown error');
