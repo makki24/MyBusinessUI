@@ -21,6 +21,8 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {DEFAULT_AVATAR_URL} from "./constants/mybusiness.constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ManageAmountsScreen from "./screens/ManageAmountsScreen";
+import TagsScreen from "./screens/TagsScreen";
+import AddTagScreen from "./screens/AddTagScreen";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -75,6 +77,15 @@ const ProfileStack = () => {
     );
 };
 
+const TagsStack = () => {
+    return (
+        <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+            <Stack.Screen name="ManageTags" component={TagsScreen}/>
+            <Stack.Screen name="AddTag" component={AddTagScreen} />
+        </Stack.Navigator>
+    );
+};
+
 const AppContent = () => {
     const userInfo = useRecoilValue(userState);
 
@@ -92,6 +103,7 @@ const AppContent = () => {
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Expenses' }} name="ExpenseStack" component={ExpenseStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Expense Types' }} name="ExpenseTypeStack" component={ExpenseTypeStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Manage profile' }} name="ProfileStack" component={ProfileStack} />
+                    <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Manage tags' }} name="TagsStack" component={TagsStack} />
                     {/* Other screens */}
                 </Drawer.Navigator>
             ) : (

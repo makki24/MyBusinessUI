@@ -5,6 +5,7 @@ import RolesService from "../services/RolesService";
 import { User } from "../types";
 import UserService from "../services/UserService";
 import DropDownPicker from 'react-native-dropdown-picker';
+import CustomDropDown from "../components/common/CustomDropdown";
 
 const EditRoleScreen = ({ route }) => {
     const { role } = route.params;
@@ -115,8 +116,12 @@ const EditRoleScreen = ({ route }) => {
 
             <Text style={styles.roleHeading}>{role.roleName}</Text>
 
-            <DropDownPicker
-                items={allUsers.map(user => ({ label: user.username, value: user.email }))}
+            <CustomDropDown
+                items={allUsers}
+                schema={{
+                    label: 'username',
+                    value: 'email',
+                }}
                 searchable={true}
                 open={open}
                 setOpen={setOpen}

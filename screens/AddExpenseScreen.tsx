@@ -1,15 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, ScrollView, Modal } from 'react-native';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import DropDownPicker, {DropDownPickerProps} from 'react-native-dropdown-picker';
+import DropDownPicker, { DropDownPickerProps } from 'react-native-dropdown-picker';
 import { Button, TextInput, Modal as PaperModal, Portal } from 'react-native-paper';
 import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates';
 
-import { expenseTypesState, userState, usersState, expensesState } from '../recoil/atom';
+import {
+    expenseTypesState,
+    userState,
+    usersState,
+    expensesState,
+    tagsState,
+} from '../recoil/atom';
 import ExpenseService from '../services/ExpenseService';
 import ExpenseTypesService from '../services/ExpenseTypesService';
 import UserService from '../services/UserService';
-import {ExpenseType, User} from "../types";
+import {ExpenseType, Tag as Tags, User} from "../types";
+import CustomDropDown from "../components/common/CustomDropdown";
+import TagsService from "../services/TagsService";
 
 interface AddExpenseScreenProps {
     navigation: any;
@@ -23,7 +31,9 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [userOpen, setUserOpen] = useState(false);
+    const [tagOpen, setTagOpen] = useState(false); // New selector for tags
     const [value, setValue] = useState<string | null>(null);
+    const [selectedTags, setSelectedTags] = useState<number[] >([]);
     const [amount, setAmount] = useState('');
     const [additionalInfo, setAdditionalInfo] = useState('');
     const [inputDate, setInputDate] = useState(new Date());
@@ -39,6 +49,8 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const [isAmountHoldingLess, setIsAmountHoldingLess] = useState(false);
+    const [tags, setTags] = useRecoilState(tagsState);
+
 
     const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
 
@@ -68,15 +80,25 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
     const fetchUsers = async () => {
         try {
             const fetchedUsers = await UserService.getUsers();
-            setUsers(fetchedUsers.filter(user => user.id !== loggedInUser.id));
+            setUsers(fetchedUsers.filter((user) => user.id !== loggedInUser.id));
         } catch (error) {
             console.error('Error fetching users:', error);
+        }
+    };
+
+    const fetchTags = async () => {
+        try {
+            const fetchedTags = await TagsService.getTags();
+            setTags(fetchedTags)
+        } catch (error) {
+            setError(error.response?.message || 'Error getting tags'); // Set the error message
         }
     };
 
     // Fetch users on component mount
     useEffect(() => {
         fetchUsers();
+        fetchTags();
     }, []);
 
     const maxFontSizeMultiplier = 1.5;
@@ -100,13 +122,19 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
     // Handler for changing the selected expense type
     const handleExpenseTypeChange = (selectedExpenseType: string | null) => {
         setSelectedUser(null);
-        setIsReceivingUser(expenseTypes.some((type) => type.id === selectedExpenseType && type.isReceivingUser));
+        setIsReceivingUser(
+            expenseTypes.some((type) => type.id === selectedExpenseType && type.isReceivingUser)
+        );
     };
 
-    const handleUserChange = (user) => {
-        if (user)
-            setSelectedUser(user);
-    }
+    // New handler for changing the selected tags
+    const handleTagChange = (tag: string | null) => {
+        // Handle tag change logic if needed
+    };
+
+    const handleUserChange = (user: string | null) => {
+        if (user) setSelectedUser(user);
+    };
 
     const handleModalClose = () => {
         setModalVisible(false);
@@ -115,46 +143,46 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
 
     const submitExpense = async () => {
         try {
-            setModalVisible(false)
+            setModalVisible(false);
             setIsLoading(true);
             const expenseDate = new Date(inputDate);
             expenseDate.setHours(time.hours, time.minutes);
 
             const newExpense = await ExpenseService.addExpense({
                 date: expenseDate,
-                expenseType: {id: value} as ExpenseType,
+                expenseType: { id: value } as ExpenseType,
                 amount: parseFloat(amount),
                 additionalInfo,
                 user: loggedInUser,
-                receivingUser: selectedUser ? {id: selectedUser} as User : null
+                receivingUser: selectedUser ? { id: selectedUser } as User : null,
+                tags: selectedTags.map(tag => ({id: tag})) as Tags[]
+                // Add tags if needed
             });
 
             newExpense.date = new Date(newExpense.date);
-            setExpenses((prevExpenses) =>  [...prevExpenses, newExpense]);
+            setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
 
             setAmount('');
             setValue(null);
             setAdditionalInfo('');
-            setLoggedInUser((currVal:User) => {
+            setLoggedInUser((currVal: User) => {
                 let amountHolding = currVal.amountHolding - parseFloat(amount);
                 let amountToReceive = currVal.amountToReceive;
                 if (amountHolding < 0) {
                     amountHolding = currVal.amountHolding;
                     amountToReceive = currVal.amountToReceive + parseFloat(amount);
                 }
-                return {...currVal, amountHolding, amountToReceive}
-            })
+                return { ...currVal, amountHolding, amountToReceive };
+            });
 
             navigation.goBack();
-        }
-        catch (error) {
-            console.error('Error adding expense:', error.response);
-            setError(error.response?.data ?? 'An error occurred while adding the expense');
+        } catch (err) {
+            console.error('Error adding expense:', err);
+            setError(err.response?.data ?? err.message ?? 'An error occurred while adding the expense');
         } finally {
-           setIsLoading(false);
+            setIsLoading(false);
         }
-    }
-
+    };
 
     // Handler for adding an expense
     const handleAddExpense = async () => {
@@ -167,7 +195,6 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
             setError('Additional info is required for others expenses');
             return;
         }
-
 
         const selectedExpenseType = expenseTypes.find((type) => type.id === value);
 
@@ -182,30 +209,32 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
         }
 
         if (isReceivingUser) {
-            const receivingUser = users.filter(user => user.id === selectedUser)[0];
+            const receivingUser = users.filter((user) => user.id === selectedUser)[0];
             if (parseFloat(amount) > receivingUser.amountToReceive) {
-                setModalMessage(`The amount to be received (${receivingUser.amountToReceive}) is smaller than the entered amount (${amount}). Do you want to continue?`);
+                setModalMessage(
+                    `The amount to be received (${receivingUser.amountToReceive}) is smaller than the entered amount (${amount}). Do you wish to continue?`
+                );
                 setModalVisible(true);
                 return;
             }
         }
 
         if (parseFloat(amount) > loggedInUser.amountHolding) {
-            setModalMessage(`Amount holding is less. Please either declare contribution or this amount will be considered as loan. You already have the loan of ${loggedInUser.amountToReceive},  Do you want to continue?`);
+            setModalMessage(
+                `Amount holding is less. Please either declare contribution or this amount will be considered as a loan. You already have the loan of ${loggedInUser.amountToReceive},  Do you wish to continue?`
+            );
             setIsAmountHoldingLess(true);
             setModalVisible(true);
             return;
         }
 
-
-        submitExpense()
+        submitExpense();
     };
 
     const navigateToManageAmounts = () => {
-        setModalVisible(false)
-        navigation.navigate('ProfileStack', { screen: 'ManageAmounts', params: { title: 'Manage Amounts' }})
+        setModalVisible(false);
+        navigation.navigate('ProfileStack', { screen: 'ManageAmounts', params: { title: 'Manage Amounts' } });
     };
-
 
     // Component rendering
     return (
@@ -225,14 +254,14 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
             )}
 
             {/* Expense type selector */}
-            <DropDownPicker
+            <CustomDropDown
+                items={expenseTypes}
                 schema={{
                     label: 'expenseTypeName',
                     value: 'id',
                 }}
                 zIndex={3000}
                 zIndexInverse={3000}
-                items={expenseTypes}
                 searchable={true}
                 open={open}
                 setOpen={setOpen}
@@ -245,7 +274,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
 
             {/* Additional selector for users if required */}
             {value && isReceivingUser && (
-                <DropDownPicker
+                <CustomDropDown
                     schema={{
                         label: 'username',
                         value: 'id',
@@ -264,6 +293,26 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
                     onChangeValue={handleUserChange}
                 />
             )}
+
+            {/* New selector for tags */}
+            <CustomDropDown
+                multiple={true}
+                items={tags}
+                zIndex={1000}
+                zIndexInverse={1000}
+                schema={{
+                    label: 'tagName',
+                    value: 'id',
+                }}
+                open={tagOpen}
+                setOpen={setTagOpen}
+                containerStyle={{ height: 40, marginBottom: 16 }}
+                value={selectedTags}
+                setValue={setSelectedTags}
+                itemSeparator={true}
+                placeholder="Select Tags"
+                onChangeValue={handleTagChange}
+            />
 
             {/* Input fields for amount and additional information */}
             <TextInput label="Amount" value={amount} onChangeText={setAmount} keyboardType="numeric" style={styles.inputField} />
