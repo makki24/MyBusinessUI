@@ -1,13 +1,31 @@
 // NetworkInterceptor.ts
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {apiUrl} from "../app-env.config";
 
-const BASE_URL = 'http://your-api-base-url';
+const BASE_URL = apiUrl;
 
 // Create an instance of axios to use interceptors
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
 });
+
+
+const extractMessage = (error): string => {
+    if (typeof error.response?.data === "string")
+        return error.response.data;
+    return error.message ?? error.response?.data?.error;
+}
+
+function extractError(error) {
+    if (!error)
+        error = new Error();
+    if (!error.response)
+        error.response = {}
+    error.response.message = extractMessage(error);
+    return error;
+}
+
 
 // Add a request interceptor
 axiosInstance.interceptors.request.use(
@@ -23,7 +41,7 @@ axiosInstance.interceptors.request.use(
 
             return config;
         } catch (error) {
-            console.error('Error adding Authorization header:', error);
+            error = extractError(error);
             return Promise.reject(error);
         }
     },
@@ -31,5 +49,20 @@ axiosInstance.interceptors.request.use(
         return Promise.reject(error);
     }
 );
+
+
+axiosInstance.interceptors.response.use(
+    (response) => {
+        // If the response is successful, just return it
+        return response;
+    },
+    (error) => {
+        // If the response is an error, add a custom message property
+        error = extractError(error);
+        // Return the modified error object
+        return Promise.reject(error);
+    }
+);
+
 
 export default axiosInstance;

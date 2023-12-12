@@ -1,3 +1,4 @@
+import { Tag } from "./tag";
 import {User} from "./users";
 
 export interface ExpenseType {
@@ -14,4 +15,5 @@ export interface Expense {
     additionalInfo?: string;
     expenseType: ExpenseType;
     receivingUser?: User;
+    tags: Tag[]
 }
