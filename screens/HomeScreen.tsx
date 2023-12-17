@@ -84,6 +84,24 @@ const HomeScreen = ({ navigation }) => {
                         <Title style={styles.cardTitle}>Manage Tags</Title>
                     </View>
                 </Card>
+
+                <Card style={styles.card} onPress={() => navigation.navigate('WorkStack', { screen: 'WorkType' })}>
+                    <Card.Cover source={{ uri: images[currentImageIndex[2]].uri }} />
+                    <View style={styles.textOverlay}>
+                        <Title style={styles.cardTitle}>Manage Work Type</Title>
+                    </View>
+                </Card>
+
+                <View style={styles.gap} />
+
+                <Card style={styles.card} onPress={() => navigation.navigate('WorkStack', { screen: 'Work' })}>
+                    <Card.Cover source={{ uri: images[currentImageIndex[2]].uri }} />
+                    <View style={styles.textOverlay}>
+                        <Title style={styles.cardTitle}>Work</Title>
+                    </View>
+                </Card>
+
+
             </View>
             {/* Display amountToReceive and amountHolding */}
             <View style={styles.amountContainer}>

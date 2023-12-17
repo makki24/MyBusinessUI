@@ -19,7 +19,7 @@ const SwitchInput: React.FC<SwitchInputProps> = ({ label, value, onValueChange }
                 onValueChange={onValueChange}
                 color={theme.colors.primary} // Adjust the color based on your theme
             />
-            <Text style={{ marginLeft: 10 }}>{label}</Text>
+            <Text>{label}</Text>
         </View>
     );
 };
