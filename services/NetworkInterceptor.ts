@@ -22,7 +22,7 @@ function extractError(error) {
         error = new Error();
     if (!error.response)
         error.response = {}
-    error.response.message = extractMessage(error);
+    error.message = extractMessage(error);
     return error;
 }
 

@@ -37,7 +37,7 @@ const AddTagScreen: React.FC<AddTagScreenProps> = ({ navigation }) => {
             navigation.goBack();
         } catch (error) {
             console.error('Error adding tag:', error);
-            setError(error.response?.message || 'An error occurred'); // Set the error message
+            setError(error.message || 'An error occurred'); // Set the error message
         } finally {
             setIsLoading(false); // Set loading to false regardless of success or failure
         }

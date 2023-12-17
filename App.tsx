@@ -23,6 +23,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ManageAmountsScreen from "./screens/ManageAmountsScreen";
 import TagsScreen from "./screens/TagsScreen";
 import AddTagScreen from "./screens/AddTagScreen";
+import WorkTypeScreen from "./screens/WorkTypeScreen";
+import AddWorkTypeScreen from "./screens/AddWorkTypeScreen";
+import WorksScreen from "./screens/WorksScreen";
+import AddWorkScreen from "./screens/AddWorkScreen";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -86,6 +90,17 @@ const TagsStack = () => {
     );
 };
 
+const WorkStack = () => {
+    return (
+        <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+            <Stack.Screen name="Work" component={WorksScreen}/>
+            <Stack.Screen name="AddWork" component={AddWorkScreen} />
+            <Stack.Screen name="WorkType" component={WorkTypeScreen}/>
+            <Stack.Screen name="AddWorkType" component={AddWorkTypeScreen} />
+        </Stack.Navigator>
+    );
+};
+
 const AppContent = () => {
     const userInfo = useRecoilValue(userState);
 
@@ -104,6 +119,7 @@ const AppContent = () => {
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Expense Types' }} name="ExpenseTypeStack" component={ExpenseTypeStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Manage profile' }} name="ProfileStack" component={ProfileStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Manage tags' }} name="TagsStack" component={TagsStack} />
+                    <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Work' }} name="WorkStack" component={WorkStack} />
                     {/* Other screens */}
                 </Drawer.Navigator>
             ) : (

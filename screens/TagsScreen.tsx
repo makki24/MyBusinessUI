@@ -26,7 +26,7 @@ const TagsScreen = ({ navigation }) => {
     };
 
     const handleError = (error, defaultMessage) => {
-        setError(error.response?.message || defaultMessage);
+        setError(error.message || defaultMessage);
     };
 
     useEffect(() => {

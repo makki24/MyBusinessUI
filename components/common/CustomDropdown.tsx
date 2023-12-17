@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {Chip} from "react-native-paper";
 import {View} from "react-native"; // Import ValueType
@@ -21,6 +21,7 @@ interface CustomDropDownProps<T> {
     zIndexInverse?: number
     placeholder?: string;
     multiple?: any; // Added a new prop for multiple selections
+    loading?: boolean;
 }
 
 const CustomDropDown = <T,>({
@@ -38,6 +39,7 @@ const CustomDropDown = <T,>({
                                 zIndexInverse,
                                 placeholder,
                                 multiple = false, // Default to false if not provided
+                                loading = false
                             }: CustomDropDownProps<T>) => {
 
     const handleDelete = (itemValue: string) => {
@@ -47,6 +49,7 @@ const CustomDropDown = <T,>({
     return (
         <>
             <DropDownPicker
+                loading={loading}
                 schema={schema}
                 zIndex={zIndex}
                 zIndexInverse={zIndexInverse}
