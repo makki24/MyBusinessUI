@@ -66,11 +66,14 @@ const CustomDropDown = <T,>({
                 multiple={multiple} // Pass the multiple prop to DropDownPicker
             />
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                {Array.isArray(value) && value.map((v: string) => (
-                    <Chip key={v} onClose={() => handleDelete(v)} style={{ margin: 4 }}>
-                        {items.find((item: T) => item[schema.value] === v)[schema.label]}
-                    </Chip>
-                ))}
+                {Array.isArray(value) && value.map((v: string) => {
+                    const item = items.find((item: T) => item[schema.value] === v);
+                    return (
+                        <Chip key={v} onClose={() => handleDelete(v)} style={{ margin: 4 }}>
+                            {item ? item[schema.label] : 'Loading...'}
+                        </Chip>
+                    );
+                })}
             </View>
         </>
     );
