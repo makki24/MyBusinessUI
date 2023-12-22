@@ -97,11 +97,14 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
 
     const fetchTags = async () => {
         try {
+            setIsDataLoading(true);
             const fetchedTags = await TagsService.getTags();
             setTags(fetchedTags);
-            setIsDataLoading(true)
         } catch (error) {
             setError(error.message || 'Error getting tags');
+        }
+        finally {
+            setIsDataLoading(false)
         }
     };
 

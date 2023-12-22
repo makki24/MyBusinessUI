@@ -9,7 +9,12 @@ import { WorkType } from '../types';
 import WorkService from "../services/WorkService";
 
 interface AddWorkTypeScreenProps {
-    route: any;
+    route: {
+        params: {
+            workType: WorkType,
+            isEditMode: boolean
+        }
+    };
     navigation: any; // Adjust the type based on your navigation prop type
 }
 
@@ -26,10 +31,10 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({ route, navigation
         // Check if the screen is in edit mode and workType data is provided
         if (route.params?.isEditMode && route.params?.workType) {
             setIsEdit(true);
-            const { workTypeName, defaultValuePerUnit, typeUnit } = route.params.workType;
-            setTypeName(workTypeName);
-            setUnit(typeUnit);
-            setDefaultPrice(defaultValuePerUnit.toString());
+            const workType = route.params.workType;
+            setTypeName(workType.workTypeName);
+            setUnit(workType.unit);
+            setDefaultPrice(workType.defaultValuePerUnit.toString());
             // ... set other state variables with workType data
         }
     }, [route.params?.isEditMode, route.params?.workType]);
