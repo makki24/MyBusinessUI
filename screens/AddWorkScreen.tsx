@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, ScrollView } from 'react-native';
+import {View, StyleSheet, Text, ActivityIndicator, ScrollView, TouchableOpacity} from 'react-native';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { Button, TextInput, Modal as PaperModal, Portal } from 'react-native-paper';
+import {Button, TextInput, Modal as PaperModal, Portal, Icon} from 'react-native-paper';
 import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates';
 
 import {userState, usersState, tagsState, worksState} from '../recoil/atom';
@@ -11,6 +11,7 @@ import {WorkType, Tag as Tags, User, Work} from '../types';
 import CustomDropDown from '../components/common/CustomDropdown';
 import TagsService from '../services/TagsService';
 import SwitchInput from "../components/common/SwitchInput";
+import UserDetails from "../components/common/UserDetails";
 
 interface AddWorkScreenProps {
     navigation: any;
@@ -260,7 +261,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
                     }}
                     zIndex={2000}
                     zIndexInverse={2000}
-                    items={users.filter(user => user.email !== loggedInUser.email)}
+                    items={users.filter(user => (user.phoneNumber || user.email) && user.email !== loggedInUser.email)}
                     searchable={true}
                     open={userOpen}
                     setOpen={setUserOpen}
@@ -270,6 +271,23 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
                     itemSeparator={true}
                     placeholder="Select User"
                     onChangeValue={handleUserChange}
+                    renderListItem={({item}) => (
+                        <TouchableOpacity onPress={() => {
+                            setSelectedUser(item.id)
+                            setUserOpen(false)
+                        }}
+                          style={styles.dropdownUserContainer}
+                        >
+                            <UserDetails user={item}/>
+                            {(selectedUser === item.id) &&
+                                <Icon
+                                    source="check"
+                                    color={'primary'}
+                                    size={20}
+                                />
+                            }
+                        </TouchableOpacity>
+                    )}
                 />
             )}
 
@@ -398,6 +416,13 @@ const styles = StyleSheet.create({
     },
     modalButtonGap: {
         height: 5,
+    },
+    dropdownUserContainer: {
+        marginLeft: 10,
+        paddingVertical: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginRight: 10
     }
 });
 
