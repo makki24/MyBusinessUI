@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Card, Title, IconButton, Paragraph, Chip, Avatar } from 'react-native-paper';
 import { Work } from '../types';
-import { DEFAULT_AVATAR_URL } from "../constants/mybusiness.constants";
+import UserDetails from "./common/UserDetails";
 
 interface WorkItemProps {
     work: Work;
@@ -12,41 +12,15 @@ interface WorkItemProps {
 }
 
 const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
-    const [imageExists, setImageExists] = useState(true);
-
-    const checkImageExists = async () => {
-        try {
-            if (!work.user.picture)
-                throw new Error("No image");
-            const response = await fetch(work.user.picture);
-            setImageExists(response.ok);
-        } catch (error) {
-            setImageExists(false);
-        }
-    };
-
-    useEffect(() => {
-        checkImageExists();
-    }, []); // Call when the component mounts
-
     return (
         <TouchableOpacity onPress={onPress}>
             <Card style={styles.workCard}>
                 <Card.Content style={styles.cardContent}>
                     <View style={styles.titleContainer}>
                         <Title>{work.workType.workTypeName}</Title>
-                        {work.user && (
-                            <View style={styles.userContainer}>
-                                {work.user.picture && (
-                                    <Avatar.Image
-                                        size={40}
-                                        source={{ uri: imageExists ? work.user.picture : DEFAULT_AVATAR_URL }}
-                                        style={styles.avatar}
-                                    />
-                                )}
-                                <Text style={styles.username}>{work.user.username}</Text>
-                            </View>
-                        )}
+                        <Text>
+                            {work.user && <UserDetails user={work.user} />} {/* Use UserDetails component */}
+                        </Text>
                     </View>
                     <Paragraph>{`Date: ${work.date.toDateString()}`}</Paragraph>
                     <Paragraph>{`Quantity: ${work.quantity}`}</Paragraph>
@@ -86,16 +60,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 8,
-    },
-    userContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    avatar: {
-        marginRight: 8,
-    },
-    username: {
-        fontWeight: 'bold',
     },
     tagsContainer: {
         flexDirection: 'row',
