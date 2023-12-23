@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {View, StyleSheet, Text, ActivityIndicator, ScrollView, TouchableOpacity} from 'react-native';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import {Button, TextInput, Modal as PaperModal, Portal, Icon} from 'react-native-paper';
-import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { useRecoilState } from 'recoil';
+import { Button, TextInput, Icon } from 'react-native-paper';
 
 import {userState, usersState, tagsState, worksState} from '../recoil/atom';
 import WorkService from '../services/WorkService';
@@ -12,6 +11,7 @@ import CustomDropDown from '../components/common/CustomDropdown';
 import TagsService from '../services/TagsService';
 import SwitchInput from "../components/common/SwitchInput";
 import UserDetails from "../components/common/UserDetails";
+import DateTimePicker from "../components/common/DateTimePicker";
 
 interface AddWorkScreenProps {
     navigation: any;
@@ -27,7 +27,6 @@ interface AddWorkScreenProps {
 const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [open, setOpen] = useState(false);
     const [tagOpen, setTagOpen] = useState(false);
     const [userOpen, setUserOpen] = useState(false);
     const [workType, setWorkType] = useState<WorkType>(null);
@@ -41,7 +40,6 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
         hours: new Date().getHours(),
         minutes: new Date().getMinutes(),
     });
-    const [timeOpen, setTimeOpen] = useState(false);
     const [users, setUsers] = useRecoilState(usersState);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [tags, setTags] = useRecoilState(tagsState);
@@ -109,35 +107,11 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
         }
     };
 
-    const onConfirmTime = useCallback(
-        ({ hours, minutes }: any) => {
-            setTimeOpen(false);
-            setTime({ hours, minutes });
-        },
-        [setTimeOpen, setTime]
-    );
-
-
-    const onDismissTime = useCallback(() => {
-        setTimeOpen(false);
-    }, [setTimeOpen]);
-
-    const timeFormatter = React.useMemo(
-        () =>
-            new Intl.DateTimeFormat('en', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-            }),
-        []
-    );
-
     useEffect(() => {
         fetchUsers();
         fetchTags();
     }, []);
 
-    const maxFontSizeMultiplier = 1.5;
     let timeDate = new Date();
     time.hours !== undefined && timeDate.setHours(time.hours);
     time.minutes !== undefined && timeDate.setMinutes(time.minutes);
@@ -325,41 +299,13 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
 
             <TextInput label="Description (optional)" value={description} onChangeText={setDescription} style={styles.inputField} />
 
-            {/* Date picker */}
-            <DatePickerInput
-                locale="en"
-                label="Work date"
-                value={inputDate}
-                onChange={(d) => setInputDate(d || new Date())}
-                inputMode="start"
-                style={styles.inputField}
-            />
-
             {/* Time picker */}
-            <View style={[styles.row, styles.marginVerticalEight]}>
-                <View style={styles.section}>
-                    <Text maxFontSizeMultiplier={maxFontSizeMultiplier} style={styles.bold}>
-                        Time
-                    </Text>
-                    <Text maxFontSizeMultiplier={maxFontSizeMultiplier}>
-                        {time && time.hours !== undefined && time.minutes !== undefined
-                            ? timeFormatter.format(new Date().setHours(time.hours, time.minutes))
-                            : `Current Time: ${timeFormatter.format(new Date())}`}
-                    </Text>
-                </View>
-                <Button onPress={() => setTimeOpen(true)} uppercase={false} mode="contained-tonal">
-                    Pick time
-                </Button>
-            </View>
-
-            {/* Time picker modal */}
-            <TimePickerModal
-                locale={'en'}
-                visible={timeOpen}
-                onDismiss={onDismissTime}
-                onConfirm={onConfirmTime}
-                hours={time.hours}
-                minutes={time.minutes}
+            <DateTimePicker
+                label="Work date"
+                dateValue={inputDate}
+                onDateChange={setInputDate}
+                onTimeChange={setTime}
+                timeValue={time}
             />
 
             {/* Button to add the work */}

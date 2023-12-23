@@ -1,37 +1,37 @@
-// src/components/WorkItem.tsx
+// src/components/SaleItem.tsx
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card, Title, IconButton, Paragraph, Chip, Avatar } from 'react-native-paper';
-import { Work } from '../types';
-import UserDetails from "./common/UserDetails";
+import { Sale } from '../types';
+import UserDetails from './common/UserDetails';
 
-interface WorkItemProps {
-    work: Work;
+interface SaleItemProps {
+    sale: Sale;
     onPress: () => void;
     onDelete: () => void;
 }
 
-const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
+const SaleItem: React.FC<SaleItemProps> = ({ sale, onPress, onDelete }) => {
     return (
         <TouchableOpacity onPress={onPress}>
-            <Card style={styles.workCard}>
+            <Card style={styles.saleCard}>
                 <Card.Content style={styles.cardContent}>
                     <View style={styles.titleContainer}>
-                        <Title>{work.workType.workTypeName}</Title>
+                        <Title>{sale.type}</Title>
                         <Text>
-                            {work.user && <UserDetails user={work.user} />} {/* Use UserDetails component */}
+                            {sale.user && <UserDetails user={sale.user} />} {/* Use UserDetails component */}
                         </Text>
                     </View>
-                    <Paragraph>{`Date: ${work.date.toDateString()}`}</Paragraph>
-                    <Paragraph>{`Quantity: ${work.quantity}`}</Paragraph>
-                    <Paragraph>{`Price Per Unit: ${work.pricePerUnit}`}</Paragraph>
-                    <Paragraph>{`Amount: ${work.amount}`}</Paragraph>
-                    {work.description && <Paragraph>{`Description: ${work.description}`}</Paragraph>}
-                    {work.tags.length > 0 && (
+                    <Paragraph>{`Date: ${sale.date.toDateString()}`}</Paragraph>
+                    <Paragraph>{`Quantity: ${sale.quantity}`}</Paragraph>
+                    <Paragraph>{`Price Per Unit: ${sale.pricePerUnit}`}</Paragraph>
+                    <Paragraph>{`Amount: ${sale.amount}`}</Paragraph>
+                    {sale.description && <Paragraph>{`Description: ${sale.description}`}</Paragraph>}
+                    {sale.tags.length > 0 && (
                         <View style={styles.tagsContainer}>
                             <Text style={styles.tagsLabel}>Tags: </Text>
                             <View style={styles.tagChipsContainer}>
-                                {work.tags.map((tag) => (
+                                {sale.tags.map((tag) => (
                                     <Chip key={tag.id} style={styles.tagChip}>
                                         {tag.tagName}
                                     </Chip>
@@ -49,18 +49,23 @@ const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
 };
 
 const styles = StyleSheet.create({
-    workCard: {
+    saleCard: {
         marginBottom: 16,
     },
     cardContent: {
         paddingHorizontal: 16,
-        paddingBottom: 16, // Added paddingBottom to create space for the delete button
+        paddingBottom: 16,
     },
     titleContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 8,
+    },
+    cardActions: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
     },
     tagsContainer: {
         flexDirection: 'row',
@@ -78,11 +83,6 @@ const styles = StyleSheet.create({
     tagChip: {
         marginHorizontal: 4,
     },
-    cardActions: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-    },
 });
 
-export default WorkItem;
+export default SaleItem;

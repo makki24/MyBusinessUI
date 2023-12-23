@@ -1,5 +1,5 @@
 // App.tsx
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, Image, TouchableOpacity, Text } from 'react-native';
 import {NavigationContainer, RouteProp, useRoute} from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
@@ -15,7 +15,7 @@ import AddExpenseTypeScreen from "./screens/AddExpenseTypeScreen";
 import ExpenseTypesScreen from "./screens/ExpenseTypesScreen";
 import ExpenseScreen from "./screens/ExpenseScreen";
 import AddExpenseScreen from "./screens/AddExpenseScreen";
-import { userState } from "./recoil/atom";
+import {tagsState, usersState, userState} from "./recoil/atom";
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {DEFAULT_AVATAR_URL} from "./constants/mybusiness.constants";
@@ -27,6 +27,10 @@ import WorkTypeScreen from "./screens/WorkTypeScreen";
 import AddWorkTypeScreen from "./screens/AddWorkTypeScreen";
 import WorksScreen from "./screens/WorksScreen";
 import AddWorkScreen from "./screens/AddWorkScreen";
+import UserService from "./services/UserService";
+import TagsService from "./services/TagsService";
+import SaleScreen from "./screens/SalesScreen";
+import AddSaleScreen from "./screens/AddSaleScreen";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -101,8 +105,45 @@ const WorkStack = () => {
     );
 };
 
+const SaleStack = () => {
+    return (
+        <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+            <Stack.Screen name="Sale" component={SaleScreen}/>
+            <Stack.Screen name="AddSale" component={AddSaleScreen} />
+        </Stack.Navigator>
+    );
+};
+
 const AppContent = () => {
     const userInfo = useRecoilValue(userState);
+    const [users, setUsers] = useRecoilState(usersState);
+    const [tags, setTags] = useRecoilState(tagsState);
+
+    const fetchUsers = async () => {
+        try {
+            const fetchedUsers = await UserService.getUsers();
+            setUsers(fetchedUsers);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
+
+    const fetchTags = async () => {
+        try {
+            const fetchedTags = await TagsService.getTags();
+            setTags(fetchedTags)
+        } catch (error) {
+            console.error('Error fetching tags:', error);
+
+        }
+
+    };
+
+    useEffect(() => {
+        fetchUsers();
+        fetchTags();
+    }, [userInfo]);
+
 
     return (
         <NavigationContainer>
@@ -114,12 +155,13 @@ const AppContent = () => {
                     initialRouteName="Home" drawerContent={props => <CustomDrawerContent {...props} userInfo={userInfo} />}
                 >
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Home' }} name="HomeStack" component={HomeStack} />
+                    <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Manage profile' }} name="ProfileStack" component={ProfileStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Roles' }} name="RolesStack" component={RoleStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Expenses' }} name="ExpenseStack" component={ExpenseStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Expense Types' }} name="ExpenseTypeStack" component={ExpenseTypeStack} />
-                    <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Manage profile' }} name="ProfileStack" component={ProfileStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Manage tags' }} name="TagsStack" component={TagsStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Work' }} name="WorkStack" component={WorkStack} />
+                    <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Sale' }} name="SaleStack" component={SaleStack} />
                     {/* Other screens */}
                 </Drawer.Navigator>
             ) : (
@@ -132,6 +174,7 @@ const AppContent = () => {
 };
 
 const App = () => {
+
     return (
         <RecoilRoot>
             <PaperProvider>
