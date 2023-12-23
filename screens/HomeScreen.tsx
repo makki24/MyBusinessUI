@@ -9,7 +9,8 @@ const HomeScreen = ({ navigation }) => {
         { uri: 'https://via.placeholder.com/300/33FF57/FFFFFF', interval: 7000 },
         { uri: 'https://via.placeholder.com/300/5733FF/FFFFFF', interval: 4000 },
         { uri: 'https://via.placeholder.com/300/FF33FF/FFFFFF', interval: 6000 }, // New Expense Card Image
-        { uri: 'https://via.placeholder.com/300/33FFFF/FFFFFF', interval: 2000 }
+        { uri: 'https://via.placeholder.com/300/33FFFF/FFFFFF', interval: 3000 },
+        { uri: 'https://via.placeholder.com/300/33ABFF/FFFFFF', interval: 4000 }
         // Add more image URLs with different intervals as needed
     ];
 
@@ -100,7 +101,12 @@ const HomeScreen = ({ navigation }) => {
                         <Title style={styles.cardTitle}>Work</Title>
                     </View>
                 </Card>
-
+                <Card style={styles.card} onPress={() => navigation.navigate('SaleStack', { screen: 'Sale' })}>
+                    <Card.Cover source={{ uri: images[currentImageIndex[6]].uri }} />
+                    <View style={styles.textOverlay}>
+                        <Title style={styles.cardTitle}>Sale</Title>
+                    </View>
+                </Card>
 
             </View>
             {/* Display amountToReceive and amountHolding */}

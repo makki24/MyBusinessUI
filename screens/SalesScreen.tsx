@@ -1,83 +1,85 @@
-// src/screens/WorksScreen.tsx
+// src/screens/SaleScreen.tsx
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { FAB, Text, Button, Modal, Portal } from 'react-native-paper';
 import { useRecoilState } from 'recoil';
-import WorkService from '../services/WorkService';
-import WorkItem from '../components/WorkItem';
-import { worksState } from '../recoil/atom';
-import { Work } from '../types';
+import SaleService from '../services/SaleService';
+import SaleItem from '../components/SaleItem';
+import {salesState, userState} from '../recoil/atom';
+import { Sale } from '../types';
 
-const WorksScreen = ({ navigation }) => {
-    const [works, setWorks] = useRecoilState(worksState);
+const SaleScreen = ({ navigation }) => {
+    const [sales, setSales] = useRecoilState(salesState);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [selectedWork, setSelectedWork] = useState(null);
+    const [selectedSale, setSelectedSale] = useState<Sale>(null);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
 
-    const fetchWorks = async () => {
+    const fetchSales = async () => {
         try {
             setIsRefreshing(true);
 
-            let worksData = await WorkService.getWorks();
-            worksData = worksData.map(work => ({
-                ...work,
-                date: new Date(work.date)
+            let salesData = await SaleService.getSales();
+            salesData = salesData.map(sale => ({
+                ...sale,
+                date: new Date(sale.date)
             }))
-            setWorks(worksData);
+            setSales(salesData);
         } catch (error) {
-            console.error('Error fetching works:', error.message || 'Unknown error');
-            setError(error.message || 'Error fetching works. Please try again.');
+            console.error('Error fetching sales:', error.message || 'Unknown error');
+            setError(error.message || 'Error fetching sales. Please try again.');
         } finally {
             setIsRefreshing(false);
         }
     };
 
     useEffect(() => {
-        fetchWorks();
+        fetchSales();
     }, []);
 
-    const handleEditWork = (work: Work) => {
-        const serializedDate = work.date.toISOString();
-        const title = work.pricePerUnit ? `(${work.pricePerUnit} per ${work.workType.unit})` : '';
-        navigation.navigate('WorkStack', { screen: 'AddWork' ,
-            params: { title: `Edit Work ${title}`, work: { ...work, date: serializedDate }, isEditMode: true }
-        })
+    const handleEditSale = (sale: Sale) => {
+        const serializedDate = sale.date.toISOString();
+
+        navigation.navigate('SaleStack', {
+            screen: 'AddSale',
+            params: { title: `Edit Sale`, sale: {...sale, date: serializedDate}, isEditMode: true },
+        });
     };
 
-    const handleDeleteWork = async (work) => {
-        setSelectedWork(work);
+    const handleDeleteSale = async (sale) => {
+        setSelectedSale(sale);
         setIsLoading(true);
 
         try {
             setIsDeleteModalVisible(true);
         } catch (error) {
-            console.error('Error checking work details:', error.response?.data || 'Unknown error');
-            setError(error.response?.data || 'Error checking work details. Please try again.');
+            console.error('Error checking sale details:', error.response?.data || 'Unknown error');
+            setError(error.message  || 'Error checking sale details. Please try again.');
         } finally {
             setIsLoading(false);
         }
     };
 
-    const confirmDeleteWork = async () => {
+    const confirmDeleteSale = async () => {
         setIsLoading(true);
 
         try {
-            await WorkService.deleteWork(selectedWork.workID);
-            setWorks((prevWorks) => prevWorks.filter((work) => work.workID !== selectedWork.workID));
+            await SaleService.deleteSale(selectedSale.id);
+            setSales((prevSales) => prevSales.filter((sale) => sale.id !== selectedSale.id));
         } catch (error) {
-            console.error('Error deleting work:', error.response?.data || 'Unknown error');
-            setError(error.message  || 'Error deleting work. Please try again.');
+            console.error('Error deleting sale:', error.response?.data || 'Unknown error');
+            setError(error.message  || 'Error deleting sale. Please try again.');
         } finally {
             setIsLoading(false);
-            setSelectedWork(null);
+            setSelectedSale(null);
             setIsDeleteModalVisible(false);
         }
     };
 
     const handleRefresh = () => {
-        fetchWorks();
+        fetchSales();
     };
 
     return (
@@ -96,32 +98,36 @@ const WorksScreen = ({ navigation }) => {
 
             {!error && (
                 <FlatList
-                    data={works}
+                    data={sales}
                     renderItem={({ item }) => (
-                        <WorkItem
-                            work={item}
-                            onPress={() => handleEditWork(item)}
-                            onDelete={() => handleDeleteWork(item)}
+                        <SaleItem
+                            sale={item}
+                            onPress={() => handleEditSale(item)}
+                            onDelete={() => handleDeleteSale(item)}
                         />
                     )}
-                    keyExtractor={(item) => item.workID.toString()} // Ensure key is a string
+                    keyExtractor={(item) => item.id.toString()} // Ensure key is a string
                     refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
                 />
             )}
 
-            <FAB style={styles.fab} icon="plus" onPress={() => navigation.navigate('WorkStack', { screen: 'WorkType', params: {title: 'Select Work type'} })} />
+            <FAB
+                style={styles.fab}
+                icon="plus"
+                onPress={() => navigation.navigate('SaleStack', { screen: 'AddSale', params: { title: 'Create Sale' } })}
+            />
 
-            {/* Delete Work Modal */}
+            {/* Delete Sale Modal */}
             <Portal>
                 <Modal visible={isDeleteModalVisible} onDismiss={() => setIsDeleteModalVisible(false)} contentContainerStyle={styles.modalContainer}>
-                    <Text>Are you sure you want to delete this work?</Text>
+                    <Text>Are you sure you want to delete this sale?</Text>
                     <View style={styles.modalButtonGap} />
                     <View style={styles.modalButtonGap} />
                     <Button icon="cancel" mode="outlined" onPress={() => setIsDeleteModalVisible(false)}>
                         Cancel
                     </Button>
                     <View style={styles.modalButtonGap} />
-                    <Button icon="delete" mode="contained" onPress={confirmDeleteWork}>
+                    <Button icon="delete" mode="contained" onPress={confirmDeleteSale}>
                         Delete
                     </Button>
                 </Modal>
@@ -168,5 +174,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default WorksScreen;
-
+export default SaleScreen;
