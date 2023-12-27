@@ -31,6 +31,8 @@ import UserService from "./services/UserService";
 import TagsService from "./services/TagsService";
 import SaleScreen from "./screens/SalesScreen";
 import AddSaleScreen from "./screens/AddSaleScreen";
+import ContributionScreen from "./screens/ContributionScreen";
+import AddContributionScreen from "./screens/AddContributionScreen";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -81,6 +83,9 @@ const ProfileStack = () => {
             <Stack.Screen name="ManageAmounts" component={ManageAmountsScreen}
                           options={{title: 'Title', headerTitle: 'title'}}
             />
+            <Stack.Screen name="ContributionScreen" component={ContributionScreen}/>
+            <Stack.Screen name="AddContribution" component={AddContributionScreen}/>
+
         </Stack.Navigator>
     );
 };
@@ -199,6 +204,10 @@ const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
 
     const navigateToManageAmounts = () => {
         navigation.navigate('ProfileStack', { screen: 'ManageAmounts', params: { title: 'Manage Amounts' }})
+    }
+
+    const navigateToContributionScreen = () => {
+        navigation.navigate('ProfileStack', { screen: 'ContributionScreen', params: { title: 'My Contributions' }})
     };
 
     return (
@@ -208,16 +217,20 @@ const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
                     <Avatar.Image source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }} size={60} />
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={navigateToManageAmounts} style={{ marginLeft: 'auto', marginRight: 10 }}>
+                <View style={{ marginLeft: 'auto', marginRight: 10 }}>
+                <TouchableOpacity onPress={navigateToContributionScreen}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <IconButton icon="wallet" style={{ margin: 0, padding: 0 }}/>
                         <Caption>{userInfo?.amountHolding}</Caption>
                     </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={navigateToManageAmounts}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <IconButton icon="hand-extended" style={{ margin: 0, padding: 0, }}/>
                         <Caption>{userInfo?.amountToReceive}</Caption>
                     </View>
                 </TouchableOpacity>
+                </View>
             </View>
             <DrawerItemList state={state} descriptors={descriptors} navigation={navigation} {...props} />
             <TouchableOpacity onPress={handleLogout}>

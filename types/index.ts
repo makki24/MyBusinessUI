@@ -5,3 +5,4 @@ export * from './expenses';
 export * from './tag'
 export * from './work'
 export * from './Sale';
+export * from './contribution';

@@ -1,6 +1,6 @@
 import axios from "./NetworkInterceptor";
 import {apiUrl} from "../app-env.config";
-import {User} from "../types";
+import {Contribution, User} from "../types";
 
 const UserService = {
     getUsers: async () => {
@@ -51,12 +51,12 @@ const UserService = {
         }
     },
 
-    updateContribution: async (user: User) => {
+    updateContribution: async (contribution: Contribution): Promise<Contribution> => {
         try {
-            const response = await axios.put(`${apiUrl}/api/users/updateContribution`, user);
+            const response = await axios.post(`/api/contributions`, contribution);
 
             if (!response.data) {
-                throw new Error(`Error removing role: ${response.statusText}`);
+                throw new Error(`no response.data`);
             }
 
             return response.data;
