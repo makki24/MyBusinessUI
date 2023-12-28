@@ -4,11 +4,11 @@ import { View, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { Button, TextInput, Text } from 'react-native-paper';
 import { useRecoilState } from "recoil";
 import { tagsState, usersState, userState } from "../recoil/atom";
-import userService from "../services/UserService";
 import UserDropDownItem from "../components/common/UserDropDownItem";
 import CustomDropDown from "../components/common/CustomDropdown";
 import DateTimePicker from "../components/common/DateTimePicker";
 import { Contribution, Tag, User } from "../types";
+import contributionService from "../services/ContributionService";
 
 let oldAmount = 0;
 const AddContributionScreen = ({ navigation, route }) => {
@@ -62,7 +62,7 @@ const AddContributionScreen = ({ navigation, route }) => {
                 newAmount = newAmount - oldAmount;
             }
 
-            const response = await userService.updateContribution(contribution);
+            const response = await contributionService.updateContribution(contribution);
             setLoggedInUser(user => ({
                 ...user,
                 amountHolding: newAmount

@@ -15,7 +15,7 @@ import AddExpenseTypeScreen from "./screens/AddExpenseTypeScreen";
 import ExpenseTypesScreen from "./screens/ExpenseTypesScreen";
 import ExpenseScreen from "./screens/ExpenseScreen";
 import AddExpenseScreen from "./screens/AddExpenseScreen";
-import {tagsState, usersState, userState} from "./recoil/atom";
+import {rolesState, tagsState, usersState, userState} from "./recoil/atom";
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {DEFAULT_AVATAR_URL} from "./constants/mybusiness.constants";
@@ -33,6 +33,9 @@ import SaleScreen from "./screens/SalesScreen";
 import AddSaleScreen from "./screens/AddSaleScreen";
 import ContributionScreen from "./screens/ContributionScreen";
 import AddContributionScreen from "./screens/AddContributionScreen";
+import AddUserScreen from "./screens/AddUserScreen";
+import UsersScreen from "./screens/UsersScreen";
+import RolesService from "./services/RolesService";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -119,10 +122,20 @@ const SaleStack = () => {
     );
 };
 
+const UsersStack = () => {
+    return (
+        <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+            <Stack.Screen name="Users" component={UsersScreen} />
+            <Stack.Screen name="AddUser" component={AddUserScreen}/>
+        </Stack.Navigator>
+    );
+};
+
 const AppContent = () => {
     const userInfo = useRecoilValue(userState);
     const [users, setUsers] = useRecoilState(usersState);
     const [tags, setTags] = useRecoilState(tagsState);
+    const [roles, setRoles] = useRecoilState(rolesState);
 
     const fetchUsers = async () => {
         try {
@@ -141,12 +154,22 @@ const AppContent = () => {
             console.error('Error fetching tags:', error);
 
         }
+    };
 
+    const fetchRoles = async () => {
+        try {
+            const fetchedRoles = await RolesService.getRoles();
+            setRoles(fetchedRoles)
+        } catch (error) {
+            console.error('Error fetching roles:', error);
+
+        }
     };
 
     useEffect(() => {
         fetchUsers();
         fetchTags();
+        fetchRoles();
     }, [userInfo]);
 
 
@@ -167,6 +190,7 @@ const AppContent = () => {
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Manage tags' }} name="TagsStack" component={TagsStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Work' }} name="WorkStack" component={WorkStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Sale' }} name="SaleStack" component={SaleStack} />
+                    <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Users' }} name="UsersStack" component={UsersStack} />
                     {/* Other screens */}
                 </Drawer.Navigator>
             ) : (
@@ -210,10 +234,17 @@ const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
         navigation.navigate('ProfileStack', { screen: 'ContributionScreen', params: { title: 'My Contributions' }})
     };
 
+    const navigateToEditAccount = () => {
+        navigation.navigate('UsersStack', {
+            screen: 'AddUser',
+            params: { title: `Edit User: ${userInfo.username}`, user: userInfo, isEditMode: true },
+        });
+    }
+
     return (
         <DrawerContentScrollView {...props}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
-                <TouchableOpacity onPress={toggleDrawer}>
+                <TouchableOpacity onPress={navigateToEditAccount}>
                     <Avatar.Image source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }} size={60} />
                 </TouchableOpacity>
 

@@ -1,6 +1,6 @@
 import axios from "./NetworkInterceptor";
 import {apiUrl} from "../app-env.config";
-import {Contribution, User} from "../types";
+import {User} from "../types";
 
 const UserService = {
     getUsers: async () => {
@@ -51,20 +51,6 @@ const UserService = {
         }
     },
 
-    updateContribution: async (contribution: Contribution): Promise<Contribution> => {
-        try {
-            const response = await axios.post(`/api/contributions`, contribution);
-
-            if (!response.data) {
-                throw new Error(`no response.data`);
-            }
-
-            return response.data;
-        } catch (error) {
-            throw error; // You can handle the error further or let the caller handle it
-        }
-    },
-
     updateLoan: async (user: User) => {
         try {
             const response = await axios.put(`${apiUrl}/api/users/updateLoan`, user);
@@ -79,6 +65,28 @@ const UserService = {
         }
     },
 
+    addUser: async (user: User): Promise<User> => {
+        try {
+            const response = await axios.post(`/api/users`, user);
+
+            if (!response.data) {
+                throw new Error(`No data in response.data`);
+            }
+
+            return response.data;
+        } catch (error) {
+            throw error; // You can handle the error further or let the caller handle it
+        }
+    },
+
+    deleteUser: async (id: number) => {
+        try {
+            const response = await axios.delete(`/api/users/${id}`);
+            return response.data;
+        } catch (error) {
+            throw error; // You can handle the error further or let the caller handle it
+        }
+    }
 }
 
 export default UserService;

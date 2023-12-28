@@ -64,7 +64,7 @@ const HomeScreen = ({ navigation }) => {
                 </Card>
                 <View style={styles.gap} />
 
-                <Card style={styles.card} onPress={() => navigation.navigate('User')}>
+                <Card style={styles.card} onPress={() => navigation.navigate('UsersStack', { screen: 'Users' })}>
                     <Card.Cover source={{ uri: images[currentImageIndex[3]].uri }} />
                     <View style={styles.textOverlay}>
                         <Title style={styles.cardTitle}>Manage User</Title>
