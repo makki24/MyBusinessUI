@@ -19,7 +19,11 @@
       "bundleIdentifier": "com.syedsons.mybusiness",
       "googleServicesFile": "./assets/GoogleService-Info.plist"
     },
-    "plugins": ["@react-native-firebase/app", "@react-native-firebase/crashlytics", "./plugins/withNetworkStatePermission.js", "./plugins/withNetworkSecurityConfig.js", "./plugins/withCustomConfig.js"],
+    "plugins": ["@react-native-firebase/app", "@react-native-firebase/crashlytics", "./plugins/withNetworkStatePermission.js", "./plugins/withNetworkSecurityConfig.js", "./plugins/withCustomConfig.js",
+      ["expo-contacts", {
+        "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
+      }]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
     },
