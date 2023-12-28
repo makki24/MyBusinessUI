@@ -14,7 +14,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user  }) => {
 
     const checkImageExists = async () => {
         try {
-            if (!user.picture) throw new Error('No image');
+            if (!user.picture || (user.picture === '')) throw new Error('No image');
             const response = await fetch(user.picture);
             setImageExists(response.ok);
         } catch (error) {
@@ -28,13 +28,11 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user  }) => {
 
     return (
         <View style={styles.userContainer}>
-            {user.picture && (
-                <Avatar.Image
-                    size={40}
-                    source={{ uri: imageExists ? user.picture : DEFAULT_AVATAR_URL }}
-                    style={styles.avatar}
-                />
-            )}
+            <Avatar.Image
+                size={40}
+                source={{ uri: (imageExists && user.picture) ? user.picture : DEFAULT_AVATAR_URL }}
+                style={styles.avatar}
+            />
             <Text style={styles.username}>{user.username}</Text>
         </View>
     );

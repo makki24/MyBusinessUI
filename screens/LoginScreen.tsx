@@ -1,6 +1,6 @@
-// LoginScreen.js
+// LoginScreen.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import * as Google from 'expo-auth-session/providers/google';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiUrl, androidClientId, expoClientId } from '../app-env.config';
@@ -10,6 +10,7 @@ import { userState } from '../recoil/atom';
 const LoginScreen = ({ navigation }) => {
     const [userInfo, setUserInfo] = useRecoilState(userState);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false); // New loading state
     const [request, response, promptAsync] = Google.useAuthRequest({
         androidClientId,
         expoClientId,
@@ -34,6 +35,7 @@ const LoginScreen = ({ navigation }) => {
 
     const getUserInfo = async (token) => {
         if (!token) return;
+        setLoading(true); // Start loading
         try {
             const response = await fetch(`${apiUrl}/login`, {
                 method: 'GET',
@@ -53,6 +55,8 @@ const LoginScreen = ({ navigation }) => {
             console.error('Failed to fetch user data:', error);
             setError(error.message);
             setUserInfo(null);
+        } finally {
+            setLoading(false); // End loading
         }
     };
 
@@ -67,11 +71,12 @@ const LoginScreen = ({ navigation }) => {
                 <View>
                     <Button
                         title="Sign in with Google"
-                        disabled={!request}
+                        disabled={!request || loading} // Disable the button when loading
                         onPress={() => {
                             promptAsync();
                         }}
                     />
+                    {loading && <ActivityIndicator />}
                     {error && <Text>{error}</Text>}
                 </View>
             ) : (
