@@ -36,6 +36,7 @@ import AddContributionScreen from "./screens/AddContributionScreen";
 import AddUserScreen from "./screens/AddUserScreen";
 import UsersScreen from "./screens/UsersScreen";
 import RolesService from "./services/RolesService";
+import ReportScreen from "./screens/ReportScreen";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -131,6 +132,14 @@ const UsersStack = () => {
     );
 };
 
+const ReportStack = () => {
+    return (
+        <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+            <Stack.Screen name="Report" component={ReportScreen} />
+        </Stack.Navigator>
+    );
+};
+
 const AppContent = () => {
     const userInfo = useRecoilValue(userState);
     const [users, setUsers] = useRecoilState(usersState);
@@ -183,7 +192,7 @@ const AppContent = () => {
                     initialRouteName="Home" drawerContent={props => <CustomDrawerContent {...props} userInfo={userInfo} />}
                 >
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Home' }} name="HomeStack" component={HomeStack} />
-                    <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Manage profile' }} name="ProfileStack" component={ProfileStack} />
+                    <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Manage profile',drawerItemStyle: { height: 0 }}} name="ProfileStack" component={ProfileStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Roles' }} name="RolesStack" component={RoleStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Expenses' }} name="ExpenseStack" component={ExpenseStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Expense Types' }} name="ExpenseTypeStack" component={ExpenseTypeStack} />
@@ -191,6 +200,7 @@ const AppContent = () => {
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Work' }} name="WorkStack" component={WorkStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Sale' }} name="SaleStack" component={SaleStack} />
                     <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Users' }} name="UsersStack" component={UsersStack} />
+                    <Drawer.Screen options={{ headerShown: false, drawerLabel: 'Report by Tags' }} name="ReportStack" component={ReportStack} />
                     {/* Other screens */}
                 </Drawer.Navigator>
             ) : (
@@ -244,23 +254,26 @@ const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
     return (
         <DrawerContentScrollView {...props}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
-                <TouchableOpacity onPress={navigateToEditAccount}>
+                <TouchableOpacity onPress={toggleDrawer}>
                     <Avatar.Image source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }} size={60} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={navigateToEditAccount}>
+                    <IconButton icon="account-edit" size={30} />
                 </TouchableOpacity>
 
                 <View style={{ marginLeft: 'auto', marginRight: 10 }}>
-                <TouchableOpacity onPress={navigateToContributionScreen}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <IconButton icon="wallet" style={{ margin: 0, padding: 0 }}/>
-                        <Caption>{userInfo?.amountHolding}</Caption>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={navigateToManageAmounts}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <IconButton icon="hand-extended" style={{ margin: 0, padding: 0, }}/>
-                        <Caption>{userInfo?.amountToReceive}</Caption>
-                    </View>
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={navigateToContributionScreen}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <IconButton icon="wallet" style={{ margin: 0, padding: 0 }}/>
+                            <Caption>{userInfo?.amountHolding}</Caption>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={navigateToManageAmounts}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <IconButton icon="hand-extended" style={{ margin: 0, padding: 0, }}/>
+                            <Caption>{userInfo?.amountToReceive}</Caption>
+                        </View>
+                    </TouchableOpacity>
                 </View>
             </View>
             <DrawerItemList state={state} descriptors={descriptors} navigation={navigation} {...props} />

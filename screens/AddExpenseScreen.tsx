@@ -295,24 +295,26 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
             )}
 
             {/* New selector for tags */}
-            <CustomDropDown
-                multiple={true}
-                items={tags}
-                zIndex={1000}
-                zIndexInverse={1000}
-                schema={{
-                    label: 'tagName',
-                    value: 'id',
-                }}
-                open={tagOpen}
-                setOpen={setTagOpen}
-                containerStyle={{ height: 40, marginBottom: 16 }}
-                value={selectedTags}
-                setValue={setSelectedTags}
-                itemSeparator={true}
-                placeholder="Select Tags"
-                onChangeValue={handleTagChange}
-            />
+            {!isReceivingUser && ( // Add this condition
+                <CustomDropDown
+                    multiple={true}
+                    items={tags}
+                    zIndex={1000}
+                    zIndexInverse={1000}
+                    schema={{
+                        label: 'tagName',
+                        value: 'id',
+                    }}
+                    open={tagOpen}
+                    setOpen={setTagOpen}
+                    containerStyle={{ height: 40, marginBottom: 16 }}
+                    value={selectedTags}
+                    setValue={setSelectedTags}
+                    itemSeparator={true}
+                    placeholder="Select Tags"
+                    onChangeValue={handleTagChange}
+                />
+            )}
 
             {/* Input fields for amount and additional information */}
             <TextInput label="Amount" value={amount} onChangeText={setAmount} keyboardType="numeric" style={styles.inputField} />
