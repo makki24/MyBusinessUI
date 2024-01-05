@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
-import {Button, Card, Title, Paragraph, Divider, Icon} from 'react-native-paper';
+import { Button, Card, Title, Paragraph, Divider, Icon, Snackbar } from 'react-native-paper';
 
 import { tagsState } from '../recoil/atom';
 import CustomDropDown from '../components/common/CustomDropdown';
@@ -17,6 +17,8 @@ const ReportScreen = () => {
     const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
     const [report, setReport] = useState<ExpenseReport>(null);
     const [profitOrLoss, setProfitOrLoss] = useState<number>();
+    const [snackbarVisible, setSnackbarVisible] = useState(false);
+    const [downloadLoading, setDownloadLoading] = useState(false); // Added downloadLoading state
 
     const generateReport = async () => {
         setError('');
@@ -42,6 +44,19 @@ const ReportScreen = () => {
 
         generateReport();
     };
+
+    const downloadReport = async () => {
+        setError('');
+        setDownloadLoading(true); // Set loading to true when starting the download
+        try {
+            await ReportService.downloadReport(selectedTags);
+            setSnackbarVisible(true);
+        } catch (e) {
+            setError(e.message ?? "Some error");
+        } finally {
+            setDownloadLoading(false); // Set loading to false after the download completes or encounters an error
+        }
+    }
 
     return (
         <View style={styles.viewContainer}>
@@ -89,6 +104,8 @@ const ReportScreen = () => {
                             <Paragraph>Total Sale Amount: {report.totalSaleAmount}</Paragraph>
                             <Paragraph>Total Contribution: {report.totalContributionAmount}</Paragraph>
                             <Divider />
+                        </Card.Content>
+                        <Card.Actions style={styles.cardActions}>
                             <View style={styles.profitOrLossContainer}>
                                 <View style={[styles.profitOrLossIcon, profitOrLoss <= 0 && styles.hidden]}>
                                     <Icon source="arrow-up-bold-circle" color="green" size={20} />
@@ -104,9 +121,29 @@ const ReportScreen = () => {
                                     )}
                                 </Paragraph>
                             </View>
-                        </Card.Content>
+                            <Button
+                                icon="download"
+                                mode="contained"
+                                onPress={downloadReport}
+                                disabled={downloadLoading} // Disable the button when downloading
+                                loading={downloadLoading}
+                            >
+                                { 'Download'}
+                            </Button>
+                        </Card.Actions>
                     </Card>
                 )}
+
+                <Snackbar
+                    visible={snackbarVisible}
+                    onDismiss={() => setSnackbarVisible(false)}
+                    action={{
+                        label: 'OK',
+                        onPress: () => setSnackbarVisible(false),
+                    }}
+                >
+                    PDF has been sent to your email!
+                </Snackbar>
             </ScrollView>
         </View>
     );
@@ -143,9 +180,10 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     profitOrLossContainer: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
     },
     profitOrLossIcon: {
         marginRight: 5,
@@ -155,6 +193,11 @@ const styles = StyleSheet.create({
     },
     hidden: {
         display: 'none',
+    },
+    cardActions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
     },
 });
 

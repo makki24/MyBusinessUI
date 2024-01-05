@@ -7,6 +7,7 @@ import { tagsState, usersState, userState } from "../recoil/atom";
 import UserDropDownItem from "../components/common/UserDropDownItem";
 import CustomDropDown from "../components/common/CustomDropdown";
 import DateTimePicker from "../components/common/DateTimePicker";
+import SwitchInput from "../components/common/SwitchInput"; // Import SwitchInput component
 import { Contribution, Tag, User } from "../types";
 import contributionService from "../services/ContributionService";
 
@@ -27,6 +28,7 @@ const AddContributionScreen = ({ navigation, route }) => {
     const [selectedTags, setSelectedTags] = useState<number[]>([]);
     const [tagOpen, setTagOpen] = useState(false);
     const [tags, setTags] = useRecoilState(tagsState);
+    const [isSelf, setIsSelf] = useState(false); // State for SwitchInput
 
     useEffect(() => {
         if (route.params?.isEditMode && route.params?.contribution) {
@@ -89,44 +91,55 @@ const AddContributionScreen = ({ navigation, route }) => {
                 </View>
             )}
 
-            <CustomDropDown
-                schema={{
-                    label: 'username',
-                    value: 'id',
-                }}
-                zIndex={2000}
-                zIndexInverse={2000}
-                items={allUsers.filter(user => (user.phoneNumber || user.email) && user.email !== loggedInUser.email)}
-                searchable={true}
-                open={userOpen}
-                setOpen={setUserOpen}
-                containerStyle={{ height: 40, marginBottom: 16 }}
-                value={selectedUser}
-                setValue={setSelectedUser}
-                itemSeparator={true}
-                placeholder="Select User"
-                renderListItem={({ item }) => (
-                    <UserDropDownItem item={item} setSelectedUser={setSelectedUser} selectedUser={selectedUser} setUserOpen={setUserOpen} />
-                )}
+            <SwitchInput
+                label="Is Self ?"
+                value={isSelf}
+                onValueChange={setIsSelf}
             />
 
-            <CustomDropDown
-                multiple={true}
-                items={tags}
-                zIndex={1000}
-                zIndexInverse={1000}
-                schema={{
-                    label: 'tagName',
-                    value: 'id',
-                }}
-                open={tagOpen}
-                setOpen={setTagOpen}
-                containerStyle={{ height: 40, marginBottom: 16 }}
-                value={selectedTags}
-                setValue={setSelectedTags}
-                itemSeparator={true}
-                placeholder="Select Tags"
-            />
+            {!isSelf && (
+                <CustomDropDown
+                    schema={{
+                        label: 'username',
+                        value: 'id',
+                    }}
+                    zIndex={2000}
+                    zIndexInverse={2000}
+                    items={allUsers.filter(user => (user.phoneNumber || user.email) && user.email !== loggedInUser.email)}
+                    searchable={true}
+                    open={userOpen}
+                    setOpen={setUserOpen}
+                    containerStyle={{ height: 40, marginBottom: 16 }}
+                    value={selectedUser}
+                    setValue={setSelectedUser}
+                    itemSeparator={true}
+                    placeholder="Select User"
+                    renderListItem={({ item }) => (
+                        <UserDropDownItem item={item} setSelectedUser={setSelectedUser} selectedUser={selectedUser} setUserOpen={setUserOpen} />
+                    )}
+                />
+            )}
+
+
+            {isSelf && (
+                <CustomDropDown
+                    multiple={true}
+                    items={tags}
+                    zIndex={1000}
+                    zIndexInverse={1000}
+                    schema={{
+                        label: 'tagName',
+                        value: 'id',
+                    }}
+                    open={tagOpen}
+                    setOpen={setTagOpen}
+                    containerStyle={{ height: 40, marginBottom: 16 }}
+                    value={selectedTags}
+                    setValue={setSelectedTags}
+                    itemSeparator={true}
+                    placeholder="Select Tags"
+                />
+            )}
 
             <TextInput
                 label="Amount to Add"
