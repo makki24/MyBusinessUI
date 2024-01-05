@@ -15,7 +15,7 @@ const UserDropDownItem = ({selectedUser, setSelectedUser, setUserOpen, item}) =>
             {(selectedUser === item.id) &&
                 <Icon
                     source="check"
-                    color={'primary'}
+                    color={'black'}
                     size={20}
                 />
             }
