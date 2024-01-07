@@ -12,17 +12,18 @@ interface RoleItemProps {
 }
 
 const RoleItem: React.FC<RoleItemProps> = ({ role, onPress, onDelete }) => (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPress} testID="role-card">
         <Card style={styles.roleCard}>
             <Card.Content>
                 <Title>{role.roleName}</Title>
             </Card.Content>
             <Card.Actions>
-                <IconButton icon="delete" onPress={onDelete} />
+                <IconButton icon="delete" onPress={onDelete} testID="delete-button" />
             </Card.Actions>
         </Card>
     </TouchableOpacity>
 );
+
 
 const styles = StyleSheet.create({
     roleCard: {
