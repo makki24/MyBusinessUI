@@ -1,7 +1,7 @@
-// AddContributionScreen.js
+// AddContributionScreen.tsx
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
-import { Button, TextInput, Text } from 'react-native-paper';
+import { Button, TextInput, Text, Portal, Modal } from 'react-native-paper';
 import { useRecoilState } from "recoil";
 import { tagsState, usersState, userState } from "../recoil/atom";
 import UserDropDownItem from "../components/common/UserDropDownItem";
@@ -12,6 +12,7 @@ import { Contribution, Tag, User } from "../types";
 import contributionService from "../services/ContributionService";
 
 let oldAmount = 0;
+
 const AddContributionScreen = ({ navigation, route }) => {
     const [amountToAdd, setAmountToAdd] = useState('');
     const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
@@ -29,6 +30,8 @@ const AddContributionScreen = ({ navigation, route }) => {
     const [tagOpen, setTagOpen] = useState(false);
     const [tags, setTags] = useRecoilState(tagsState);
     const [isSelf, setIsSelf] = useState(false); // State for SwitchInput
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
     useEffect(() => {
         if (route.params?.isEditMode && route.params?.contribution) {
@@ -44,8 +47,16 @@ const AddContributionScreen = ({ navigation, route }) => {
         }
     }, [route.params?.isEditMode, route.params?.contribution]);
 
-    const handleAddAmount = async () => {
-        setError('');
+    const handleModalClose = () => {
+        setModalVisible(false);
+    };
+
+    const navigateToManageAmounts = () => {
+        // Implement navigation logic to manage amounts screen
+        handleModalClose();
+    };
+
+    const submitContribution = async () => {
         try {
             setIsLoading(true);
             const contributionDate = new Date(inputDate);
@@ -76,6 +87,25 @@ const AddContributionScreen = ({ navigation, route }) => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const addContribution = async () => {
+        setError('');
+        if (!amountToAdd) {
+            setError("Amount is needed");
+            return;
+        }
+
+        if (!isSelf) {
+            const sendingUser = allUsers.filter(user => user.id === selectedUser)[0];
+
+            if (selectedUser && parseFloat(amountToAdd) > sendingUser.amountHolding) {
+                setModalMessage('User has less amount to pay. The rest of the amount will be considered as a loan.');
+                setModalVisible(true);
+                return;
+            }
+        }
+        submitContribution();
     };
 
     return (
@@ -120,7 +150,6 @@ const AddContributionScreen = ({ navigation, route }) => {
                 />
             )}
 
-
             {isSelf && (
                 <CustomDropDown
                     multiple={true}
@@ -156,9 +185,23 @@ const AddContributionScreen = ({ navigation, route }) => {
                 timeValue={time}
             />
 
-            <Button icon="plus" mode="contained" onPress={handleAddAmount} style={styles.button}>
+            <Button icon="plus" mode="contained" onPress={addContribution} style={styles.button}>
                 {route.params?.isEditMode ? 'Update Contribution' : 'Declare the contribution'}
             </Button>
+
+            <Portal>
+                <Modal visible={modalVisible} onDismiss={handleModalClose} contentContainerStyle={styles.modalContainer}>
+                    <Text>{modalMessage}</Text>
+                    <View style={styles.modalButtonGap} />
+                    <Button icon="check" mode="contained" onPress={submitContribution}>
+                        Continue
+                    </Button>
+                    <View style={styles.modalButtonGap} />
+                    <Button icon="cancel" mode="outlined" onPress={handleModalClose}>
+                        Cancel
+                    </Button>
+                </Modal>
+            </Portal>
         </ScrollView>
     );
 };
@@ -188,6 +231,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContainer: {
+        backgroundColor: 'white',
+        padding: 20,
+        margin: 20,
+        borderRadius: 5,
+    },
+    modalButtonGap: {
+        marginVertical: 10,
     },
 });
 

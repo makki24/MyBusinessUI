@@ -37,6 +37,7 @@ import AddUserScreen from "./screens/AddUserScreen";
 import UsersScreen from "./screens/UsersScreen";
 import RolesService from "./services/RolesService";
 import ReportScreen from "./screens/ReportScreen";
+import UserReportScreen from "./screens/UserReportScreen";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -128,6 +129,7 @@ const UsersStack = () => {
         <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
             <Stack.Screen name="Users" component={UsersScreen} />
             <Stack.Screen name="AddUser" component={AddUserScreen}/>
+            <Stack.Screen name="UserReport" component={UserReportScreen}/>
         </Stack.Navigator>
     );
 };

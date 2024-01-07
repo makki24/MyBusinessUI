@@ -6,7 +6,7 @@ import { tagsState } from '../recoil/atom';
 import CustomDropDown from '../components/common/CustomDropdown';
 import { useRecoilState } from 'recoil';
 import ReportService from '../services/ReportService';
-import { ExpenseReport } from '../types/expenseReport';
+import {ExpenseReport} from "../types";
 
 const ReportScreen = () => {
     const [error, setError] = useState<string | null>(null);

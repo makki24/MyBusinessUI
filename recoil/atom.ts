@@ -1,6 +1,6 @@
 // In a new file, e.g., atoms.ts
 import { atom } from 'recoil';
-import {Expense, ExpenseType, Role, User, WorkType, Work, Sale, Tag, Contribution} from "../types";
+import {Expense, ExpenseType, Role, User, WorkType, Work, Sale, Tag, Contribution, UserReport} from "../types";
 
 export const rolesState = atom({
     key: 'rolesState',
@@ -50,4 +50,9 @@ export const salesState = atom({
 export const contributionsState = atom({
     key: 'contributionsState', // unique ID (with respect to other atoms/selectors)
     default: [] as Contribution[],
+});
+
+export const userReportsState = atom({
+    key: 'userReportsState', // unique ID (with respect to other atoms/selectors)
+    default: [] as UserReport[],
 });
