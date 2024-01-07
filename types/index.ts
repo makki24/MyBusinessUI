@@ -6,3 +6,4 @@ export * from './tag'
 export * from './work'
 export * from './Sale';
 export * from './contribution';
+export * from './report';

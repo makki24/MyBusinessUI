@@ -31,10 +31,13 @@ const UsersScreen = ({ navigation }) => {
     };
 
     useEffect(() => {
-        setMembers(users.filter(user => user.roles.findIndex(role => role.roleName === 'MEMBER') !== -1));
+        setMembers(users);
     }, [users]);
 
     const handleEditUser = (user: User) => {
+        if (user.roles.findIndex(role => role.roleName === 'MEMBER') === -1) {
+            return ;
+        }
         navigation.navigate('UsersStack', {
             screen: 'AddUser',
             params: { title: `Edit User: ${user.username}`, user, isEditMode: true },
@@ -54,6 +57,13 @@ const UsersScreen = ({ navigation }) => {
             setIsLoading(false);
         }
     };
+
+    const navigateToTransactions = (clickedUser: User) => {
+        navigation.navigate('UsersStack', {
+            screen: 'UserReport',
+            params: { title: `User Report`, userId: clickedUser.id,},
+        });
+    }
 
     const confirmDeleteUser = async () => {
         setIsLoading(true);
@@ -98,7 +108,7 @@ const UsersScreen = ({ navigation }) => {
                 <FlatList
                     data={members}
                     renderItem={({ item }) => (
-                        <UserItem user={item} onPress={() => {}} onEdit={() => handleEditUser(item)} onDelete={() => handleDeleteUser(item)} />
+                        <UserItem user={item} onPress={() => navigateToTransactions(item)} onEdit={() => handleEditUser(item)} onDelete={() => handleDeleteUser(item)} />
                     )}
                     keyExtractor={(item) => item.id.toString()} // Ensure key is a string
                     refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}

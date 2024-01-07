@@ -4,3 +4,11 @@ export interface ExpenseReport {
     totalSaleAmount: number
     totalContributionAmount: number
 }
+
+export interface UserReport {
+    date: Date;
+    amount: number;
+    type: string;
+    description: string;
+    sent: boolean;
+}
