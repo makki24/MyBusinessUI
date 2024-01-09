@@ -27,6 +27,14 @@ jobs:
         run: |
           BUILD_URL=$(eas build --profile production --platform android --non-interactive --no-wait | grep -o 'https://expo.dev/accounts/[^ ]*')
           echo $BUILD_URL > build_url.txt
+      - name: Get build URL
+        id: get_url
+        run: |
+          echo "::set-output name=URL::$(cat build_url.txt)"
+      - name: Construct email body
+        id: email_body
+        run: |
+          echo "::set-output name=BODY::The APK build has been completed successfully. You can download it from the following URL: $(cat build_url.txt)"
       - name: Send email
         uses: dawidd6/action-send-mail@v3
         with:
@@ -35,6 +43,6 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: Your APK is ready
-          body: The APK build has been completed successfully. You can download it from the following URL: $(cat build_url.txt)
+          body: ${{ steps.email_body.outputs.BODY }}
           to: ${{ secrets.MAIL_TO }}
           from: ${{ secrets.MAIL_FROM }}
