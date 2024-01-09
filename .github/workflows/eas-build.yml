@@ -24,7 +24,9 @@ jobs:
       - name: Run tests
         run: npm test
       - name: Build on EAS
-        run: eas build --profile production --platform android --non-interactive --no-wait
+        run: |
+          BUILD_URL=$(eas build --profile production --platform android --non-interactive --no-wait | grep -o 'https://expo.dev/accounts/[^ ]*')
+          echo $BUILD_URL > build_url.txt
       - name: Send email
         uses: dawidd6/action-send-mail@v3
         with:
@@ -33,6 +35,6 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: Your APK is ready
-          body: The APK build has been completed successfully.
+          body: The APK build has been completed successfully. You can download it from the following URL: $(cat build_url.txt)
           to: ${{ secrets.MAIL_TO }}
           from: ${{ secrets.MAIL_FROM }}
