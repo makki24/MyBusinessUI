@@ -82,3 +82,5 @@ ios/
 
 assets/google-services.json
 assets/GoogleService-Info.plist
+coverage/**/*
+coverage/
