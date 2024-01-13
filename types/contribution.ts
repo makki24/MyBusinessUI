@@ -9,3 +9,11 @@ export interface Contribution {
     date: Date;
     tags: Tag[];
 }
+
+export interface LoanToHoldingTransaction {
+    id?: number;
+    user?: User;
+    amount: number;
+    createdBy: User;
+    date: Date;
+}

@@ -20,7 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {DEFAULT_AVATAR_URL} from "./constants/mybusiness.constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ManageAmountsScreen from "./screens/ManageAmountsScreen";
+import CreateLoanClearTransaction from "./screens/CreateLoanClearTransaction";
 import TagsScreen from "./screens/TagsScreen";
 import AddTagScreen from "./screens/AddTagScreen";
 import WorkTypeScreen from "./screens/WorkTypeScreen";
@@ -38,6 +38,7 @@ import UsersScreen from "./screens/UsersScreen";
 import RolesService from "./services/RolesService";
 import ReportScreen from "./screens/ReportScreen";
 import UserReportScreen from "./screens/UserReportScreen";
+import LoanTransactionScreen from "./screens/LoanTransactionsScreen";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -85,9 +86,10 @@ const HomeStack = () => {
 const ProfileStack = () => {
     return (
         <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
-            <Stack.Screen name="ManageAmounts" component={ManageAmountsScreen}
+            <Stack.Screen name="ManageAmounts" component={CreateLoanClearTransaction}
                           options={{title: 'Title', headerTitle: 'title'}}
             />
+            <Stack.Screen name="LoanTransactionList" component={LoanTransactionScreen}/>
             <Stack.Screen name="ContributionScreen" component={ContributionScreen}/>
             <Stack.Screen name="AddContribution" component={AddContributionScreen}/>
 
@@ -239,7 +241,7 @@ const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
     };
 
     const navigateToManageAmounts = () => {
-        navigation.navigate('ProfileStack', { screen: 'ManageAmounts', params: { title: 'Manage Amounts' }})
+        navigation.navigate('ProfileStack', { screen: 'LoanTransactionList', params: { title: 'Manage Amounts' }})
     }
 
     const navigateToContributionScreen = () => {

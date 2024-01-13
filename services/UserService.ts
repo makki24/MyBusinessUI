@@ -51,20 +51,6 @@ const UserService = {
         }
     },
 
-    updateLoan: async (user: User) => {
-        try {
-            const response = await axios.put(`${apiUrl}/api/users/updateLoan`, user);
-
-            if (!response.data) {
-                throw new Error(`Error removing role: ${response.statusText}`);
-            }
-
-            return response.data;
-        } catch (error) {
-            throw error; // You can handle the error further or let the caller handle it
-        }
-    },
-
     addUser: async (user: User): Promise<User> => {
         try {
             const response = await axios.post(`/api/users`, user);
