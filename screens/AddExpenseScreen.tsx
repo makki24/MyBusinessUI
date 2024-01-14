@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, ScrollView, Modal } from 'react-native';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import DropDownPicker, { DropDownPickerProps } from 'react-native-dropdown-picker';
+import { View, Text, ActivityIndicator, ScrollView, Modal } from 'react-native';
+import { useRecoilState } from 'recoil';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { Button, TextInput, Modal as PaperModal, Portal } from 'react-native-paper';
 import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates';
 
@@ -18,6 +18,8 @@ import UserService from '../services/UserService';
 import {ExpenseType, Tag as Tags, User} from "../types";
 import CustomDropDown from "../components/common/CustomDropdown";
 import TagsService from "../services/TagsService";
+import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 interface AddExpenseScreenProps {
     navigation: any;
@@ -238,18 +240,18 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
 
     // Component rendering
     return (
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <ScrollView contentContainerStyle={commonAddScreenStyles.scrollViewContainer}>
             {/* Loading indicator */}
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
 
             {/* Error message display */}
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
 
@@ -317,13 +319,13 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
             )}
 
             {/* Input fields for amount and additional information */}
-            <TextInput label="Amount" value={amount} onChangeText={setAmount} keyboardType="numeric" style={styles.inputField} />
+            <TextInput label="Amount" value={amount} onChangeText={setAmount} keyboardType="numeric" style={commonAddScreenStyles.inputField} />
 
             <TextInput
                 label="Additional information (optional)"
                 value={additionalInfo}
                 onChangeText={setAdditionalInfo}
-                style={styles.inputField}
+                style={commonAddScreenStyles.inputField}
             />
 
             {/* Date picker */}
@@ -333,13 +335,13 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
                 value={inputDate}
                 onChange={(d) => setInputDate(d || new Date())}
                 inputMode="start"
-                style={styles.inputField}
+                style={commonAddScreenStyles.inputField}
             />
 
             {/* Time picker */}
-            <View style={[styles.row, styles.marginVerticalEight]}>
-                <View style={styles.section}>
-                    <Text maxFontSizeMultiplier={maxFontSizeMultiplier} style={styles.bold}>
+            <View style={[commonStyles.row, commonAddScreenStyles.marginVerticalEight]}>
+                <View style={commonAddScreenStyles.section}>
+                    <Text maxFontSizeMultiplier={maxFontSizeMultiplier} style={commonAddScreenStyles.bold}>
                         Time
                     </Text>
                     <Text maxFontSizeMultiplier={maxFontSizeMultiplier}>
@@ -369,21 +371,21 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
             </Button>
 
             <Portal>
-                <PaperModal visible={modalVisible} onDismiss={handleModalClose} contentContainerStyle={styles.modalContainer}>
+                <PaperModal visible={modalVisible} onDismiss={handleModalClose} contentContainerStyle={commonStyles.modalContainer}>
                     <Text>{modalMessage}</Text>
-                    <View style={styles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
                     <Button icon="check" mode="contained" onPress={submitExpense}>
                         Continue
                     </Button>
                     {isAmountHoldingLess && (
                         <>
-                            <View style={styles.modalButtonGap} />
+                            <View style={commonStyles.modalButtonGap} />
                             <Button icon="account-cog" mode="contained" onPress={navigateToManageAmounts}>
                                 Manage Amounts
                             </Button>
                         </>
                     )}
-                    <View style={styles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
                     <Button icon="cancel" mode="outlined" onPress={handleModalClose}>
                         Cancel
                     </Button>
@@ -392,54 +394,5 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
         </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    scrollViewContainer: {
-        justifyContent: 'center',
-        padding: 16,
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-    bold: {
-        fontWeight: 'bold',
-    },
-    row: {
-        flexDirection: 'row',
-    },
-    section: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-    },
-    marginVerticalEight: {
-        marginVertical: 8,
-    },
-    inputField: {
-        marginBottom: 16,
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        alignSelf: 'center', // Center the modal on the screen
-        width: '80%', // Set the width to a percentage of the screen width
-    },
-    modalButtonGap: {
-        height: 5,
-    },
-});
 
 export default AddExpenseScreen;

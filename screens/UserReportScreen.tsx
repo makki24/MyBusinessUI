@@ -7,6 +7,8 @@ import ReportItem from '../components/ReportItem';
 import { userReportsState } from '../recoil/atom';
 import { UserReport } from '../types';
 import ReportService from "../services/ReportService";
+import commonScreenStyles from "../components/common/commonScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 const UserReportScreen = ({route}) => {
     const { userId } = route.params;
@@ -45,15 +47,15 @@ const UserReportScreen = ({route}) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={commonStyles.container}>
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
 
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
@@ -73,27 +75,5 @@ const UserReportScreen = ({route}) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-});
 
 export default UserReportScreen;

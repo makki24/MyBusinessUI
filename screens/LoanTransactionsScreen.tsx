@@ -7,6 +7,8 @@ import LoanTransactionItem from '../components/LoanTransactionItem';
 import { loanToHoldingTransactionState, userState } from '../recoil/atom';
 import { LoanToHoldingTransaction } from '../types';
 import contributionService from "../services/ContributionService";
+import commonScreenStyles from "../components/common/commonScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 const LoanTransactionScreen = ({ navigation }) => {
     const [loanTransactions, setLoanTransactions] = useRecoilState(loanToHoldingTransactionState);
@@ -82,17 +84,17 @@ const LoanTransactionScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.viewContainer}>
+        <View style={commonStyles.container}>
             {error && (
-                <View style={styles.errorContainer} testID="error-container">
-                    <Text style={styles.errorText} testID="error-text">
+                <View style={commonStyles.errorContainer} testID="error-container">
+                    <Text style={commonStyles.errorText} testID="error-text">
                         {error}
                     </Text>
                 </View>
             )}
 
             {isLoading && (
-                <View style={styles.loadingContainer} testID="loading-indicator">
+                <View style={commonStyles.loadingContainer} testID="loading-indicator">
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
@@ -116,14 +118,14 @@ const LoanTransactionScreen = ({ navigation }) => {
 
             {/* Delete Transaction Modal */}
             <Portal>
-                <Modal visible={isDeleteModalVisible} onDismiss={() => setIsDeleteModalVisible(false)} contentContainerStyle={styles.modalContainer} testID="delete-modal">
+                <Modal visible={isDeleteModalVisible} onDismiss={() => setIsDeleteModalVisible(false)} contentContainerStyle={commonStyles.modalContainer} testID="delete-modal">
                     <Text testID="delete-modal-text">Are you sure you want to delete this loan transaction?</Text>
-                    <View style={styles.modalButtonGap} />
-                    <View style={styles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
                     <Button icon="cancel" mode="outlined" onPress={() => setIsDeleteModalVisible(false)} testID="cancel-delete-button">
                         Cancel
                     </Button>
-                    <View style={styles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
                     <Button icon="delete" mode="contained" onPress={confirmDeleteTransaction} testID="confirm-delete-button">
                         Delete
                     </Button>
@@ -131,7 +133,7 @@ const LoanTransactionScreen = ({ navigation }) => {
             </Portal>
 
             <FAB
-                style={styles.fab}
+                style={commonScreenStyles.fab}
                 icon="plus"
                 onPress={() => navigation.navigate('ProfileStack', { screen: 'ManageAmounts', params: { title: 'Manage Amounts' }})}
                 testID="add-transaction-fab"
@@ -145,51 +147,10 @@ const LoanTransactionScreen = ({ navigation }) => {
                 }}
                 testID="snackbar"
             >
-                Transaction created successfully!
+                Transaction deleted successfully!
             </Snackbar>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    viewContainer: {
-        flex: 1, // Ensure the container takes the full screen height
-        padding: 16,
-    },
-    scrollViewContent: {
-        flexGrow: 1, // Allow the content to grow within the ScrollView
-    },
-    fab: {
-        position: 'absolute',
-        margin: 16,
-        right: 0,
-        bottom: 0,
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        alignSelf: 'center', // Center the modal on the screen
-        width: '80%', // Set the width to a percentage of the screen width
-    },
-    modalButtonGap: {
-        height: 5,
-    },
-});
 
 export default LoanTransactionScreen;

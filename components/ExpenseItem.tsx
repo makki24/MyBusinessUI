@@ -3,6 +3,9 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card, Title, IconButton, Paragraph, Chip } from 'react-native-paper';
 import { Expense } from '../types';
+import commonItemStyles from "./common/commonItemStyles";
+import UserDetails from "./common/UserDetails";
+import commonStyles from "./common/commonStyles";
 
 interface ExpenseItemProps {
     expense: Expense;
@@ -12,24 +15,32 @@ interface ExpenseItemProps {
 
 const ExpenseItem: React.FC<ExpenseItemProps> = ({ expense, onPress, onDelete }) => (
     <TouchableOpacity onPress={onPress}>
-        <Card style={styles.expenseCard}>
-            <Card.Content>
-                <Title>
-                    {expense.expenseType.isReceivingUser
-                        ? `${expense.expenseType.expenseTypeName} to ${expense.receivingUser.username}`
-                        : expense.expenseType.expenseTypeName}
-                </Title>
-                <Paragraph>{`Date: ${expense.date.toDateString()}`}</Paragraph>
-                <Paragraph>{`Time: ${expense.date.toLocaleTimeString()}`}</Paragraph>
-                <Paragraph>{`User: ${expense.user.username}`}</Paragraph>
-                <Paragraph>{`Amount: ${expense.amount}`}</Paragraph>
-                {expense.additionalInfo && <Paragraph>{`Additional Info: ${expense.additionalInfo}`}</Paragraph>}
+        <Card style={commonItemStyles.card}>
+            <Card.Content style={expense.tags.length ? commonItemStyles.cardContent: {}}>
+                <View  style={commonItemStyles.titleContainer}>
+                    <Title>
+                        {expense.expenseType.isReceivingUser
+                            ? `${expense.expenseType.expenseTypeName} to ${expense.receivingUser.username}`
+                            : expense.expenseType.expenseTypeName}
+                    </Title>
+                    <Text>
+                        {expense.user && <UserDetails user={expense.user} />} {/* Use UserDetails component */}
+                    </Text>
+                </View>
+                <View style={commonStyles.row}>
+                    <Paragraph>{`Date: ${expense.date.toDateString()}`}</Paragraph>
+                    <Paragraph>{`Time: ${expense.date.toLocaleTimeString()}`}</Paragraph>
+                </View>
+                <View style={commonStyles.row}>
+                    <Paragraph>{`Amount: ${expense.amount}`}</Paragraph>
+                    {expense.additionalInfo && <Paragraph>{`Additional Info: ${expense.additionalInfo}`}</Paragraph>}
+                </View>
                 {expense.tags.length > 0 && (
-                    <View style={styles.tagsContainer}>
-                        <Text style={styles.tagsLabel}>Tags: </Text>
-                        <View style={styles.tagChipsContainer}>
+                    <View style={commonItemStyles.tagsContainer}>
+                        <Text style={commonItemStyles.tagsLabel}>Tags: </Text>
+                        <View style={commonItemStyles.tagChipsContainer}>
                             {expense.tags.map((tag) => (
-                                <Chip key={tag.id} style={styles.tagChip}>
+                                <Chip key={tag.id} style={commonItemStyles.tagChip}>
                                     {tag.tagName}
                                 </Chip>
                             ))}
@@ -37,33 +48,11 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({ expense, onPress, onDelete })
                     </View>
                 )}
             </Card.Content>
-            <Card.Actions>
+            <Card.Actions style={expense.tags.length ? commonItemStyles.cardActions : {}}>
                 <IconButton icon="delete" onPress={onDelete} />
             </Card.Actions>
         </Card>
     </TouchableOpacity>
 );
-
-const styles = StyleSheet.create({
-    expenseCard: {
-        marginBottom: 16,
-    },
-    tagsContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 8,
-    },
-    tagsLabel: {
-        fontWeight: 'bold',
-        marginRight: 8,
-    },
-    tagChipsContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    tagChip: {
-        marginHorizontal: 4,
-    },
-});
 
 export default ExpenseItem;

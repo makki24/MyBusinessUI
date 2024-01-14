@@ -1,6 +1,6 @@
 // AddContributionScreen.tsx
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, ScrollView } from 'react-native';
 import { Button, TextInput, Text, Portal, Modal } from 'react-native-paper';
 import { useRecoilState } from "recoil";
 import { tagsState, usersState, userState } from "../recoil/atom";
@@ -10,6 +10,8 @@ import DateTimePicker from "../components/common/DateTimePicker";
 import SwitchInput from "../components/common/SwitchInput"; // Import SwitchInput component
 import { Contribution, Tag, User } from "../types";
 import contributionService from "../services/ContributionService";
+import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 let oldAmount = 0;
 
@@ -109,14 +111,14 @@ const AddContributionScreen = ({ navigation, route }) => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <ScrollView contentContainerStyle={commonAddScreenStyles.scrollViewContainer}>
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
@@ -174,7 +176,7 @@ const AddContributionScreen = ({ navigation, route }) => {
                 label="Amount to Add"
                 value={amountToAdd}
                 onChangeText={setAmountToAdd}
-                style={styles.input}
+                style={commonAddScreenStyles.inputField}
             />
 
             <DateTimePicker
@@ -185,18 +187,18 @@ const AddContributionScreen = ({ navigation, route }) => {
                 timeValue={time}
             />
 
-            <Button icon="plus" mode="contained" onPress={addContribution} style={styles.button}>
+            <Button icon="plus" mode="contained" onPress={addContribution} style={commonAddScreenStyles.button}>
                 {route.params?.isEditMode ? 'Update Contribution' : 'Declare the contribution'}
             </Button>
 
             <Portal>
-                <Modal visible={modalVisible} onDismiss={handleModalClose} contentContainerStyle={styles.modalContainer}>
+                <Modal visible={modalVisible} onDismiss={handleModalClose} contentContainerStyle={commonStyles.modalContainer}>
                     <Text>{modalMessage}</Text>
-                    <View style={styles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
                     <Button icon="check" mode="contained" onPress={submitContribution}>
                         Continue
                     </Button>
-                    <View style={styles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
                     <Button icon="cancel" mode="outlined" onPress={handleModalClose}>
                         Cancel
                     </Button>
@@ -205,42 +207,5 @@ const AddContributionScreen = ({ navigation, route }) => {
         </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    scrollViewContainer: {
-        justifyContent: 'center',
-        padding: 16,
-    },
-    input: {
-        marginBottom: 16,
-    },
-    button: {
-        marginBottom: 16,
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        margin: 20,
-        borderRadius: 5,
-    },
-    modalButtonGap: {
-        marginVertical: 10,
-    },
-});
 
 export default AddContributionScreen;

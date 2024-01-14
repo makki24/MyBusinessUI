@@ -7,8 +7,10 @@ import CustomDropDown from "../components/common/CustomDropdown";
 import UserDropDownItem from "../components/common/UserDropDownItem";
 import {LoanToHoldingTransaction, User} from "../types";
 import contributionService from "../services/ContributionService";
+import commonStyles from "../components/common/commonStyles";
+import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
 
-const CreateLoanClearTransaction = ({ navigation, route }) => {
+const AddLoanClearTransaction = ({ navigation, route }) => {
     const [amountToTransfer, setAmountToTransfer] = useState('');
     const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
     const [error, setError] = useState('');
@@ -72,15 +74,15 @@ const CreateLoanClearTransaction = ({ navigation, route }) => {
     };
 
     return (
-        <View  style={styles.viewContainer}>
+        <View  style={commonStyles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
@@ -115,11 +117,11 @@ const CreateLoanClearTransaction = ({ navigation, route }) => {
                 label="Amount to Transfer"
                 value={amountToTransfer}
                 onChangeText={setAmountToTransfer}
-                style={styles.input}
+                style={commonAddScreenStyles.inputField}
                 keyboardType={'numeric'}
             />
 
-            <Button icon="arrow-right" mode="contained" onPress={handleTransferAmount} style={styles.button}>
+            <Button icon="arrow-right" mode="contained" onPress={handleTransferAmount}>
                 Transfer to clear loan
             </Button>
             <Snackbar
@@ -138,35 +140,9 @@ const CreateLoanClearTransaction = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
-    viewContainer: {
-        flex: 1, // Ensure the container takes the full screen height
-        justifyContent: 'center',
-        padding: 16,
-    },
     scrollViewContent: {
         flexGrow: 1, // Allow the content to grow within the ScrollView
     },
-    input: {
-        marginBottom: 16,
-    },
-    button: {
-        marginBottom: 16,
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
 });
 
-export default CreateLoanClearTransaction;
+export default AddLoanClearTransaction;

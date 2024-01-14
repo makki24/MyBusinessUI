@@ -1,9 +1,10 @@
 // src/components/RoleItem.tsx
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Card, Title, IconButton } from 'react-native-paper';
 import { Role } from '../types';
+import commonItemStyles from "./common/commonItemStyles";
 
 interface RoleItemProps {
     role: Role;
@@ -13,22 +14,15 @@ interface RoleItemProps {
 
 const RoleItem: React.FC<RoleItemProps> = ({ role, onPress, onDelete }) => (
     <TouchableOpacity onPress={onPress} testID="role-card">
-        <Card style={styles.roleCard}>
-            <Card.Content>
+        <Card style={commonItemStyles.card}>
+            <Card.Content style={commonItemStyles.cardContent}>
                 <Title>{role.roleName}</Title>
             </Card.Content>
-            <Card.Actions>
+            <Card.Actions style={commonItemStyles.cardActions}>
                 <IconButton icon="delete" onPress={onDelete} testID="delete-button" />
             </Card.Actions>
         </Card>
     </TouchableOpacity>
 );
-
-
-const styles = StyleSheet.create({
-    roleCard: {
-        marginBottom: 16,
-    },
-});
 
 export default RoleItem;

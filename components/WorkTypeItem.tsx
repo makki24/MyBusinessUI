@@ -3,6 +3,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card, Title, IconButton } from 'react-native-paper';
 import { WorkType } from '../types';
+import commonItemStyles from "./common/commonItemStyles";
 
 interface WorkTypeItemProps {
     workType: WorkType;
@@ -13,12 +14,12 @@ interface WorkTypeItemProps {
 
 const WorkTypeItem: React.FC<WorkTypeItemProps> = ({ workType, onPress, onEdit, onDelete }) => (
     <TouchableOpacity onPress={() => onPress(workType)}>
-        <Card style={styles.workTypeCard}>
-            <Card.Content>
+        <Card style={commonItemStyles.card}>
+            <Card.Content style={commonItemStyles.cardContent}>
                 <Title>{workType.workTypeName}</Title>
                 <Text>Default Value Per {workType.unit}: {workType.defaultValuePerUnit}</Text>
             </Card.Content>
-            <Card.Actions>
+            <Card.Actions style={commonItemStyles.cardActions}>
                 {/* Edit action button */}
                 <IconButton icon="pencil" onPress={() => onEdit(workType)} />
 
@@ -28,11 +29,5 @@ const WorkTypeItem: React.FC<WorkTypeItemProps> = ({ workType, onPress, onEdit, 
         </Card>
     </TouchableOpacity>
 );
-
-const styles = StyleSheet.create({
-    workTypeCard: {
-        marginBottom: 16,
-    },
-});
 
 export default WorkTypeItem;

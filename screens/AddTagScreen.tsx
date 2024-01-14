@@ -1,12 +1,13 @@
 // src/screens/AddTagScreen.tsx
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { useRecoilState } from 'recoil';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import TagsService from "../services/TagsService"; // Adjust the path accordingly
 import { tagsState } from '../recoil/atom'; // Adjust the path accordingly
-import { Tag } from '../types'; // Adjust the path accordingly
+import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import commonStyles from "../components/common/commonStyles"; // Adjust the path accordingly
 
 interface AddTagScreenProps {
     navigation: any; // Adjust the type based on your navigation prop type
@@ -44,9 +45,9 @@ const AddTagScreen: React.FC<AddTagScreenProps> = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={commonStyles.container}>
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <Text>
                         <ActivityIndicator size="large" color="#0000ff" /> {/* Show spinner if loading */}
                     </Text>
@@ -54,8 +55,8 @@ const AddTagScreen: React.FC<AddTagScreenProps> = ({ navigation }) => {
             )}
 
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
 
@@ -68,28 +69,5 @@ const AddTagScreen: React.FC<AddTagScreenProps> = ({ navigation }) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        justifyContent: 'center',
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-});
 
 export default AddTagScreen;

@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import {Card, Title, Avatar, Paragraph, IconButton} from 'react-native-paper';
 import { User } from '../types';
 import UserDetails from "./common/UserDetails";
+import commonItemStyles from "./common/commonItemStyles";
 
 interface UserItemProps {
     user: User;
@@ -15,9 +16,9 @@ interface UserItemProps {
 const UserItem: React.FC<UserItemProps> = ({ user, onPress, onDelete, onEdit }) => {
     return (
         <TouchableOpacity onPress={onPress}>
-            <Card style={styles.userCard}>
-                <Card.Content style={styles.cardContent}>
-                    <View style={styles.titleContainer}>
+            <Card style={commonItemStyles.card}>
+                <Card.Content style={commonItemStyles.cardContent}>
+                    <View style={commonItemStyles.titleContainer}>
                         <View>
                             <Paragraph>{user.email}</Paragraph>
                             <Paragraph>{`Phone: ${user.phoneNumber}`}</Paragraph>
@@ -30,33 +31,12 @@ const UserItem: React.FC<UserItemProps> = ({ user, onPress, onDelete, onEdit }) 
                     <Paragraph>{`Amount Holding: ${user.amountHolding}`}</Paragraph>
                     {/* Display additional user information as needed */}
                 </Card.Content>
-                <Card.Actions style={styles.cardActions}>
+                <Card.Actions style={commonItemStyles.cardActions}>
                     <IconButton icon="delete" onPress={onDelete} />
                 </Card.Actions>
             </Card>
         </TouchableOpacity>
     );
 };
-
-const styles = StyleSheet.create({
-    userCard: {
-        marginBottom: 16,
-    },
-    cardContent: {
-        paddingHorizontal: 16,
-        paddingBottom: 16,
-    },
-    titleContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-        justifyContent: 'space-between'
-    },
-    cardActions: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-    },
-});
 
 export default UserItem;

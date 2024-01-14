@@ -1,9 +1,10 @@
 // src/components/ContributionItem.tsx
 import React, { FC } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Card, Title, IconButton, Paragraph, Chip } from 'react-native-paper';
 import { Contribution } from '../types';
 import UserDetails from './common/UserDetails';
+import commonItemStyles from "./common/commonItemStyles";
 
 interface ContributionItemProps {
     contribution: Contribution;
@@ -14,9 +15,9 @@ interface ContributionItemProps {
 const ContributionItem: FC<ContributionItemProps> = ({ contribution, onPress, onDelete }) => {
     return (
         <TouchableOpacity onPress={onPress}>
-            <Card style={styles.contributionCard}>
-                <Card.Content style={styles.cardContent}>
-                    <View style={styles.titleContainer}>
+            <Card style={commonItemStyles.card}>
+                <Card.Content style={commonItemStyles.cardContent}>
+                    <View style={commonItemStyles.titleContainer}>
                         <Title>{`${contribution.amount}`}</Title>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                             {contribution.sendingMember && <Text style={{fontWeight: '800'}}>  From:  </Text>}
@@ -28,11 +29,11 @@ const ContributionItem: FC<ContributionItemProps> = ({ contribution, onPress, on
                     </View>
                     <Paragraph>{`Date: ${contribution.date.toDateString()}`}</Paragraph>
                     {contribution.tags.length > 0 && (
-                        <View style={styles.tagsContainer}>
-                            <Text style={styles.tagsLabel}>Tags: </Text>
-                            <View style={styles.tagChipsContainer}>
+                        <View style={commonItemStyles.tagsContainer}>
+                            <Text style={commonItemStyles.tagsLabel}>Tags: </Text>
+                            <View style={commonItemStyles.tagChipsContainer}>
                                 {contribution.tags.map((tag) => (
-                                    <Chip key={tag.id} style={styles.tagChip}>
+                                    <Chip key={tag.id} style={commonItemStyles.tagChip}>
                                         {tag.tagName}
                                     </Chip>
                                 ))}
@@ -40,49 +41,12 @@ const ContributionItem: FC<ContributionItemProps> = ({ contribution, onPress, on
                         </View>
                     )}
                 </Card.Content>
-                <Card.Actions style={styles.cardActions}>
+                <Card.Actions style={commonItemStyles.cardActions}>
                     <IconButton icon="delete" onPress={onDelete} />
                 </Card.Actions>
             </Card>
         </TouchableOpacity>
     );
 };
-
-const styles = StyleSheet.create({
-    contributionCard: {
-        marginBottom: 16,
-    },
-    cardContent: {
-        paddingHorizontal: 16,
-        paddingBottom: 16,
-    },
-    titleContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    cardActions: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-    },
-    tagsContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 8,
-    },
-    tagsLabel: {
-        fontWeight: 'bold',
-        marginRight: 8,
-    },
-    tagChipsContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    tagChip: {
-        marginHorizontal: 4,
-    },
-});
 
 export default ContributionItem;

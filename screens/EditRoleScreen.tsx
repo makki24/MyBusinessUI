@@ -6,6 +6,7 @@ import { User } from "../types";
 import UserService from "../services/UserService";
 import DropDownPicker from 'react-native-dropdown-picker';
 import CustomDropDown from "../components/common/CustomDropdown";
+import commonStyles from "../components/common/commonStyles";
 
 const EditRoleScreen = ({ route }) => {
     const { role } = route.params;
@@ -106,11 +107,11 @@ const EditRoleScreen = ({ route }) => {
     );
 
     return (
-        <View style={styles.container}>
+        <View style={commonStyles.container}>
             {loadingAllUsers && <ActivityIndicator animating={true} />}
             {!loadingAllUsers && errorAllUsers && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{errorAllUsers}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{errorAllUsers}</Text>
                 </View>
             )}
 
@@ -144,8 +145,8 @@ const EditRoleScreen = ({ route }) => {
 
             {loadingAssignedUsers && <ActivityIndicator animating={true} />}
             {!loadingAssignedUsers && errorAssignedUsers && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{errorAssignedUsers}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{errorAssignedUsers}</Text>
                 </View>
             )}
 
@@ -176,23 +177,10 @@ const EditRoleScreen = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-    },
     roleHeading: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 16,
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
     },
 });
 

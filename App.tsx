@@ -20,7 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {DEFAULT_AVATAR_URL} from "./constants/mybusiness.constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import CreateLoanClearTransaction from "./screens/CreateLoanClearTransaction";
+import AddLoanClearTransaction from "./screens/AddLoanClearTransaction";
 import TagsScreen from "./screens/TagsScreen";
 import AddTagScreen from "./screens/AddTagScreen";
 import WorkTypeScreen from "./screens/WorkTypeScreen";
@@ -86,7 +86,7 @@ const HomeStack = () => {
 const ProfileStack = () => {
     return (
         <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
-            <Stack.Screen name="ManageAmounts" component={CreateLoanClearTransaction}
+            <Stack.Screen name="ManageAmounts" component={AddLoanClearTransaction}
                           options={{title: 'Title', headerTitle: 'title'}}
             />
             <Stack.Screen name="LoanTransactionList" component={LoanTransactionScreen}/>
@@ -241,7 +241,7 @@ const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
     };
 
     const navigateToManageAmounts = () => {
-        navigation.navigate('ProfileStack', { screen: 'LoanTransactionList', params: { title: 'Manage Amounts' }})
+        navigation.navigate('ProfileStack', { screen: 'LoanTransactionList', params: { title: 'Loan Clear Transactions' }})
     }
 
     const navigateToContributionScreen = () => {

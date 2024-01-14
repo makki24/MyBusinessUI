@@ -1,7 +1,7 @@
 // AddUserScreen.tsx
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, StyleSheet, ActivityIndicator, Text, Image, TouchableOpacity, ImageBackground } from 'react-native';
-import { Button, TextInput, Avatar, Snackbar } from 'react-native-paper';
+import { Button, TextInput, Snackbar } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import EmailInput from '../components/common/EmailInput';
 import PhoneNumberInput from '../components/common/PhoneNumberInput';
@@ -12,6 +12,8 @@ import { User } from '../types';
 import {DEFAULT_AVATAR_URL} from "../constants/mybusiness.constants";
 import {useRecoilState} from "recoil";
 import {rolesState} from "../recoil/atom";
+import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 
 const AddUserScreen = ({ route, navigation }) => {
@@ -121,16 +123,16 @@ const AddUserScreen = ({ route, navigation }) => {
     );
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <ScrollView contentContainerStyle={commonAddScreenStyles.scrollViewContainer}>
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
 
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
 
@@ -140,29 +142,29 @@ const AddUserScreen = ({ route, navigation }) => {
                 </CustomRoundImage>
             </View>
 
-            <TextInput label="Username*" value={username} onChangeText={setUsername} style={styles.inputField} />
+            <TextInput label="Username*" value={username} onChangeText={setUsername} style={commonAddScreenStyles.inputField} />
             <EmailInput
-                style={styles.inputField}
+                style={commonAddScreenStyles.inputField}
                 label="Email"
                 setEmail={setEmail}
                 onValidationChange={setEmailValid}
                 email={email}
             />
-            <PhoneNumberInput label="Phone Number*" phoneNumber={phoneNumber} setPhoneNumber={setPhoneNumber} style={styles.inputField}
+            <PhoneNumberInput label="Phone Number*" phoneNumber={phoneNumber} setPhoneNumber={setPhoneNumber} style={commonAddScreenStyles.inputField}
             />
             <TextInput
                 label="Amount to Receive"
                 value={amountToReceive}
                 onChangeText={setAmountToReceive}
                 keyboardType="numeric"
-                style={styles.inputField}
+                style={commonAddScreenStyles.inputField}
             />
             <TextInput
                 label="Amount Holding"
                 value={amountHolding}
                 onChangeText={setAmountHolding}
                 keyboardType="numeric"
-                style={styles.inputField}
+                style={commonAddScreenStyles.inputField}
             />
             <Button mode="contained" onPress={handleAddUser}>
                 {route.params?.isEditMode ? 'Update User' : 'Add User'}
@@ -175,28 +177,6 @@ const AddUserScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    scrollViewContainer: {
-        justifyContent: 'center',
-        padding: 16,
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-    inputField: {
-        marginBottom: 8,
-    },
     imageContainer: {
         alignItems: 'center',
         marginBottom: 16,
@@ -218,10 +198,6 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 4,
         alignItems: 'center',
-    },
-    uploadText: {
-        color: 'white',
-        marginTop: 4,
     },
 });
 
