@@ -15,7 +15,7 @@ const CreateLoanClearTransaction = ({ navigation, route }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [allUsers, setAllUsers] = useRecoilState(usersState);
     const [userOpen, setUserOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<string | null>(null);
+    const [selectedUser, setSelectedUser] = useState<string | null>(loggedInUser.id);
     const [displayUser, setDisplayUser] = useState<User>(loggedInUser);
     const [loanTransactions, setLoanTransactions] = useRecoilState(loanToHoldingTransactionState);
     const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -63,7 +63,8 @@ const CreateLoanClearTransaction = ({ navigation, route }) => {
     }
 
     const handleTransferAmount = async () => {
-        if (parseFloat(amountToTransfer) > loggedInUser.amountToReceive && parseFloat(amountToTransfer) > loggedInUser.amountHolding) {
+        const userSelected = allUsers.filter(user => user.id === selectedUser)[0];
+        if (parseFloat(amountToTransfer) > userSelected.amountToReceive && parseFloat(amountToTransfer) > userSelected.amountHolding) {
             setError('The transfer amount cannot be greater than the amount to receive or amount holding.');
             return;
         }
