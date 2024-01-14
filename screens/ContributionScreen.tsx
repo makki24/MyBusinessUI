@@ -7,6 +7,8 @@ import ContributionService from '../services/ContributionService';
 import ContributionItem from '../components/ContributionItem';
 import { contributionsState, userState } from '../recoil/atom';
 import { Contribution } from '../types';
+import commonScreenStyles from "../components/common/commonScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 const ContributionScreen = ({ navigation }) => {
     const [contributions, setContributions] = useRecoilState(contributionsState);
@@ -87,15 +89,15 @@ const ContributionScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={commonStyles.container}>
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
 
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
@@ -116,21 +118,21 @@ const ContributionScreen = ({ navigation }) => {
             )}
 
             <FAB
-                style={styles.fab}
+                style={commonScreenStyles.fab}
                 icon="plus"
                 onPress={() => navigation.navigate('ProfileStack', { screen: 'AddContribution', params: { title: 'Create Contribution' } })}
             />
 
             {/* Delete Contribution Modal */}
             <Portal>
-                <Modal visible={isDeleteModalVisible} onDismiss={() => setIsDeleteModalVisible(false)} contentContainerStyle={styles.modalContainer}>
+                <Modal visible={isDeleteModalVisible} onDismiss={() => setIsDeleteModalVisible(false)} contentContainerStyle={commonStyles.modalContainer}>
                     <Text>Are you sure you want to delete this contribution?</Text>
-                    <View style={styles.modalButtonGap} />
-                    <View style={styles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
                     <Button icon="cancel" mode="outlined" onPress={() => setIsDeleteModalVisible(false)}>
                         Cancel
                     </Button>
-                    <View style={styles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
                     <Button icon="delete" mode="contained" onPress={confirmDeleteContribution}>
                         Delete
                     </Button>
@@ -139,43 +141,5 @@ const ContributionScreen = ({ navigation }) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-    fab: {
-        position: 'absolute',
-        margin: 16,
-        right: 0,
-        bottom: 0,
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        alignSelf: 'center', // Center the modal on the screen
-        width: '80%', // Set the width to a percentage of the screen width
-    },
-    modalButtonGap: {
-        height: 5,
-    },
-});
 
 export default ContributionScreen;

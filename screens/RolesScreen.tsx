@@ -10,6 +10,8 @@ import RoleItem from '../components/RoleItem';
 import { Role } from '../types';
 import {StackActions, useNavigation} from "@react-navigation/native";
 import {DrawerNavigationProp} from "@react-navigation/drawer";
+import commonScreenStyles from "../components/common/commonScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 const RolesScreen = ({ navigation }) => {
     const [roles, setRoles] = useRecoilState(rolesState);
@@ -86,15 +88,15 @@ const RolesScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={commonStyles.container}>
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
 
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
@@ -114,18 +116,18 @@ const RolesScreen = ({ navigation }) => {
                 />
             )}
 
-            <FAB style={styles.fab} icon="plus" onPress={() => navigation.navigate('AddRole')} />
+            <FAB style={commonScreenStyles.fab} icon="plus" onPress={() => navigation.navigate('AddRole')} />
 
             {/* Delete Role Modal */}
             <Portal>
-                <Modal visible={isDeleteModalVisible} onDismiss={() => setIsDeleteModalVisible(false)} contentContainerStyle={styles.modalContainer}>
+                <Modal visible={isDeleteModalVisible} onDismiss={() => setIsDeleteModalVisible(false)} contentContainerStyle={commonStyles.modalContainer}>
                     <Text>Are you sure you want to delete this role?</Text>
-                    <View style={styles.modalButtonGap} />
-                    <View style={styles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
                     <Button icon="cancel" mode="outlined" onPress={() => setIsDeleteModalVisible(false)}>
                         Cancel
                     </Button>
-                    <View style={styles.modalButtonGap} />
+                    <View style={commonStyles.modalButtonGap} />
                     <Button icon="delete" mode="contained" onPress={confirmDeleteRole}>
                         Delete
                     </Button>
@@ -134,7 +136,7 @@ const RolesScreen = ({ navigation }) => {
 
             {/* Assign Warning Modal */}
             <Portal>
-                <Modal visible={isAssignModalVisible} onDismiss={() => setIsAssignModalVisible(false)} contentContainerStyle={styles.modalContainer}>
+                <Modal visible={isAssignModalVisible} onDismiss={() => setIsAssignModalVisible(false)} contentContainerStyle={commonStyles.modalContainer}>
                     <Text>This role cannot be deleted as it is assigned to users.</Text>
                     {assignedUsers.map((user, index) => (
                         <Text key={index}>{user.username}</Text>
@@ -147,44 +149,6 @@ const RolesScreen = ({ navigation }) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-    fab: {
-        position: 'absolute',
-        margin: 16,
-        right: 0,
-        bottom: 0,
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        alignSelf: 'center', // Center the modal on the screen
-        width: '80%', // Set the width to a percentage of the screen width
-    },
-    modalButtonGap: {
-        height: 5,
-    },
-});
 
 export default RolesScreen;
 

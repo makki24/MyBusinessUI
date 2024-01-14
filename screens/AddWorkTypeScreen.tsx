@@ -7,6 +7,8 @@ import Button from '../components/common/Button';
 import { workTypesState } from '../recoil/atom'; // Adjust the path accordingly
 import { WorkType } from '../types';
 import WorkService from "../services/WorkService";
+import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 interface AddWorkTypeScreenProps {
     route: {
@@ -76,9 +78,9 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({ route, navigation
     };
 
     return (
-     <View style={styles.container}>
+     <View style={commonStyles.container}>
         {isLoading && (
-            <View style={styles.loadingContainer}>
+            <View style={commonStyles.loadingContainer}>
                 <Text>
                     <ActivityIndicator size="large" color="#0000ff" /> {/* Show spinner if loading */}
                 </Text>
@@ -86,8 +88,8 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({ route, navigation
         )}
 
         {error && (
-            <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
+            <View style={commonStyles.errorContainer}>
+                <Text style={commonStyles.errorText}>{error}</Text>
             </View>
         )}
 
@@ -110,28 +112,5 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({ route, navigation
         <Button title={isEdit ? 'Save Work Type': "Add Work Type"} onPress={handleAddWorkType} />
     </View>);
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        justifyContent: 'center',
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-});
 
 export default AddWorkTypeScreen;

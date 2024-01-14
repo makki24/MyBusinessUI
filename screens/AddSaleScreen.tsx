@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Button, Icon, TextInput} from 'react-native-paper';
+import {ActivityIndicator, ScrollView, Text, View} from 'react-native';
+import {Button, TextInput} from 'react-native-paper';
 
 import {salesState, tagsState, usersState, userState} from '../recoil/atom';
 import saleService from '../services/SaleService';
-import {Sale, SaleType, Tag as Tags, User, Work} from '../types';
+import {Sale, SaleType, Tag as Tags, User} from '../types';
 import CustomDropDown from '../components/common/CustomDropdown';
 import {useRecoilState} from "recoil";
 import DateTimePicker from "../components/common/DateTimePicker";
 import UserDropDownItem from "../components/common/UserDropDownItem";
 import SwitchInput from "../components/common/SwitchInput";
+import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 interface AddSaleScreenProps {
     navigation: any;
@@ -150,20 +152,20 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <ScrollView contentContainerStyle={commonAddScreenStyles.scrollViewContainer}>
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
 
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
 
-            <View style={{...styles.row, justifyContent: 'space-between',}}>
+            <View style={{...commonStyles.row, justifyContent: 'space-between',}}>
                 <SwitchInput label={'Enter amount directly'} value={showAmount} onValueChange={(showAmount) => {
                     if (showAmount) {
                         setPricePerUnit(null);
@@ -234,14 +236,14 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
                 loading={isDataLoading}
             />
 
-            {showAmount && <TextInput label="Amount" value={amount} onChangeText={setAmount} keyboardType="numeric" style={styles.inputField} />}
+            {showAmount && <TextInput label="Amount" value={amount} onChangeText={setAmount} keyboardType="numeric" style={commonAddScreenStyles.inputField} />}
 
 
-            {!showAmount && <TextInput label="Price per unit" value={pricePerUnit} onChangeText={setPricePerUnit} keyboardType="numeric" style={styles.inputField} />}
+            {!showAmount && <TextInput label="Price per unit" value={pricePerUnit} onChangeText={setPricePerUnit} keyboardType="numeric" style={commonAddScreenStyles.inputField} />}
 
-            {!showAmount && <TextInput label="Quantity" value={quantity} onChangeText={setQuantity} keyboardType="numeric" style={styles.inputField} />}
+            {!showAmount && <TextInput label="Quantity" value={quantity} onChangeText={setQuantity} keyboardType="numeric" style={commonAddScreenStyles.inputField} />}
 
-            <TextInput label="Description (optional)" value={description} onChangeText={setDescription} style={styles.inputField} />
+            <TextInput label="Description (optional)" value={description} onChangeText={setDescription} style={commonAddScreenStyles.inputField} />
 
             {/* Time picker */}
             <DateTimePicker
@@ -258,55 +260,5 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
         </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    scrollViewContainer: {
-        justifyContent: 'center',
-        padding: 16,
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-    bold: {
-        fontWeight: 'bold',
-    },
-    row: {
-        flexDirection: 'row',
-    },
-    section: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-    },
-    marginVerticalEight: {
-        marginVertical: 8,
-    },
-    inputField: {
-        marginBottom: 8,
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        alignSelf: 'center', // Center the modal on the screen
-        width: '80%', // Set the width to a percentage of the screen width
-    },
-    modalButtonGap: {
-        height: 5,
-    }
-});
-
 
 export default AddSaleScreen;

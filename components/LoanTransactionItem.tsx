@@ -4,6 +4,7 @@ import { Card, Paragraph, Title, IconButton } from "react-native-paper";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import UserDetails from "./common/UserDetails";
 import {LoanToHoldingTransaction} from "../types";
+import commonItemStyles from "./common/commonItemStyles";
 
 interface LoanTransactionItemProps {
     transaction: LoanToHoldingTransaction;
@@ -22,9 +23,9 @@ const LoanTransactionItem: React.FC<LoanTransactionItemProps> = ({
 
     return (
         <TouchableOpacity onPress={onPress} testID={'transaction-item'}>
-            <Card style={styles.transactionCard}>
-                <Card.Content style={styles.cardContent}>
-                    <View style={styles.titleContainer}>
+            <Card style={commonItemStyles.card}>
+                <Card.Content>
+                    <View style={commonItemStyles.titleContainer}>
                         <View>
                             <Paragraph>{`Date: ${transaction.date.toDateString()}`}</Paragraph>
                             <Paragraph>{`Amount: ${transaction.amount}`}</Paragraph>
@@ -39,20 +40,5 @@ const LoanTransactionItem: React.FC<LoanTransactionItemProps> = ({
         </TouchableOpacity>
     );
 };
-
-const styles = StyleSheet.create({
-    transactionCard: {
-        marginBottom: 16,
-    },
-    cardContent: {
-        paddingHorizontal: 16,
-    },
-    titleContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-
-});
 
 export default LoanTransactionItem;

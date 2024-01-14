@@ -1,6 +1,7 @@
 // Button.tsx
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import {Button as PaperButton} from "react-native-paper";
 
 interface ButtonProps {
     title: string;
@@ -9,9 +10,9 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({ title, onPress }) => {
     return (
-        <TouchableOpacity style={styles.button} onPress={onPress}>
-            <Text style={styles.buttonText}>{title}</Text>
-        </TouchableOpacity>
+        <PaperButton  mode="contained" onPress={onPress}>
+            {title}
+        </PaperButton>
     );
 };
 

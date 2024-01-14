@@ -3,7 +3,10 @@ import {View, StyleSheet, FlatList, ActivityIndicator, RefreshControl, Touchable
 import {FAB, Text, Button, Modal, Portal, Card, Title, IconButton} from 'react-native-paper';
 import { useRecoilState } from 'recoil';
 import { tagsState } from '../recoil/atom';
-import TagsService from "../services/TagsService"; // Assuming you have a tags atom
+import TagsService from "../services/TagsService";
+import commonScreenStyles from "../components/common/commonScreenStyles";
+import commonItemStyles from "../components/common/commonItemStyles";
+import commonStyles from "../components/common/commonStyles"; // Assuming you have a tags atom
 
 const TagsScreen = ({ navigation }) => {
     const [tags, setTags] = useRecoilState(tagsState);
@@ -41,15 +44,15 @@ const TagsScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={commonStyles.container}>
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
 
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
@@ -59,7 +62,7 @@ const TagsScreen = ({ navigation }) => {
                     data={tags}
                     renderItem={({ item }) => (
                         <TouchableOpacity onPress={() => handleEditTag(item)}>
-                            <Card style={styles.roleCard}>
+                            <Card style={commonItemStyles.card}>
                                 <Card.Content>
                                     <Title>{item.tagName}</Title>
                                 </Card.Content>
@@ -71,50 +74,9 @@ const TagsScreen = ({ navigation }) => {
                 />
             )}
 
-            <FAB style={styles.fab} icon="plus" onPress={() => navigation.navigate('AddTag')} />
+            <FAB style={commonScreenStyles.fab} icon="plus" onPress={() => navigation.navigate('AddTag')} />
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-    fab: {
-        position: 'absolute',
-        margin: 16,
-        right: 0,
-        bottom: 0,
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        alignSelf: 'center', // Center the modal on the screen
-        width: '80%', // Set the width to a percentage of the screen width
-    },
-    modalButtonGap: {
-        height: 5,
-    },
-    roleCard: {
-        marginBottom: 16,
-    },
-});
 
 export default TagsScreen;

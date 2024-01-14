@@ -12,6 +12,8 @@ import TagsService from '../services/TagsService';
 import SwitchInput from "../components/common/SwitchInput";
 import UserDetails from "../components/common/UserDetails";
 import DateTimePicker from "../components/common/DateTimePicker";
+import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 interface AddWorkScreenProps {
     navigation: any;
@@ -193,23 +195,23 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
 
     // Component rendering
     return (
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <ScrollView contentContainerStyle={commonAddScreenStyles.scrollViewContainer}>
             {/* Loading indicator */}
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
 
             {/* Error message display */}
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
 
             {/* Switch to show/hide Price per unit field */}
-            <View style={{...styles.row, justifyContent: 'space-between',}}>
+            <View style={{...commonStyles.row, justifyContent: 'space-between',}}>
                 <SwitchInput label={'Show Price per unit'} value={showPricePerUnit} onValueChange={(value) => {
                     if(value)
                         setShowAmount(false);
@@ -250,7 +252,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
                             setSelectedUser(item.id)
                             setUserOpen(false)
                         }}
-                          style={styles.dropdownUserContainer}
+                          style={commonAddScreenStyles.dropdownUserContainer}
                         >
                             <UserDetails user={item}/>
                             {(selectedUser === item.id) &&
@@ -288,16 +290,16 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
 
             {/* Input fields for quantity, price per unit, amount, and description */}
             {showPricePerUnit && (
-                <TextInput label="Price per unit" value={pricePerUnit} onChangeText={setPricePerUnit} keyboardType="numeric" style={styles.inputField} />
+                <TextInput label="Price per unit" value={pricePerUnit} onChangeText={setPricePerUnit} keyboardType="numeric" style={commonAddScreenStyles.inputField} />
             )}
 
             {!showAmount && (
-                <TextInput label="Quantity" value={quantity} onChangeText={setQuantity} keyboardType="numeric" style={styles.inputField} />
+                <TextInput label="Quantity" value={quantity} onChangeText={setQuantity} keyboardType="numeric" style={commonAddScreenStyles.inputField} />
             )}
 
-            {showAmount && <TextInput label="Amount" value={amount} onChangeText={setAmount} keyboardType="numeric" style={styles.inputField} />}
+            {showAmount && <TextInput label="Amount" value={amount} onChangeText={setAmount} keyboardType="numeric" style={commonAddScreenStyles.inputField} />}
 
-            <TextInput label="Description (optional)" value={description} onChangeText={setDescription} style={styles.inputField} />
+            <TextInput label="Description (optional)" value={description} onChangeText={setDescription} style={commonAddScreenStyles.inputField} />
 
             {/* Time picker */}
             <DateTimePicker
@@ -315,61 +317,5 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
         </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    scrollViewContainer: {
-        justifyContent: 'center',
-        padding: 16,
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-    bold: {
-        fontWeight: 'bold',
-    },
-    row: {
-        flexDirection: 'row',
-    },
-    section: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-    },
-    marginVerticalEight: {
-        marginVertical: 8,
-    },
-    inputField: {
-        marginBottom: 8,
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        alignSelf: 'center', // Center the modal on the screen
-        width: '80%', // Set the width to a percentage of the screen width
-    },
-    modalButtonGap: {
-        height: 5,
-    },
-    dropdownUserContainer: {
-        marginLeft: 10,
-        paddingVertical: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginRight: 10
-    }
-});
 
 export default AddWorkScreen;

@@ -1,13 +1,14 @@
 // src/screens/AddExpenseTypeScreen.tsx
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import {View, Text, ActivityIndicator} from 'react-native';
 import { useRecoilState } from 'recoil';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import ExpenseTypesService from '../services/ExpenseTypesService'; // Adjust the path accordingly
 import { expenseTypesState } from '../recoil/atom'; // Adjust the path accordingly
-import { ExpenseType } from '../types';
 import SwitchInput from "../components/common/SwitchInput";
+import CommonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 interface AddExpenseTypeScreenProps {
     navigation: any; // Adjust the type based on your navigation prop type
@@ -46,16 +47,16 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({ navigation 
     };
 
     return (
-        <View style={styles.container}>
+        <View style={commonStyles.container}>
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
             )}
 
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
 
@@ -76,28 +77,5 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({ navigation 
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        justifyContent: 'center',
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-});
 
 export default AddExpenseTypeScreen;

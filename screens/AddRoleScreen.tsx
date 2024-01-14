@@ -5,8 +5,9 @@ import { useRecoilState } from 'recoil';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import RolesService from "../services/RolesService";
-import { rolesState } from '../recoil/atom'; // Adjust the path accordingly
-import { Role } from '../types';
+import { rolesState } from '../recoil/atom';
+import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import commonStyles from "../components/common/commonStyles"; // Adjust the path accordingly
 
 interface AddRoleScreenProps {
     navigation: any; // Adjust the type based on your navigation prop type
@@ -44,9 +45,9 @@ const AddRoleScreen: React.FC<AddRoleScreenProps> = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={commonStyles.container}>
             {isLoading && (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                     <Text>
                         <ActivityIndicator size="large" color="#0000ff" /> {/* Show spinner if loading */}
                     </Text>
@@ -54,8 +55,8 @@ const AddRoleScreen: React.FC<AddRoleScreenProps> = ({ navigation }) => {
             )}
 
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={commonStyles.errorContainer}>
+                    <Text style={commonStyles.errorText}>{error}</Text>
                 </View>
             )}
 
@@ -68,28 +69,5 @@ const AddRoleScreen: React.FC<AddRoleScreenProps> = ({ navigation }) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        justifyContent: 'center',
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-});
 
 export default AddRoleScreen;

@@ -1,9 +1,12 @@
 // src/components/WorkItem.tsx
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Card, Title, IconButton, Paragraph, Chip, Avatar } from 'react-native-paper';
 import { Work } from '../types';
 import UserDetails from "./common/UserDetails";
+import commonItemStyles from "./common/commonItemStyles";
+import commonAddScreenStyles from "./common/commonAddScreenStyles";
+import commonStyles from "./common/commonStyles";
 
 interface WorkItemProps {
     work: Work;
@@ -14,25 +17,31 @@ interface WorkItemProps {
 const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
     return (
         <TouchableOpacity onPress={onPress}>
-            <Card style={styles.workCard}>
-                <Card.Content style={styles.cardContent}>
-                    <View style={styles.titleContainer}>
+            <Card style={commonItemStyles.card}>
+                <Card.Content style={commonItemStyles.cardContent}>
+                    <View style={commonItemStyles.titleContainer}>
                         <Title>{work.workType.workTypeName}</Title>
                         <Text>
                             {work.user && <UserDetails user={work.user} />} {/* Use UserDetails component */}
                         </Text>
                     </View>
-                    <Paragraph>{`Date: ${work.date.toDateString()}`}</Paragraph>
-                    <Paragraph>{`Quantity: ${work.quantity}`}</Paragraph>
-                    <Paragraph>{`Price Per Unit: ${work.pricePerUnit}`}</Paragraph>
-                    <Paragraph>{`Amount: ${work.amount}`}</Paragraph>
-                    {work.description && <Paragraph>{`Description: ${work.description}`}</Paragraph>}
+                    <View style={commonStyles.row}>
+                        <Paragraph>Date: <Text style={{fontWeight: 'bold'}}>{work.date.toDateString()}</Text> </Paragraph>
+                        <Paragraph>Quantity: <Text style={{fontWeight: 'bold'}}>{work.quantity}</Text> </Paragraph>
+                    </View>
+                    <View style={commonStyles.row}>
+                        <Paragraph>Price Per Unit: <Text style={{fontWeight: 'bold'}}>{work.pricePerUnit}</Text> </Paragraph>
+                        <Paragraph>Amount: <Text style={{fontWeight: 'bold'}}>{work.amount}</Text> </Paragraph>
+                    </View>
+                    <View style={commonStyles.row}>
+                        {work.description && <Paragraph>Description: <Text style={{fontWeight: 'bold'}}>{work.description}</Text> </Paragraph>}
+                    </View>
                     {work.tags.length > 0 && (
-                        <View style={styles.tagsContainer}>
-                            <Text style={styles.tagsLabel}>Tags: </Text>
-                            <View style={styles.tagChipsContainer}>
+                        <View style={commonItemStyles.tagsContainer}>
+                            <Text style={commonItemStyles.tagsLabel}>Tags: </Text>
+                            <View style={commonItemStyles.tagChipsContainer}>
                                 {work.tags.map((tag) => (
-                                    <Chip key={tag.id} style={styles.tagChip}>
+                                    <Chip key={tag.id} style={commonItemStyles.tagChip}>
                                         {tag.tagName}
                                     </Chip>
                                 ))}
@@ -40,49 +49,12 @@ const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
                         </View>
                     )}
                 </Card.Content>
-                <Card.Actions style={styles.cardActions}>
+                <Card.Actions style={commonItemStyles.cardActions}>
                     <IconButton icon="delete" onPress={onDelete} />
                 </Card.Actions>
             </Card>
         </TouchableOpacity>
     );
 };
-
-const styles = StyleSheet.create({
-    workCard: {
-        marginBottom: 16,
-    },
-    cardContent: {
-        paddingHorizontal: 16,
-        paddingBottom: 16, // Added paddingBottom to create space for the delete button
-    },
-    titleContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    tagsContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 8,
-    },
-    tagsLabel: {
-        fontWeight: 'bold',
-        marginRight: 8,
-    },
-    tagChipsContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    tagChip: {
-        marginHorizontal: 4,
-    },
-    cardActions: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-    },
-});
 
 export default WorkItem;

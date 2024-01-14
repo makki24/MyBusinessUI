@@ -1,8 +1,8 @@
 // src/components/ExpenseTypeItem.tsx
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card, Title, IconButton } from 'react-native-paper';
 import { ExpenseType } from '../types';
+import commonItemStyles from "./common/commonItemStyles";
 
 interface ExpenseTypeItemProps {
     expenseType: ExpenseType;
@@ -11,20 +11,14 @@ interface ExpenseTypeItemProps {
 }
 
 const ExpenseTypeItem: React.FC<ExpenseTypeItemProps> = ({ expenseType, onPress, onDelete }) => (
-        <Card style={styles.expenseTypeCard}>
-            <Card.Content>
+        <Card style={commonItemStyles.card}>
+            <Card.Content style={commonItemStyles.cardContent}>
                 <Title>{expenseType.expenseTypeName}</Title>
             </Card.Content>
-            <Card.Actions>
+            <Card.Actions style={commonItemStyles.cardActions}>
                 <IconButton icon="delete" onPress={onDelete} />
             </Card.Actions>
         </Card>
 );
-
-const styles = StyleSheet.create({
-    expenseTypeCard: {
-        marginBottom: 16,
-    },
-});
 
 export default ExpenseTypeItem;

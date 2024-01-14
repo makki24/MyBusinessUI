@@ -7,6 +7,10 @@ import CustomDropDown from '../components/common/CustomDropdown';
 import { useRecoilState } from 'recoil';
 import ReportService from '../services/ReportService';
 import {ExpenseReport} from "../types";
+import commonItemStyles from "../components/common/commonItemStyles";
+import commonScreenStyles from "../components/common/commonScreenStyles";
+import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import commonStyles from "../components/common/commonStyles";
 
 const ReportScreen = () => {
     const [error, setError] = useState<string | null>(null);
@@ -59,17 +63,17 @@ const ReportScreen = () => {
     }
 
     return (
-        <View style={styles.viewContainer}>
+        <View style={commonStyles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 {isLoading && (
-                    <View style={styles.loadingContainer}>
+                    <View style={commonStyles.loadingContainer}>
                         <ActivityIndicator size="large" color="#0000ff" />
                     </View>
                 )}
 
                 {error && (
-                    <View style={styles.errorContainer}>
-                        <Text style={styles.errorText}>{error}</Text>
+                    <View style={commonStyles.errorContainer}>
+                        <Text style={commonStyles.errorText}>{error}</Text>
                     </View>
                 )}
 
@@ -96,7 +100,7 @@ const ReportScreen = () => {
                 </Button>
 
                 {report && (
-                    <Card style={styles.reportCard}>
+                    <Card style={commonItemStyles.card}>
                         <Card.Content>
                             <Title>Expense Report</Title>
                             <Paragraph>Total Work Amount: {report.totalWorkAmount}</Paragraph>
@@ -105,7 +109,7 @@ const ReportScreen = () => {
                             <Paragraph>Total Contribution: {report.totalContributionAmount}</Paragraph>
                             <Divider />
                         </Card.Content>
-                        <Card.Actions style={styles.cardActions}>
+                        <Card.Actions style={commonStyles.row}>
                             <View style={styles.profitOrLossContainer}>
                                 <View style={[styles.profitOrLossIcon, profitOrLoss <= 0 && styles.hidden]}>
                                     <Icon source="arrow-up-bold-circle" color="green" size={20} />
@@ -150,34 +154,8 @@ const ReportScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    viewContainer: {
-        flex: 1, // Ensure the container takes the full screen height
-        justifyContent: 'center',
-        padding: 16,
-    },
     scrollViewContent: {
         flexGrow: 1, // Allow the content to grow within the ScrollView
-    },
-    loadingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    errorContainer: {
-        backgroundColor: 'red',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
-    },
-    reportCard: {
-        marginTop: 10,
-        marginHorizontal: 10,
-        borderRadius: 10,
-        elevation: 3,
     },
     profitOrLossContainer: {
         flex: 1,
@@ -193,12 +171,7 @@ const styles = StyleSheet.create({
     },
     hidden: {
         display: 'none',
-    },
-    cardActions: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10,
-    },
+    }
 });
 
 export default ReportScreen;
