@@ -70,7 +70,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
             const paramDate = new Date(work.date)
 
             setQuantity(`${work.quantity}`);
-            setWorkType(work.workType);
+            setWorkType(work.type);
             setPricePerUnit(`${work.pricePerUnit}`);
             setAmount(`${work.amount}`);
             setDescription(work.description);
@@ -78,7 +78,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
             setSelectedTags(work.tags.map(tag => tag.id))
             setSelectedUser(work.user.id)
             setTime({hours: paramDate.getHours(), minutes: paramDate.getMinutes()});
-            if(work.pricePerUnit && (work.pricePerUnit !== work.workType.defaultValuePerUnit))
+            if(work.pricePerUnit && (work.pricePerUnit !== work.type.defaultValuePerUnit))
                 setShowPricePerUnit(true);
             if (!work.pricePerUnit) {
                 setShowAmount(true);
@@ -146,7 +146,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
 
             let newWork: Work = {
                 date: workDate,
-                workType: workType,
+                type: workType,
                 quantity: parseInt(quantity),
                 pricePerUnit: parseFloat(pricePerUnit),
                 amount: calculatedAmount,
@@ -156,13 +156,13 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
             }
 
             if (isEdit) {
-                newWork.workID = route.params.work.workID;
+                newWork.id = route.params.work.id;
             }
 
             newWork = await WorkService.addWork(newWork);
 
             newWork.date = new Date(newWork.date);
-            setAllWorks((prevWorks) => [...prevWorks.filter((wt) => wt.workID !== newWork.workID), newWork]);
+            setAllWorks((prevWorks) => [...prevWorks.filter((wt) => wt.id !== newWork.id), newWork]);
 
             // Add logic to update Recoil state or other actions based on the new work
 
@@ -221,7 +221,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
             {workType && (
                 <CustomDropDown
                     schema={{
-                        label: 'username',
+                        label: 'name',
                         value: 'id',
                     }}
                     zIndex={2000}
@@ -263,7 +263,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
                 zIndex={1000}
                 zIndexInverse={1000}
                 schema={{
-                    label: 'tagName',
+                    label: 'name',
                     value: 'id',
                 }}
                 open={tagOpen}

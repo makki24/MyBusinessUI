@@ -39,7 +39,7 @@ const AddUserScreen = ({ route, navigation }) => {
         // Check if the screen is in edit mode and user data is provided
         if (route.params?.isEditMode && route.params?.user) {
             const editingUser = route.params.user as User;
-            setUsername(editingUser.username);
+            setUsername(editingUser.name);
             setEmail(editingUser.email);
             setPicture(editingUser.picture);
             setAmountToReceive(`${editingUser.amountToReceive}`);
@@ -67,10 +67,10 @@ const AddUserScreen = ({ route, navigation }) => {
             }
 
             // Add your logic to add/update the user here
-            const memberRole = roles.filter(role => role.roleName === 'MEMBER')[0];
+            const memberRole = roles.filter(role => role.name === 'MEMBER')[0];
 
             let user: User = {
-                username,
+                name: username,
                 email,
                 picture: imageUrl,
                 phoneNumber,

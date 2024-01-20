@@ -65,10 +65,10 @@ const AddContributionScreen = ({ navigation, route }) => {
             const contributionDate = new Date(inputDate);
             contributionDate.setHours(time.hours, time.minutes);
             const contribution: Contribution = {
-                sendingMember: selectedUser ? { id: selectedUser } as User : null,
+                sender: selectedUser ? { id: selectedUser } as User : null,
                 amount: parseFloat(amountToAdd),
                 date: contributionDate,
-                receivingManager: loggedInUser,
+                receiver: loggedInUser,
                 tags: selectedTags.map(tag => ({ id: tag })) as Tag[],
             };
             let newAmount = loggedInUser.amountHolding + contribution.amount;
@@ -124,7 +124,7 @@ const AddContributionScreen = ({ navigation, route }) => {
             {!isSelf && (
                 <CustomDropDown
                     schema={{
-                        label: 'username',
+                        label: 'name',
                         value: 'id',
                     }}
                     zIndex={2000}
@@ -151,7 +151,7 @@ const AddContributionScreen = ({ navigation, route }) => {
                     zIndex={1000}
                     zIndexInverse={1000}
                     schema={{
-                        label: 'tagName',
+                        label: 'name',
                         value: 'id',
                     }}
                     open={tagOpen}

@@ -4,22 +4,22 @@ import {User} from "./users";
 
 export interface WorkType {
     id?: number;
-    workTypeName: string;
+    name: string;
     unit: string;
     defaultValuePerUnit?: number;
 }
 
 
 export interface Work {
-    workID?: number;
+    id?: number;
+    date: Date;
+    type: WorkType; // Assuming ExpenseType is another interface or type
     quantity: number;
     pricePerUnit: number;
     amount: number;
-    description?: string;
-    workType: WorkType; // Assuming ExpenseType is another interface or type
     user: User; // Assuming User is another interface or type
+    description?: string;
     tags: Tag[]; // Assuming Tag is another interface or type
-    date: Date;
 }
 
 

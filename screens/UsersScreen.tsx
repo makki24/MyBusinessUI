@@ -38,12 +38,13 @@ const UsersScreen = ({ navigation }) => {
     }, [users]);
 
     const handleEditUser = (user: User) => {
-        if (user.roles.findIndex(role => role.roleName === 'MEMBER') === -1) {
+        console.log("edit", JSON.stringify(user));
+        if (user.roles.findIndex(role => role.name === 'MEMBER') === -1) {
             return ;
         }
         navigation.navigate('UsersStack', {
             screen: 'AddUser',
-            params: { title: `Edit User: ${user.username}`, user, isEditMode: true },
+            params: { title: `Edit User: ${user.name}`, user, isEditMode: true },
         });
     };
 

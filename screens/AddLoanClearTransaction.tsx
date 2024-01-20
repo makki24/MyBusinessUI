@@ -80,7 +80,7 @@ const AddLoanClearTransaction = ({ navigation, route }) => {
                 <LoadingError error={error} isLoading={isLoading} />
             <CustomDropDown
                 schema={{
-                    label: 'username',
+                    label: 'name',
                     value: 'id',
                 }}
                 zIndex={2000}

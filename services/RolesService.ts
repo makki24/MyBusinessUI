@@ -1,6 +1,8 @@
 // RolesService.ts
 import { apiUrl } from '../app-env.config';
-import axios from './NetworkInterceptor';// Adjust the path accordingly
+import axios from './NetworkInterceptor';
+import {Role} from "../types";
+// Adjust the path accordingly
 
 
 
@@ -19,7 +21,7 @@ const RolesService = {
         }
     },
 
-    addRole: async (roleData: any) => {
+    addRole: async (roleData: Role) => {
         try {
             const response = await axios.post(`${apiUrl}/api/roles`, roleData);
 

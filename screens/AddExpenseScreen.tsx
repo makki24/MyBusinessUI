@@ -153,11 +153,11 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
 
             const newExpense = await ExpenseService.addExpense({
                 date: expenseDate,
-                expenseType: { id: value } as ExpenseType,
+                type: { id: value } as ExpenseType,
                 amount: parseFloat(amount),
-                additionalInfo,
-                user: loggedInUser,
-                receivingUser: selectedUser ? { id: selectedUser } as User : null,
+                description: additionalInfo,
+                sender: loggedInUser,
+                receiver: selectedUser ? { id: selectedUser } as User : null,
                 tags: selectedTags.map(tag => ({id: tag})) as Tags[]
                 // Add tags if needed
             });
@@ -248,7 +248,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
             <CustomDropDown
                 items={expenseTypes}
                 schema={{
-                    label: 'expenseTypeName',
+                    label: 'name',
                     value: 'id',
                 }}
                 zIndex={3000}
@@ -267,7 +267,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
             {value && isReceivingUser && (
                 <CustomDropDown
                     schema={{
-                        label: 'username',
+                        label: 'name',
                         value: 'id',
                     }}
                     zIndex={2000}
@@ -293,7 +293,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
                     zIndex={1000}
                     zIndexInverse={1000}
                     schema={{
-                        label: 'tagName',
+                        label: 'name',
                         value: 'id',
                     }}
                     open={tagOpen}

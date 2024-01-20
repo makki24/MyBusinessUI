@@ -73,7 +73,7 @@ const ReportScreen = () => {
                     zIndex={1000}
                     zIndexInverse={1000}
                     schema={{
-                        label: 'tagName',
+                        label: 'name',
                         value: 'id',
                     }}
                     open={tagOpen}

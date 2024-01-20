@@ -19,12 +19,12 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({ expense, onPress, onDelete })
             <Card.Content style={expense.tags.length ? commonItemStyles.cardContent: {}}>
                 <View  style={commonItemStyles.titleContainer}>
                     <Title>
-                        {expense.expenseType.isReceivingUser
-                            ? `${expense.expenseType.expenseTypeName} to ${expense.receivingUser.username}`
-                            : expense.expenseType.expenseTypeName}
+                        {expense.type.isReceivingUser
+                            ? `${expense.type.name} to ${expense.receiver.name}`
+                            : expense.type.name}
                     </Title>
                     <Text>
-                        {expense.user && <UserDetails user={expense.user} />} {/* Use UserDetails component */}
+                        {expense.sender && <UserDetails user={expense.sender} />} {/* Use UserDetails component */}
                     </Text>
                 </View>
                 <View style={commonStyles.row}>
@@ -33,7 +33,7 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({ expense, onPress, onDelete })
                 </View>
                 <View style={commonStyles.row}>
                     <Paragraph>{`Amount: ${expense.amount}`}</Paragraph>
-                    {expense.additionalInfo && <Paragraph>{`Additional Info: ${expense.additionalInfo}`}</Paragraph>}
+                    {expense.description && <Paragraph>{`Additional Info: ${expense.description}`}</Paragraph>}
                 </View>
                 {expense.tags.length > 0 && (
                     <View style={commonItemStyles.tagsContainer}>
@@ -41,7 +41,7 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({ expense, onPress, onDelete })
                         <View style={commonItemStyles.tagChipsContainer}>
                             {expense.tags.map((tag) => (
                                 <Chip key={tag.id} style={commonItemStyles.tagChip}>
-                                    {tag.tagName}
+                                    {tag.name}
                                 </Chip>
                             ))}
                         </View>

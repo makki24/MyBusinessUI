@@ -30,7 +30,7 @@ const AddTagScreen: React.FC<AddTagScreenProps> = ({ navigation }) => {
             setIsLoading(true); // Set loading to true
 
             // Call your API service to add a new tag
-            const newTag = await TagsService.addTag({ tagName });
+            const newTag = await TagsService.addTag({ name: tagName });
 
             // Update Recoil state with the new tag
             setTags((prevTags) => [...prevTags, newTag]);
