@@ -39,6 +39,9 @@ import RolesService from "./services/RolesService";
 import ReportScreen from "./screens/ReportScreen";
 import UserReportScreen from "./screens/UserReportScreen";
 import LoanTransactionScreen from "./screens/LoanTransactionsScreen";
+import {BottomSheetModalProvider} from "@gorhom/bottom-sheet";
+import {GestureHandlerRootView} from "react-native-gesture-handler";
+import {User} from "./types";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -219,16 +222,21 @@ const AppContent = () => {
 const App = () => {
 
     return (
-        <RecoilRoot>
-            <PaperProvider>
-                <AppContent />
-            </PaperProvider>
-        </RecoilRoot>
+        <GestureHandlerRootView style={{ height: "100%", width: "100%" }}>
+            <RecoilRoot>
+                <PaperProvider>
+                    <BottomSheetModalProvider>
+                        <AppContent />
+                    </BottomSheetModalProvider>
+                </PaperProvider>
+            </RecoilRoot>
+        </GestureHandlerRootView>
+
     );
 };
 
 const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
-    const userInfo = props.userInfo;
+    const userInfo = props.userInfo as User;
     const [_, setUserInfo] = useRecoilState(userState);
 
     const toggleDrawer = () => {
@@ -251,7 +259,7 @@ const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
     const navigateToEditAccount = () => {
         navigation.navigate('UsersStack', {
             screen: 'AddUser',
-            params: { title: `Edit User: ${userInfo.username}`, user: userInfo, isEditMode: true },
+            params: { title: `Edit User: ${userInfo.name}`, user: userInfo, isEditMode: true },
         });
     }
 

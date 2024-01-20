@@ -55,7 +55,7 @@ const TagsScreen = ({ navigation }) => {
                         <TouchableOpacity onPress={() => handleEditTag(item)}>
                             <Card style={commonItemStyles.card}>
                                 <Card.Content>
-                                    <Title>{item.tagName}</Title>
+                                    <Title>{item.name}</Title>
                                 </Card.Content>
                             </Card>
                         </TouchableOpacity>

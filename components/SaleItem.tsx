@@ -41,7 +41,7 @@ const SaleItem: React.FC<SaleItemProps> = ({ sale, onPress, onDelete }) => {
                             <View style={commonItemStyles.tagChipsContainer}>
                                 {sale.tags.map((tag) => (
                                     <Chip key={tag.id} style={commonItemStyles.tagChip}>
-                                        {tag.tagName}
+                                        {tag.name}
                                     </Chip>
                                 ))}
                             </View>

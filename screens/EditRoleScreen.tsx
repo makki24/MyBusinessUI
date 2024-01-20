@@ -99,7 +99,7 @@ const EditRoleScreen = ({ route }) => {
 
     const renderUserItem = ({ item }) => (
         <List.Item
-            title={item.username}
+            title={item.name}
             right={() => (
                 <IconButton icon="delete" onPress={() => handleRemoveUser(item.id)} />
             )}
@@ -120,7 +120,7 @@ const EditRoleScreen = ({ route }) => {
             <CustomDropDown
                 items={allUsers}
                 schema={{
-                    label: 'username',
+                    label: 'name',
                     value: 'email',
                 }}
                 searchable={true}
@@ -162,7 +162,7 @@ const EditRoleScreen = ({ route }) => {
                 onDismiss={onSnackbarDismiss}
                 duration={3000}
             >
-                {`User "${assignedUsers[assignedUsers.length - 1]?.username}" added successfully`}
+                {`User "${assignedUsers[assignedUsers.length - 1]?.name}" added successfully`}
             </Snackbar>
 
             <Snackbar

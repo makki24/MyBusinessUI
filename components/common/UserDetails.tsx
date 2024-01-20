@@ -33,7 +33,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user  }) => {
                 source={{ uri: (imageExists && user.picture) ? user.picture : DEFAULT_AVATAR_URL }}
                 style={styles.avatar}
             />
-            <Text style={styles.username}>{user.username}</Text>
+            <Text style={styles.username}>{user.name}</Text>
         </View>
     );
 };

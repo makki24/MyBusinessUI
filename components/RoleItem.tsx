@@ -16,7 +16,7 @@ const RoleItem: React.FC<RoleItemProps> = ({ role, onPress, onDelete }) => (
     <TouchableOpacity onPress={onPress} testID="role-card">
         <Card style={commonItemStyles.card}>
             <Card.Content style={commonItemStyles.cardContent}>
-                <Title>{role.roleName}</Title>
+                <Title>{role.name}</Title>
             </Card.Content>
             <Card.Actions style={commonItemStyles.cardActions}>
                 <IconButton icon="delete" onPress={onDelete} testID="delete-button" />

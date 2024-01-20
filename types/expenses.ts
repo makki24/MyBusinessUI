@@ -3,17 +3,17 @@ import {User} from "./users";
 
 export interface ExpenseType {
     id?: string;
-    expenseTypeName: string;
+    name: string;
     isReceivingUser?: boolean
 }
 
 export interface Expense {
     id?: number;
     date: Date;
-    user: User;
     amount: number;
-    additionalInfo?: string;
-    expenseType: ExpenseType;
-    receivingUser?: User;
+    sender: User;
+    receiver?: User;
     tags: Tag[]
+    description?: string;
+    type: ExpenseType;
 }

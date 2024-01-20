@@ -9,9 +9,7 @@ const commonScreenStyles = StyleSheet.create({
         right: 0,
         bottom: 0,
     },
-    searchBar: {
-        marginBottom: 10,
-    }
+
 });
 
 export default commonScreenStyles;

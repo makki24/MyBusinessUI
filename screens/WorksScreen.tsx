@@ -43,7 +43,7 @@ const WorksScreen = ({ navigation }) => {
 
     const handleEditWork = (work: Work) => {
         const serializedDate = work.date.toISOString();
-        const title = work.pricePerUnit ? `(${work.pricePerUnit} per ${work.workType.unit})` : '';
+        const title = work.pricePerUnit ? `(${work.pricePerUnit} per ${work.type.unit})` : '';
         navigation.navigate('WorkStack', { screen: 'AddWork' ,
             params: { title: `Edit Work ${title}`, work: { ...work, date: serializedDate }, isEditMode: true }
         })
@@ -68,7 +68,7 @@ const WorksScreen = ({ navigation }) => {
 
         try {
             await WorkService.deleteWork(selectedWork.workID);
-            setWorks((prevWorks) => prevWorks.filter((work) => work.workID !== selectedWork.workID));
+            setWorks((prevWorks) => prevWorks.filter((work) => work.id !== selectedWork.workID));
         } catch (error) {
             console.error('Error deleting work:', error.response?.data || 'Unknown error');
             setError(error.message  || 'Error deleting work. Please try again.');
@@ -97,7 +97,7 @@ const WorksScreen = ({ navigation }) => {
                             onDelete={() => handleDeleteWork(item)}
                         />
                     )}
-                    keyExtractor={(item) => item.workID.toString()} // Ensure key is a string
+                    keyExtractor={(item) => item.id.toString()} // Ensure key is a string
                     refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
                 />
             )}

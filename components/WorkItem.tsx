@@ -18,9 +18,9 @@ const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
     return (
         <TouchableOpacity onPress={onPress}>
             <Card style={commonItemStyles.card}>
-                <Card.Content style={commonItemStyles.cardContent}>
+                <Card.Content style={work.tags.length ? commonItemStyles.cardContent: {}}>
                     <View style={commonItemStyles.titleContainer}>
-                        <Title>{work.workType.workTypeName}</Title>
+                        <Title>{work.type.name}</Title>
                         <Text>
                             {work.user && <UserDetails user={work.user} />} {/* Use UserDetails component */}
                         </Text>
@@ -42,14 +42,14 @@ const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
                             <View style={commonItemStyles.tagChipsContainer}>
                                 {work.tags.map((tag) => (
                                     <Chip key={tag.id} style={commonItemStyles.tagChip}>
-                                        {tag.tagName}
+                                        {tag.name}
                                     </Chip>
                                 ))}
                             </View>
                         </View>
                     )}
                 </Card.Content>
-                <Card.Actions style={commonItemStyles.cardActions}>
+                <Card.Actions style={work.tags.length ? commonItemStyles.cardActions: {}}>
                     <IconButton icon="delete" onPress={onDelete} />
                 </Card.Actions>
             </Card>

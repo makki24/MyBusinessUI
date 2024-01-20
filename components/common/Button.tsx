@@ -9,7 +9,7 @@ interface ButtonProps {
     mode?: "text" | "outlined" | "contained" | "elevated" | "contained-tonal";
 }
 
-const Button: React.FC<ButtonProps> = ({ title, onPress, icon, mode }) => {
+const Button: React.FC<ButtonProps> = ({ title, onPress, icon, mode = 'contained' }) => {
     return (
         <PaperButton icon={icon}  mode={mode} onPress={onPress}>
             {title}

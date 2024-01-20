@@ -16,7 +16,7 @@ const WorkTypeItem: React.FC<WorkTypeItemProps> = ({ workType, onPress, onEdit, 
     <TouchableOpacity onPress={() => onPress(workType)}>
         <Card style={commonItemStyles.card}>
             <Card.Content style={commonItemStyles.cardContent}>
-                <Title>{workType.workTypeName}</Title>
+                <Title>{workType.name}</Title>
                 <Text>Default Value Per {workType.unit}: {workType.defaultValuePerUnit}</Text>
             </Card.Content>
             <Card.Actions style={commonItemStyles.cardActions}>

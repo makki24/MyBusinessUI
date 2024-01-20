@@ -3,11 +3,12 @@ import {Tag} from "./tag";
 
 export interface Contribution {
     id?: number;
-    amount: number;
-    sendingMember?: User;
-    receivingManager: User;
     date: Date;
+    amount: number;
+    sender?: User;
+    receiver: User;
     tags: Tag[];
+    description?: string;
 }
 
 export interface LoanToHoldingTransaction {

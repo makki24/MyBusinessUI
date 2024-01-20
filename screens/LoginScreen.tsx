@@ -86,7 +86,7 @@ const LoginScreen = ({ navigation }) => {
                     </TouchableOpacity>
                     <View>
                         <Text>Email: {userInfo.email}</Text>
-                        <Text>Name: {userInfo.username}</Text>
+                        <Text>Name: {userInfo.name}</Text>
                         <View style={styles.button}>
                             <Button title="Continue to Home" onPress={() => navigation.navigate('Home')} />
                         </View>

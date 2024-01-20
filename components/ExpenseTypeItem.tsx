@@ -13,7 +13,7 @@ interface ExpenseTypeItemProps {
 const ExpenseTypeItem: React.FC<ExpenseTypeItemProps> = ({ expenseType, onPress, onDelete }) => (
         <Card style={commonItemStyles.card}>
             <Card.Content style={commonItemStyles.cardContent}>
-                <Title>{expenseType.expenseTypeName}</Title>
+                <Title>{expenseType.name}</Title>
             </Card.Content>
             <Card.Actions style={commonItemStyles.cardActions}>
                 <IconButton icon="delete" onPress={onDelete} />

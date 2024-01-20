@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, RefreshControl } from 'react-native';
-import { FAB, Text, Modal, Portal, Searchbar } from 'react-native-paper'; // Import Searchbar
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {View, FlatList, RefreshControl, StyleSheet} from 'react-native';
+import {FAB, Text, Modal, Portal, Searchbar, IconButton} from 'react-native-paper'; // Import Searchbar
 import { useRecoilState } from 'recoil';
 import { workTypesState } from '../recoil/atom';
 import WorkTypeItem from '../components/WorkTypeItem';
@@ -10,6 +10,8 @@ import commonScreenStyles from "../components/common/commonScreenStyles";
 import commonStyles from "../components/common/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import Button from '../components/common/Button';
+import {BottomSheetModal} from "@gorhom/bottom-sheet";
+import SearchFilter from "../components/common/SearchFilter";
 
 const WorkTypeScreen = ({navigation}) => {
     const [workTypes, setWorkTypes] = useRecoilState(workTypesState);
@@ -20,6 +22,9 @@ const WorkTypeScreen = ({navigation}) => {
     const [selectedWorkType, setSelectedWorkType] = useState(null);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+    const snapPoints = useMemo(() => ['25%', '50%'], []);
 
     const fetchWorkTypes = async () => {
         try {
@@ -77,24 +82,23 @@ const WorkTypeScreen = ({navigation}) => {
     const handleSearch = (query) => {
         setSearchQuery(query);
         const filtered = workTypes.filter((workType) =>
-            workType.workTypeName.toLowerCase().includes(query.toLowerCase())
+            workType.name.toLowerCase().includes(query.toLowerCase())
         );
         setFilteredWorkTypes(filtered);
     };
 
     const handleAddWork = (workType: WorkType) => {
-        navigation.navigate('WorkStack', { screen: 'AddWork', params: {title: `Add ${workType.workTypeName} (${workType.defaultValuePerUnit} per ${workType.unit})`, workType} })
+        navigation.navigate('WorkStack', { screen: 'AddWork', params: {title: `Add ${workType.name} (${workType.defaultValuePerUnit} per ${workType.unit})`, workType} })
     }
+
+    const openBottomSheet = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
 
     return (
         <View style={commonStyles.container}>
             {/* Searchbar */}
-            <Searchbar
-                placeholder="Search"
-                onChangeText={handleSearch}
-                value={searchQuery}
-                style={commonScreenStyles.searchBar}
-            />
+            <SearchFilter searchQuery={searchQuery} handleSearch={handleSearch} openBottomSheet={openBottomSheet} />
 
             <LoadingError error={error} isLoading={isLoading} />
 
@@ -127,8 +131,19 @@ const WorkTypeScreen = ({navigation}) => {
                     <Button title={'Delete'} icon="delete" mode="contained" onPress={confirmDeleteWorkType} />
                 </Modal>
             </Portal>
+            <BottomSheetModal
+                ref={bottomSheetModalRef}
+                index={0}
+                snapPoints={snapPoints}
+            >
+                <View style={commonStyles.container}>
+                    <Text>Awesome 🎉</Text>
+                </View>
+            </BottomSheetModal>
         </View>
     );
 };
+
+
 
 export default WorkTypeScreen;

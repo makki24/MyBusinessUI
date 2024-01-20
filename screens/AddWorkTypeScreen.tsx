@@ -35,7 +35,7 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({ route, navigation
         if (route.params?.isEditMode && route.params?.workType) {
             setIsEdit(true);
             const workType = route.params.workType;
-            setTypeName(workType.workTypeName);
+            setTypeName(workType.name);
             setUnit(workType.unit);
             setDefaultPrice(workType.defaultValuePerUnit.toString());
             // ... set other state variables with workType data
@@ -54,7 +54,7 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({ route, navigation
             // Call your API service to add a new work type
 
             let newWorkType: WorkType = {
-                workTypeName: typeName,
+                name: typeName,
                 defaultValuePerUnit: parseFloat(defaultPrice),
                 unit: unit
             }

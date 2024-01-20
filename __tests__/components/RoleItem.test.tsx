@@ -10,7 +10,7 @@ const mockOnDelete = jest.fn();
 
 const roleMock = {
     id: '1',
-    roleName: 'Administrator',
+    name: 'Administrator',
 };
 
 describe('<RoleItem />', () => {

@@ -7,7 +7,8 @@ import Button from '../components/common/Button';
 import RolesService from "../services/RolesService";
 import { rolesState } from '../recoil/atom';
 import commonStyles from "../components/common/commonStyles";
-import LoadingError from "../components/common/LoadingError"; // Adjust the path accordingly
+import LoadingError from "../components/common/LoadingError";
+import {Role} from "../types"; // Adjust the path accordingly
 
 interface AddRoleScreenProps {
     navigation: any; // Adjust the type based on your navigation prop type
@@ -29,7 +30,7 @@ const AddRoleScreen: React.FC<AddRoleScreenProps> = ({ navigation }) => {
             setIsLoading(true); // Set loading to true
 
             // Call your API service to add a new role
-            const newRole = await RolesService.addRole({ roleName });
+            const newRole = await RolesService.addRole({ name: roleName } as Role);
 
             // Update Recoil state with the new role
             setRoles((prevRoles) => [...prevRoles, newRole]);

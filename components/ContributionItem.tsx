@@ -20,10 +20,10 @@ const ContributionItem: FC<ContributionItemProps> = ({ contribution, onPress, on
                     <View style={commonItemStyles.titleContainer}>
                         <Title>{`${contribution.amount}`}</Title>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            {contribution.sendingMember && <Text style={{fontWeight: '800'}}>  From:  </Text>}
+                            {contribution.sender && <Text style={{fontWeight: '800'}}>  From:  </Text>}
                             <Text>
-                                {contribution.sendingMember && <UserDetails user={contribution.sendingMember} />} {/* Assuming User has a 'name' property */}
-                                {!contribution.sendingMember && <Text>Self contribution</Text>}
+                                {contribution.sender && <UserDetails user={contribution.sender} />} {/* Assuming User has a 'name' property */}
+                                {!contribution.sender && <Text>Self contribution</Text>}
                             </Text>
                         </View>
                     </View>
@@ -34,7 +34,7 @@ const ContributionItem: FC<ContributionItemProps> = ({ contribution, onPress, on
                             <View style={commonItemStyles.tagChipsContainer}>
                                 {contribution.tags.map((tag) => (
                                     <Chip key={tag.id} style={commonItemStyles.tagChip}>
-                                        {tag.tagName}
+                                        {tag.name}
                                     </Chip>
                                 ))}
                             </View>
