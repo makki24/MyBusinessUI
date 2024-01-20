@@ -1,32 +1,20 @@
 // Button.tsx
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import {Button as PaperButton} from "react-native-paper";
 
 interface ButtonProps {
     title: string;
     onPress: () => void;
+    icon?: string;
+    mode?: "text" | "outlined" | "contained" | "elevated" | "contained-tonal";
 }
 
-const Button: React.FC<ButtonProps> = ({ title, onPress }) => {
+const Button: React.FC<ButtonProps> = ({ title, onPress, icon, mode }) => {
     return (
-        <PaperButton  mode="contained" onPress={onPress}>
+        <PaperButton icon={icon}  mode={mode} onPress={onPress}>
             {title}
         </PaperButton>
     );
 };
-
-const styles = StyleSheet.create({
-    button: {
-        backgroundColor: 'blue',
-        padding: 10,
-        borderRadius: 5,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-    },
-});
 
 export default Button;

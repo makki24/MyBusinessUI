@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
-import { FAB, Text, Button, Modal, Portal, Searchbar } from 'react-native-paper'; // Import Searchbar
+import { View, FlatList, RefreshControl } from 'react-native';
+import { FAB, Text, Modal, Portal, Searchbar } from 'react-native-paper'; // Import Searchbar
 import { useRecoilState } from 'recoil';
 import { workTypesState } from '../recoil/atom';
 import WorkTypeItem from '../components/WorkTypeItem';
 import { WorkType } from '../types';
-import { useNavigation } from '@react-navigation/native';
 import WorkService from "../services/WorkService";
 import commonScreenStyles from "../components/common/commonScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
+import Button from '../components/common/Button';
 
 const WorkTypeScreen = ({navigation}) => {
     const [workTypes, setWorkTypes] = useRecoilState(workTypesState);
@@ -95,17 +96,7 @@ const WorkTypeScreen = ({navigation}) => {
                 style={commonScreenStyles.searchBar}
             />
 
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
-
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
+            <LoadingError error={error} isLoading={isLoading} />
 
             {!error && (
                 <FlatList
@@ -131,13 +122,9 @@ const WorkTypeScreen = ({navigation}) => {
                     <Text>Are you sure you want to delete this work type?</Text>
                     <View style={commonStyles.modalButtonGap} />
                     <View style={commonStyles.modalButtonGap} />
-                    <Button icon="cancel" mode="outlined" onPress={() => setIsDeleteModalVisible(false)}>
-                        Cancel
-                    </Button>
+                    <Button title={'Cancel'} icon="cancel" mode="outlined" onPress={() => setIsDeleteModalVisible(false)} />
                     <View style={commonStyles.modalButtonGap} />
-                    <Button icon="delete" mode="contained" onPress={confirmDeleteWorkType}>
-                        Delete
-                    </Button>
+                    <Button title={'Delete'} icon="delete" mode="contained" onPress={confirmDeleteWorkType} />
                 </Modal>
             </Portal>
         </View>

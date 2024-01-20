@@ -20,6 +20,7 @@ import CustomDropDown from "../components/common/CustomDropdown";
 import TagsService from "../services/TagsService";
 import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 interface AddExpenseScreenProps {
     navigation: any;
@@ -241,19 +242,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
     // Component rendering
     return (
         <ScrollView contentContainerStyle={commonAddScreenStyles.scrollViewContainer}>
-            {/* Loading indicator */}
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
-
-            {/* Error message display */}
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
+            <LoadingError error={error} isLoading={isLoading} />
 
             {/* Expense type selector */}
             <CustomDropDown

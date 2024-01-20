@@ -14,6 +14,7 @@ import UserDetails from "../components/common/UserDetails";
 import DateTimePicker from "../components/common/DateTimePicker";
 import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 interface AddWorkScreenProps {
     navigation: any;
@@ -196,19 +197,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
     // Component rendering
     return (
         <ScrollView contentContainerStyle={commonAddScreenStyles.scrollViewContainer}>
-            {/* Loading indicator */}
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
-
-            {/* Error message display */}
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
+            <LoadingError error={error} isLoading={isLoading} />
 
             {/* Switch to show/hide Price per unit field */}
             <View style={{...commonStyles.row, justifyContent: 'space-between',}}>

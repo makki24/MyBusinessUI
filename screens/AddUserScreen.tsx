@@ -14,6 +14,7 @@ import {useRecoilState} from "recoil";
 import {rolesState} from "../recoil/atom";
 import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 
 const AddUserScreen = ({ route, navigation }) => {
@@ -124,17 +125,7 @@ const AddUserScreen = ({ route, navigation }) => {
 
     return (
         <ScrollView contentContainerStyle={commonAddScreenStyles.scrollViewContainer}>
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
-
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
+            <LoadingError error={error} isLoading={isLoading} />
 
             <View style={styles.imageContainer}>
                 <CustomRoundImage source={{ uri: picture || DEFAULT_AVATAR_URL }} style={styles.roundedImage}>

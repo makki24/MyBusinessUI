@@ -9,6 +9,7 @@ import { contributionsState, userState } from '../recoil/atom';
 import { Contribution } from '../types';
 import commonScreenStyles from "../components/common/commonScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 const ContributionScreen = ({ navigation }) => {
     const [contributions, setContributions] = useRecoilState(contributionsState);
@@ -90,17 +91,7 @@ const ContributionScreen = ({ navigation }) => {
 
     return (
         <View style={commonStyles.container}>
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
-
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
+            <LoadingError error={error} isLoading={isLoading} />
 
             {!error && (
                 <FlatList

@@ -1,13 +1,13 @@
 // src/screens/AddRoleScreen.tsx
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { View } from 'react-native';
 import { useRecoilState } from 'recoil';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import RolesService from "../services/RolesService";
 import { rolesState } from '../recoil/atom';
-import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
-import commonStyles from "../components/common/commonStyles"; // Adjust the path accordingly
+import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError"; // Adjust the path accordingly
 
 interface AddRoleScreenProps {
     navigation: any; // Adjust the type based on your navigation prop type
@@ -46,19 +46,7 @@ const AddRoleScreen: React.FC<AddRoleScreenProps> = ({ navigation }) => {
 
     return (
         <View style={commonStyles.container}>
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <Text>
-                        <ActivityIndicator size="large" color="#0000ff" /> {/* Show spinner if loading */}
-                    </Text>
-                </View>
-            )}
-
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
+            <LoadingError error={error} isLoading={isLoading} />
 
             <Input
                 placeholder="Enter role name"

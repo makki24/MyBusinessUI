@@ -12,6 +12,7 @@ import {StackActions, useNavigation} from "@react-navigation/native";
 import {DrawerNavigationProp} from "@react-navigation/drawer";
 import commonScreenStyles from "../components/common/commonScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 const RolesScreen = ({ navigation }) => {
     const [roles, setRoles] = useRecoilState(rolesState);
@@ -89,17 +90,7 @@ const RolesScreen = ({ navigation }) => {
 
     return (
         <View style={commonStyles.container}>
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
-
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
+            <LoadingError error={error} isLoading={isLoading} />
 
             {!error && (
                 <FlatList

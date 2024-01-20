@@ -12,6 +12,7 @@ import UserDropDownItem from "../components/common/UserDropDownItem";
 import SwitchInput from "../components/common/SwitchInput";
 import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 interface AddSaleScreenProps {
     navigation: any;
@@ -153,17 +154,7 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
 
     return (
         <ScrollView contentContainerStyle={commonAddScreenStyles.scrollViewContainer}>
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
-
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
+            <LoadingError error={error} isLoading={isLoading} />
 
             <View style={{...commonStyles.row, justifyContent: 'space-between',}}>
                 <SwitchInput label={'Enter amount directly'} value={showAmount} onValueChange={(showAmount) => {
