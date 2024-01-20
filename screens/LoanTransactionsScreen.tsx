@@ -9,6 +9,7 @@ import { LoanToHoldingTransaction } from '../types';
 import contributionService from "../services/ContributionService";
 import commonScreenStyles from "../components/common/commonScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 const LoanTransactionScreen = ({ navigation }) => {
     const [loanTransactions, setLoanTransactions] = useRecoilState(loanToHoldingTransactionState);
@@ -85,19 +86,7 @@ const LoanTransactionScreen = ({ navigation }) => {
 
     return (
         <View style={commonStyles.container}>
-            {error && (
-                <View style={commonStyles.errorContainer} testID="error-container">
-                    <Text style={commonStyles.errorText} testID="error-text">
-                        {error}
-                    </Text>
-                </View>
-            )}
-
-            {isLoading && (
-                <View style={commonStyles.loadingContainer} testID="loading-indicator">
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
+            <LoadingError error={error} isLoading={isLoading} />
 
             {!error && (
                 <FlatList

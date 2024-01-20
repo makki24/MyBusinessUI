@@ -9,6 +9,7 @@ import {LoanToHoldingTransaction, User} from "../types";
 import contributionService from "../services/ContributionService";
 import commonStyles from "../components/common/commonStyles";
 import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import LoadingError from "../components/common/LoadingError";
 
 const AddLoanClearTransaction = ({ navigation, route }) => {
     const [amountToTransfer, setAmountToTransfer] = useState('');
@@ -76,18 +77,7 @@ const AddLoanClearTransaction = ({ navigation, route }) => {
     return (
         <View  style={commonStyles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
-
-
+                <LoadingError error={error} isLoading={isLoading} />
             <CustomDropDown
                 schema={{
                     label: 'username',
@@ -109,7 +99,7 @@ const AddLoanClearTransaction = ({ navigation, route }) => {
                 )}
             />
 
-            <Text>Amount to Receive: {displayUser.amountToReceive}</Text>
+            {displayUser &&  (<Text>Amount to Receive: {displayUser.amountToReceive}</Text>)}
             <Text style={{marginBottom: 5}}>Amount Holding: {displayUser.amountHolding}</Text>
 
 

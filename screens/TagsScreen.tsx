@@ -6,7 +6,8 @@ import { tagsState } from '../recoil/atom';
 import TagsService from "../services/TagsService";
 import commonScreenStyles from "../components/common/commonScreenStyles";
 import commonItemStyles from "../components/common/commonItemStyles";
-import commonStyles from "../components/common/commonStyles"; // Assuming you have a tags atom
+import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError"; // Assuming you have a tags atom
 
 const TagsScreen = ({ navigation }) => {
     const [tags, setTags] = useRecoilState(tagsState);
@@ -45,17 +46,7 @@ const TagsScreen = ({ navigation }) => {
 
     return (
         <View style={commonStyles.container}>
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
-
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
+            <LoadingError error={error} isLoading={isLoading} />
 
             {!error && (
                 <FlatList

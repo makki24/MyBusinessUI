@@ -12,6 +12,7 @@ import { Contribution, Tag, User } from "../types";
 import contributionService from "../services/ContributionService";
 import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 let oldAmount = 0;
 
@@ -112,16 +113,7 @@ const AddContributionScreen = ({ navigation, route }) => {
 
     return (
         <ScrollView contentContainerStyle={commonAddScreenStyles.scrollViewContainer}>
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
+           <LoadingError error={error} isLoading={isLoading} />
 
             <SwitchInput
                 label="Is Self ?"

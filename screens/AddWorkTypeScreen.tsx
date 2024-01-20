@@ -9,6 +9,7 @@ import { WorkType } from '../types';
 import WorkService from "../services/WorkService";
 import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 interface AddWorkTypeScreenProps {
     route: {
@@ -79,19 +80,7 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({ route, navigation
 
     return (
      <View style={commonStyles.container}>
-        {isLoading && (
-            <View style={commonStyles.loadingContainer}>
-                <Text>
-                    <ActivityIndicator size="large" color="#0000ff" /> {/* Show spinner if loading */}
-                </Text>
-            </View>
-        )}
-
-        {error && (
-            <View style={commonStyles.errorContainer}>
-                <Text style={commonStyles.errorText}>{error}</Text>
-            </View>
-        )}
+        <LoadingError error={error} isLoading={isLoading} />
 
         <Input
             placeholder="Enter type name"

@@ -9,6 +9,7 @@ import { expenseTypesState } from '../recoil/atom'; // Adjust the path according
 import SwitchInput from "../components/common/SwitchInput";
 import CommonAddScreenStyles from "../components/common/commonAddScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 interface AddExpenseTypeScreenProps {
     navigation: any; // Adjust the type based on your navigation prop type
@@ -48,17 +49,7 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({ navigation 
 
     return (
         <View style={commonStyles.container}>
-            {isLoading && (
-                <View style={commonStyles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-                </View>
-            )}
-
-            {error && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{error}</Text>
-                </View>
-            )}
+            <LoadingError error={error} isLoading={isLoading} />
 
             <Input
                 placeholder="Enter expense type name"

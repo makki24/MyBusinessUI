@@ -11,6 +11,7 @@ import commonItemStyles from "../components/common/commonItemStyles";
 import commonScreenStyles from "../components/common/commonScreenStyles";
 import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 const ReportScreen = () => {
     const [error, setError] = useState<string | null>(null);
@@ -65,17 +66,7 @@ const ReportScreen = () => {
     return (
         <View style={commonStyles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                {isLoading && (
-                    <View style={commonStyles.loadingContainer}>
-                        <ActivityIndicator size="large" color="#0000ff" />
-                    </View>
-                )}
-
-                {error && (
-                    <View style={commonStyles.errorContainer}>
-                        <Text style={commonStyles.errorText}>{error}</Text>
-                    </View>
-                )}
+                <LoadingError error={error} isLoading={isLoading} />
 
                 <CustomDropDown
                     items={tags}
