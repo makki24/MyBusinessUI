@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Card, Title } from 'react-native-paper';
+import commonStyles from "../components/common/commonStyles";
+import {CONTAINER_PADDING} from "../constants/mybusiness.constants";
 
 const HomeScreen = ({ navigation }) => {
     const images = [
@@ -120,7 +122,7 @@ const HomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
+        padding: CONTAINER_PADDING,
     },
     cardsContainer: {
         flexDirection: 'row',

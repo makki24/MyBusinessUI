@@ -1,6 +1,6 @@
 // Button.tsx
 import React from 'react';
-import {Button as PaperButton} from "react-native-paper";
+import {Button as PaperButton, useTheme} from "react-native-paper";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 
@@ -13,12 +13,14 @@ interface ButtonProps {
     style?: StyleProp<ViewStyle>
 }
 
-const Button: React.FC<ButtonProps> = ({ title, onPress, icon, disabled, mode = 'contained', style }) => {
+const TertiaryButton: React.FC<ButtonProps> = ({ title, onPress, icon, disabled, mode = 'contained', style }) => {
+    const theme = useTheme(); // thi
+
     return (
-        <PaperButton style={style} icon={icon}  mode={mode} onPress={onPress} disabled={disabled} >
+        <PaperButton textColor={theme.colors.onTertiary} style={{backgroundColor: theme.colors.tertiary, ...style as ViewStyle}} icon={icon}  mode={mode} onPress={onPress} disabled={disabled} >
             {title}
         </PaperButton>
     );
 };
 
-export default Button;
+export default TertiaryButton;

@@ -1,6 +1,5 @@
 import axios from "./NetworkInterceptor";
-import {Work, WorkType} from "../types";
-import {apiUrl} from "../app-env.config";
+import {Filter, Work, WorkType} from "../types";
 
 const WorkService = {
     getWorkTypes: async (): Promise<WorkType[]> => {
@@ -72,6 +71,20 @@ const WorkService = {
             throw error; // You can handle the error further or let the caller handle it
         }
     },
+
+    filterWork: async (filter: Filter): Promise<Work[]> => {
+        try {
+            const response = await axios.post(`/api/works/filter`, filter);
+
+            if (!response.data) {
+                throw new Error(`No data in response.data`);
+            }
+
+            return response.data;
+        } catch (error) {
+            throw error; // You can handle the error further or let the caller handle it
+        }
+    }
 
 
 }

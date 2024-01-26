@@ -17,7 +17,7 @@ const WorkTypeItem: React.FC<WorkTypeItemProps> = ({ workType, onPress, onEdit, 
         <Card style={commonItemStyles.card}>
             <Card.Content style={commonItemStyles.cardContent}>
                 <Title>{workType.name}</Title>
-                <Text>Default Value Per {workType.unit}: {workType.defaultValuePerUnit}</Text>
+                <Text>Default Value Per {workType.unit}: {workType.pricePerUnit}</Text>
             </Card.Content>
             <Card.Actions style={commonItemStyles.cardActions}>
                 {/* Edit action button */}

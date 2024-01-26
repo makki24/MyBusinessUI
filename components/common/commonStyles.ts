@@ -1,9 +1,10 @@
 import {StyleSheet} from "react-native";
+import {CONTAINER_PADDING, UI_ELEMENTS_GAP} from "../../constants/mybusiness.constants";
 
 const commonStyles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        padding: CONTAINER_PADDING,
     },
     loadingContainer: {
         ...StyleSheet.absoluteFillObject,
@@ -20,6 +21,11 @@ const commonStyles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
+    simpleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+
+    },
     modalContainer: {
         backgroundColor: 'white',
         padding: 20,
@@ -30,6 +36,19 @@ const commonStyles = StyleSheet.create({
     modalButtonGap: {
         height: 5,
     },
+
+    twoItemPerRowParagraph: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    twoItemPerRowParagraphItemStyle: {
+        flexBasis: '50%',
+    },
+    elementsGap: {
+        marginTop: UI_ELEMENTS_GAP
+    }
 });
 
 export default commonStyles

@@ -6,10 +6,13 @@ import { useRecoilState } from 'recoil';
 import ExpenseService from '../services/ExpenseService';
 import ExpenseItem from '../components/ExpenseItem';
 import { expensesState } from '../recoil/atom';
-import { Expense } from '../types';
+import {Expense, User} from '../types';
 import commonScreenStyles from "../components/common/commonScreenStyles";
 import commonStyles from "../components/common/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import SearchAndFilter from "../components/common/SearchAndFilter";
+import workService from "../services/WorkService";
+import expenseService from "../services/ExpenseService";
 
 const ExpenseScreen = ({ navigation }) => {
     const [expenses, setExpenses] = useRecoilState(expensesState);
@@ -18,17 +21,34 @@ const ExpenseScreen = ({ navigation }) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [selectedExpense, setSelectedExpense] = useState(null);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [senders, setSenders] = useState<User[]>([]);
+    const [receivers, setReceivers] = useState<User[]>([]);
+
+    const transFormAndSetExpense = (expensesData: Expense[]) => {
+        expensesData = expensesData.map(expense => ({
+            ...expense,
+            date: new Date(expense.date)
+        }))
+        setExpenses(expensesData);
+    }
 
     const fetchExpenses = async () => {
         try {
             setIsRefreshing(true);
 
             let expensesData = await ExpenseService.getExpenses();
-            expensesData = expensesData.map(expense => ({
-                ...expense,
-                date: new Date(expense.date)
-            }))
-            setExpenses(expensesData);
+            let sendersSet: User[] = []
+            let receiverSet: User[] = []
+            expensesData.forEach(expn => {
+                if (expn.sender && !sendersSet.find(user => user.id === expn.sender.id))
+                    sendersSet.push(expn.sender)
+                if (expn.receiver && !receiverSet.find(user => user.id === expn.receiver.id))
+                    receiverSet.push(expn.receiver);
+            })
+            setSenders(sendersSet);
+            setReceivers([...receiverSet]);
+            transFormAndSetExpense(expensesData)
         } catch (error) {
             console.error('Error fetching expenses:', error.response?.data || 'Unknown error');
             setError(error.response?.data || 'Error fetching expenses. Please try again.');
@@ -79,10 +99,28 @@ const ExpenseScreen = ({ navigation }) => {
         fetchExpenses();
     };
 
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+
+    }
+
+    const onApply = async (arg) => {
+        setIsLoading(true)
+        try {
+            const filteredExpenses = await expenseService.filterExpense(arg)
+            transFormAndSetExpense(filteredExpenses)
+        }
+        catch (e) {
+            setError(e.message  || 'Error setting filters.');
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     return (
         <View style={commonStyles.container}>
             <LoadingError error={error} isLoading={isLoading} />
-
+            <SearchAndFilter  searchQuery={searchQuery} handleSearch={handleSearch} sender={senders} receiver={receivers} onApply={onApply} />
             {!error && (
                 <FlatList
                     data={expenses}
