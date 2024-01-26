@@ -59,7 +59,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
         // Check if the screen is in edit mode and workType data is provided
         if (route.params?.workType) {
             setWorkType(route.params.workType);
-            setPricePerUnit(`${route.params.workType.defaultValuePerUnit}`)
+            setPricePerUnit(`${route.params.workType.pricePerUnit}`)
         }
     }, [route.params?.workType]);
 
@@ -79,7 +79,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
             setSelectedTags(work.tags.map(tag => tag.id))
             setSelectedUser(work.user.id)
             setTime({hours: paramDate.getHours(), minutes: paramDate.getMinutes()});
-            if(work.pricePerUnit && (work.pricePerUnit !== work.type.defaultValuePerUnit))
+            if(work.pricePerUnit && (work.pricePerUnit !== work.type.pricePerUnit))
                 setShowPricePerUnit(true);
             if (!work.pricePerUnit) {
                 setShowAmount(true);

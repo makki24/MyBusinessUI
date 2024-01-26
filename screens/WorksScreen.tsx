@@ -6,10 +6,12 @@ import { useRecoilState } from 'recoil';
 import WorkService from '../services/WorkService';
 import WorkItem from '../components/WorkItem';
 import { worksState } from '../recoil/atom';
-import { Work } from '../types';
+import {User, Work} from '../types';
 import commonScreenStyles from "../components/common/commonScreenStyles";
 import commonStyles from "../components/common/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import SearchAndFilter from "../components/common/SearchAndFilter";
+import workService from "../services/WorkService";
 
 const WorksScreen = ({ navigation }) => {
     const [works, setWorks] = useRecoilState(worksState);
@@ -18,17 +20,28 @@ const WorksScreen = ({ navigation }) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [selectedWork, setSelectedWork] = useState(null);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [workUsers, setWorkUsers] = useState<User[]>();
+
+    const transformAndSetWork = (worksData) => {
+        worksData = worksData.map(work => ({
+            ...work,
+            date: new Date(work.date)
+        }))
+        setWorks(worksData);
+    }
 
     const fetchWorks = async () => {
         try {
             setIsRefreshing(true);
 
             let worksData = await WorkService.getWorks();
-            worksData = worksData.map(work => ({
-                ...work,
-                date: new Date(work.date)
-            }))
-            setWorks(worksData);
+            let userSet = new Set<User>();
+            worksData.forEach(expn => {
+                userSet.add(expn.user)
+            })
+            setWorkUsers([...userSet]);
+            transformAndSetWork(worksData)
         } catch (error) {
             console.error('Error fetching works:', error.message || 'Unknown error');
             setError(error.message || 'Error fetching works. Please try again.');
@@ -83,9 +96,28 @@ const WorksScreen = ({ navigation }) => {
         fetchWorks();
     };
 
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+
+    }
+
+    const onApply = async (arg) => {
+        setIsLoading(true)
+        try {
+            const filteredWorks = await workService.filterWork(arg)
+            transformAndSetWork(filteredWorks)
+        }
+        catch (e) {
+            setError(e.message  || 'Error setting filters.');
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     return (
         <View style={commonStyles.container}>
             <LoadingError error={error} isLoading={isLoading} />
+            <SearchAndFilter  searchQuery={searchQuery} handleSearch={handleSearch} user={workUsers} onApply={onApply} />
 
             {!error && (
                 <FlatList
