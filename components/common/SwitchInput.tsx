@@ -1,7 +1,7 @@
 // SwitchInput.tsx
 import React from 'react';
-import { View, Text } from 'react-native';
-import { useTheme, Switch } from 'react-native-paper';
+import { View } from 'react-native';
+import { useTheme, Switch, Text } from 'react-native-paper';
 
 interface SwitchInputProps {
     label: string;

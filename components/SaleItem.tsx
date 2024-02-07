@@ -6,6 +6,7 @@ import { Sale } from '../types';
 import UserDetails from './common/UserDetails';
 import commonItemStyles from "./common/commonItemStyles";
 import commonStyles from "./common/commonStyles";
+import Labels from "./common/Labels";
 
 interface SaleItemProps {
     sale: Sale;
@@ -36,16 +37,7 @@ const SaleItem: React.FC<SaleItemProps> = ({ sale, onPress, onDelete }) => {
                         {sale.description && <Paragraph>{`Description: ${sale.description}`}</Paragraph>}
                     </View>
                     {sale.tags.length > 0 && (
-                        <View style={commonItemStyles.tagsContainer}>
-                            <Text style={commonItemStyles.tagsLabel}>Tags: </Text>
-                            <View style={commonItemStyles.tagChipsContainer}>
-                                {sale.tags.map((tag) => (
-                                    <Chip key={tag.id} style={commonItemStyles.tagChip}>
-                                        {tag.name}
-                                    </Chip>
-                                ))}
-                            </View>
-                        </View>
+                        <Labels label={"Tags"} items={sale.tags} />
                     )}
                 </Card.Content>
                 <Card.Actions style={sale.tags.length ? commonItemStyles.cardActions: {}}>

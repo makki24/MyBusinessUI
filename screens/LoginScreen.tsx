@@ -1,11 +1,14 @@
 // LoginScreen.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import * as Google from 'expo-auth-session/providers/google';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiUrl, androidClientId, expoClientId } from '../app-env.config';
 import { useRecoilState } from 'recoil';
 import { userState } from '../recoil/atom';
+import {Text} from 'react-native-paper'
+import Button from "../components/common/Button";
+import LoadingError from "../components/common/LoadingError";
 
 const LoginScreen = ({ navigation }) => {
     const [userInfo, setUserInfo] = useRecoilState(userState);
@@ -69,15 +72,15 @@ const LoginScreen = ({ navigation }) => {
         <View style={styles.container}>
             {!userInfo ? (
                 <View>
+                    <LoadingError error={error} isLoading={loading} />
                     <Button
                         title="Sign in with Google"
+                        icon={'google'}
                         disabled={!request || loading} // Disable the button when loading
                         onPress={() => {
                             promptAsync();
                         }}
                     />
-                    {loading && <ActivityIndicator />}
-                    {error && <Text>{error}</Text>}
                 </View>
             ) : (
                 <View style={styles.loggedInContainer}>

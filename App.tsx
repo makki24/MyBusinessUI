@@ -1,10 +1,19 @@
 // App.tsx
 import React, {useEffect} from 'react';
-import { View, Image, TouchableOpacity, Text } from 'react-native';
-import {NavigationContainer, RouteProp, useRoute} from '@react-navigation/native';
+import {View, Image, TouchableOpacity, useColorScheme} from 'react-native';
+import {NavigationContainer, RouteProp, useRoute, DarkTheme as NavigationDarkTheme,
+    DefaultTheme as NavigationDefaultTheme,} from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
-import {Caption, IconButton, Provider as PaperProvider,Avatar} from 'react-native-paper';
+import {
+    Caption,
+    IconButton,
+    Provider as PaperProvider,
+    Avatar,
+    adaptNavigationTheme,
+    MD3LightTheme, MD3DarkTheme,
+    Text
+} from 'react-native-paper';
 import {RecoilRoot, useRecoilState, useRecoilValue} from 'recoil';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -49,6 +58,29 @@ const Stack = createStackNavigator();
 interface RouteParams {
     title?: string;
 }
+
+
+const { LightTheme, DarkTheme } = adaptNavigationTheme({
+    reactNavigationLight: NavigationDefaultTheme,
+    reactNavigationDark: NavigationDarkTheme,
+});
+
+const CombinedDefaultTheme = {
+    ...MD3LightTheme,
+    ...LightTheme,
+    colors: {
+        ...MD3LightTheme.colors,
+        ...LightTheme.colors,
+    },
+};
+const CombinedDarkTheme = {
+    ...MD3DarkTheme,
+    ...DarkTheme,
+    colors: {
+        ...MD3DarkTheme.colors,
+        ...DarkTheme.colors,
+    },
+};
 
 const RoleStack = () => {
     return (
@@ -188,9 +220,15 @@ const AppContent = () => {
         fetchRoles();
     }, [userInfo]);
 
+    const colorScheme = useColorScheme();
+
+    const paperTheme =
+        colorScheme === 'dark'
+            ? CombinedDarkTheme
+            : CombinedDefaultTheme
 
     return (
-        <NavigationContainer>
+        <NavigationContainer theme={paperTheme}>
             {userInfo ? (
                 <Drawer.Navigator
                     screenOptions={{
@@ -212,7 +250,7 @@ const AppContent = () => {
                 </Drawer.Navigator>
             ) : (
                 <Drawer.Navigator initialRouteName="Login" screenOptions={{ drawerPosition: 'right' }} drawerContent={props => <CustomDrawerContent {...props} userInfo={userInfo} />}>
-                    <Drawer.Screen name="Login" component={LoginScreen} />
+                    <Drawer.Screen options={{headerShown: false }}  name="Login" component={LoginScreen} />
                 </Drawer.Navigator>
             )}
         </NavigationContainer>
