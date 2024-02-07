@@ -12,13 +12,9 @@ const commonStyles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     errorContainer: {
-        backgroundColor: 'red',
         padding: 10,
         marginBottom: 10,
         borderRadius: 5,
-    },
-    errorText: {
-        color: 'white',
     },
     row: {
         flexDirection: 'row',

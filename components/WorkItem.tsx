@@ -7,6 +7,7 @@ import UserDetails from "./common/UserDetails";
 import commonItemStyles from "./common/commonItemStyles";
 import commonAddScreenStyles from "./common/commonAddScreenStyles";
 import commonStyles from "./common/commonStyles";
+import Labels from "./common/Labels";
 
 interface WorkItemProps {
     work: Work;
@@ -37,16 +38,7 @@ const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
                         {work.description && <Paragraph>Description: <Text style={{fontWeight: 'bold'}}>{work.description}</Text> </Paragraph>}
                     </View>
                     {work.tags.length > 0 && (
-                        <View style={commonItemStyles.tagsContainer}>
-                            <Text style={commonItemStyles.tagsLabel}>Tags: </Text>
-                            <View style={commonItemStyles.tagChipsContainer}>
-                                {work.tags.map((tag) => (
-                                    <Chip key={tag.id} style={commonItemStyles.tagChip}>
-                                        {tag.name}
-                                    </Chip>
-                                ))}
-                            </View>
-                        </View>
+                        <Labels label={"Tags"} items={work.tags} />
                     )}
                 </Card.Content>
                 <Card.Actions style={work.tags.length ? commonItemStyles.cardActions: {}}>

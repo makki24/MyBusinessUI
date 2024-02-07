@@ -1,8 +1,8 @@
 // DateTimePicker.tsx
 import React, { useCallback } from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates';
-import { Button } from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
 
 interface DateTimePickerProps {
     label: string;

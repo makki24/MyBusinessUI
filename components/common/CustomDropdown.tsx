@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
-import {Chip} from "react-native-paper";
-import {Text, View} from "react-native"; // Import ValueType
+import {Chip, MD3DarkTheme, MD3LightTheme} from "react-native-paper";
+import {useColorScheme, View} from "react-native";
 
 interface CustomDropDownProps<T> {
     schema?: {
@@ -48,6 +48,9 @@ const CustomDropDown = <T,>({
         setValue((prevValue: any) => prevValue.filter((v: string) => v !== itemValue));
     };
 
+    const colorScheme = useColorScheme();
+    const theme = colorScheme === 'dark' ? MD3DarkTheme : MD3LightTheme;
+
     return (
         <>
             <DropDownPicker
@@ -59,7 +62,7 @@ const CustomDropDown = <T,>({
                 searchable={searchable}
                 open={open}
                 setOpen={setOpen}
-                containerStyle={{ height: 40, marginBottom: 16, ...containerStyle }}
+                containerStyle={{ height: 40, marginBottom: 16, ...containerStyle}}
                 value={value}
                 setValue={setValue}
                 itemSeparator={itemSeparator}
@@ -67,6 +70,14 @@ const CustomDropDown = <T,>({
                 placeholder={placeholder}
                 multiple={multiple} // Pass the multiple prop to DropDownPicker
                 renderListItem={renderListItem}
+                style={{borderRadius: 0, borderWidth: 0, backgroundColor: theme.colors.surfaceVariant}}
+                textStyle={{color: theme.colors.onSurfaceVariant}}
+                searchTextInputStyle={{backgroundColor: theme.colors.surfaceVariant, color: theme.colors.onSurfaceVariant, }}
+                dropDownContainerStyle={{backgroundColor: theme.colors.background, borderColor: theme.colors.onBackground}}
+                listItemLabelStyle={{color: theme.colors.onBackground}}
+                listMessageTextStyle={{color: theme.colors.onBackground}}
+                itemSeparatorStyle={{backgroundColor: theme.colors.onBackground}}
+                searchContainerStyle={{borderBottomColor: theme.colors.onBackground}}
             />
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                 {Array.isArray(value) && value.map((v: string) => {

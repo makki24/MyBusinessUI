@@ -7,6 +7,7 @@ import UserService from "../services/UserService";
 import DropDownPicker from 'react-native-dropdown-picker';
 import CustomDropDown from "../components/common/CustomDropdown";
 import commonStyles from "../components/common/commonStyles";
+import LoadingError from "../components/common/LoadingError";
 
 const EditRoleScreen = ({ route }) => {
     const { role } = route.params;
@@ -108,12 +109,7 @@ const EditRoleScreen = ({ route }) => {
 
     return (
         <View style={commonStyles.container}>
-            {loadingAllUsers && <ActivityIndicator animating={true} />}
-            {!loadingAllUsers && errorAllUsers && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{errorAllUsers}</Text>
-                </View>
-            )}
+            <LoadingError error={errorAllUsers} isLoading={loadingAllUsers} />
 
             <Text style={styles.roleHeading}>{role.roleName}</Text>
 
@@ -143,12 +139,8 @@ const EditRoleScreen = ({ route }) => {
                 Add
             </Button>
 
-            {loadingAssignedUsers && <ActivityIndicator animating={true} />}
-            {!loadingAssignedUsers && errorAssignedUsers && (
-                <View style={commonStyles.errorContainer}>
-                    <Text style={commonStyles.errorText}>{errorAssignedUsers}</Text>
-                </View>
-            )}
+
+            <LoadingError error={errorAssignedUsers} isLoading={loadingAssignedUsers} />
 
             <FlatList
                 data={assignedUsers}

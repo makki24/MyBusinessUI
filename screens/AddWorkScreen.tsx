@@ -15,6 +15,7 @@ import DateTimePicker from "../components/common/DateTimePicker";
 import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
 import commonStyles from "../components/common/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import UserDropDownItem from "../components/common/UserDropDownItem";
 
 interface AddWorkScreenProps {
     navigation: any;
@@ -237,21 +238,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
                     placeholder="Select User"
                     onChangeValue={handleUserChange}
                     renderListItem={({item}) => (
-                        <TouchableOpacity onPress={() => {
-                            setSelectedUser(item.id)
-                            setUserOpen(false)
-                        }}
-                          style={commonAddScreenStyles.dropdownUserContainer}
-                        >
-                            <UserDetails user={item}/>
-                            {(selectedUser === item.id) &&
-                                <Icon
-                                    source="check"
-                                    color={'primary'}
-                                    size={20}
-                                />
-                            }
-                        </TouchableOpacity>
+                        <UserDropDownItem item={item} setSelectedUser={setSelectedUser} selectedUser={selectedUser} setUserOpen={setUserOpen} />
                     )}
                 />
             )}

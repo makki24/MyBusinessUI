@@ -1,7 +1,7 @@
 // src/components/UserDetails.tsx
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Avatar } from 'react-native-paper';
+import { View, StyleSheet } from 'react-native';
+import { Avatar, Text } from 'react-native-paper';
 import {DEFAULT_AVATAR_URL} from "../../constants/mybusiness.constants";
 import {User} from "../../types";
 
@@ -33,7 +33,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user  }) => {
                 source={{ uri: (imageExists && user.picture) ? user.picture : DEFAULT_AVATAR_URL }}
                 style={styles.avatar}
             />
-            <Text style={styles.username}>{user.name}</Text>
+            <Text variant="titleMedium">{user.name}</Text>
         </View>
     );
 };
