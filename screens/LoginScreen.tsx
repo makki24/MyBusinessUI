@@ -21,8 +21,7 @@ const LoginScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (response?.type === 'success') {
-            AsyncStorage.setItem('@token', response.authentication.accessToken);
-            getUserInfo(response.authentication.accessToken);
+            loginOrSignUp(response.authentication.accessToken);
         }
     }, [response]);
 
@@ -30,17 +29,17 @@ const LoginScreen = ({ navigation }) => {
         const checkUser = async () => {
             const token = await AsyncStorage.getItem('@token');
             if (token) {
-                getUserInfo(token);
+                login(token);
             }
         };
         checkUser();
     }, []);
 
-    const getUserInfo = async (token) => {
+    const loginFunc = async (token, url: string) => {
         if (!token) return;
         setLoading(true); // Start loading
         try {
-            const response = await fetch(`${apiUrl}/login`, {
+            const response = await fetch(`${apiUrl}/${url}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -52,14 +51,43 @@ const LoginScreen = ({ navigation }) => {
                 throw new Error('Token is invalid or expired');
             }
             const user = await response.json();
+            if (url === 'loginOrSignUp')
+                saveToken(response)
             setUserInfo(user);
             navigation.navigate('Home');
         } catch (error) {
             console.error('Failed to fetch user data:', error);
-            setError(error.message);
             setUserInfo(null);
+            throw new Error(error.message);
         } finally {
             setLoading(false); // End loading
+        }
+    }
+
+    const saveToken = (response) => {
+        const authHeader = response.headers.get('Authorization');
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const token = authHeader.slice(7); // Remove 'Bearer ' prefix
+            console.log('Bearer token:', token);
+            AsyncStorage.setItem('@token', token);
+        } else {
+            console.log('No Bearer token found in headers');
+        }
+    }
+
+    const loginOrSignUp = async (token) => {
+        try {
+            await loginFunc(token, 'loginOrSignUp')
+        } catch (error) {
+            setError(error.message);
+        }
+    };
+
+    const login = async (token) => {
+        try {
+            await loginFunc(token, 'login')
+        } catch (error) {
+            setError(error.message);
         }
     };
 

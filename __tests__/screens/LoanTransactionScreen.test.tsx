@@ -1,5 +1,5 @@
 import React from 'react';
-import {render, fireEvent, screen, act, waitFor} from '@testing-library/react-native';
+import {render, fireEvent, screen, act, waitFor, cleanup} from '@testing-library/react-native';
 import LoanTransactionScreen from "../../screens/LoanTransactionsScreen";
 import {LoanToHoldingTransaction} from "../../types";
 import {RecoilRoot} from "recoil";
@@ -24,6 +24,9 @@ const Stack = createStackNavigator();
 describe('LoanTransactionScreen', () => {
     beforeEach(() => {
     });
+
+    afterEach(cleanup);
+
 
     it('renders correctly', async () => {
         const mockTransactions = [{ id: 1, amount: 100 }] as LoanToHoldingTransaction[];
