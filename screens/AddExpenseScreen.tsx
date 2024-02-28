@@ -18,8 +18,8 @@ import UserService from '../services/UserService';
 import {ExpenseType, Tag as Tags, User} from "../types";
 import CustomDropDown from "../components/common/CustomDropdown";
 import TagsService from "../services/TagsService";
-import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 interface AddExpenseScreenProps {

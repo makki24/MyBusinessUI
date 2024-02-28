@@ -7,8 +7,8 @@ import Button from '../components/common/Button';
 import { workTypesState } from '../recoil/atom'; // Adjust the path accordingly
 import { WorkType } from '../types';
 import WorkService from "../services/WorkService";
-import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 interface AddWorkTypeScreenProps {

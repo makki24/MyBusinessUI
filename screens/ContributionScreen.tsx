@@ -7,8 +7,8 @@ import ContributionService from '../services/ContributionService';
 import ContributionItem from '../components/ContributionItem';
 import { contributionsState, userState } from '../recoil/atom';
 import { Contribution } from '../types';
-import commonScreenStyles from "../components/common/commonScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonScreenStyles from "../src/styles/commonScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 const ContributionScreen = ({ navigation }) => {

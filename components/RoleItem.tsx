@@ -4,7 +4,7 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Card, Title, IconButton } from 'react-native-paper';
 import { Role } from '../types';
-import commonItemStyles from "./common/commonItemStyles";
+import commonItemStyles from "../src/styles/commonItemStyles";
 
 interface RoleItemProps {
     role: Role;

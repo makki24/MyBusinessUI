@@ -4,7 +4,7 @@ import FilterScreen from "./FilterScreen";
 import React, {useCallback, useMemo, useRef, useState} from "react";
 import {Filter, User} from "../../types";
 import {StyleSheet, View} from "react-native";
-import commonStyles from "./commonStyles";
+import commonStyles from "../../src/styles/commonStyles";
 import {IconButton, Searchbar, useTheme} from "react-native-paper";
 
 interface SearchAndFilterProps {

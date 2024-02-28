@@ -6,8 +6,8 @@ import { expenseTypesState } from '../recoil/atom';
 import ExpenseTypesService from '../services/ExpenseTypesService';
 import ExpenseTypeItem from '../components/ExpenseTypeItem';
 import { ExpenseType } from '../types';
-import commonScreenStyles from "../components/common/commonScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonScreenStyles from "../src/styles/commonScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 const ExpenseTypesScreen = ({ navigation }) => {

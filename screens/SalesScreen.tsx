@@ -7,8 +7,8 @@ import SaleService from '../services/SaleService';
 import SaleItem from '../components/SaleItem';
 import {salesState, userState} from '../recoil/atom';
 import { Sale } from '../types';
-import commonScreenStyles from "../components/common/commonScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonScreenStyles from "../src/styles/commonScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 const SaleScreen = ({ navigation }) => {

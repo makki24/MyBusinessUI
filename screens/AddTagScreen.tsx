@@ -6,8 +6,8 @@ import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import TagsService from "../services/TagsService"; // Adjust the path accordingly
 import { tagsState } from '../recoil/atom'; // Adjust the path accordingly
-import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError"; // Adjust the path accordingly
 
 interface AddTagScreenProps {

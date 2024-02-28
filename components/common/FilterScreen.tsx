@@ -1,4 +1,4 @@
-import commonStyles from "./commonStyles";
+import commonStyles from "../../src/styles/commonStyles";
 import {RadioButton, Text} from "react-native-paper";
 import {View} from "react-native";
 import React, {useState} from "react";
@@ -9,9 +9,9 @@ import {Filter, Tag, User} from "../../types";
 
 import Labels from "./Labels";
 import Button from "./Button";
-import {UI_ELEMENTS_GAP} from "../../constants/mybusiness.constants";
 import SecondaryButton from "./SecondaryButton";
 import TertiaryButton from "./TertiaryButton";
+import {UI_ELEMENTS_GAP} from "../../src/styles/constants";
 
 interface FilterScreenProps {
     user: User[];

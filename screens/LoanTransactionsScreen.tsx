@@ -7,8 +7,8 @@ import LoanTransactionItem from '../components/LoanTransactionItem';
 import { loanToHoldingTransactionState, userState } from '../recoil/atom';
 import { LoanToHoldingTransaction } from '../types';
 import contributionService from "../services/ContributionService";
-import commonScreenStyles from "../components/common/commonScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonScreenStyles from "../src/styles/commonScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 const LoanTransactionScreen = ({ navigation }) => {

@@ -10,8 +10,8 @@ import RoleItem from '../components/RoleItem';
 import { Role } from '../types';
 import {StackActions, useNavigation} from "@react-navigation/native";
 import {DrawerNavigationProp} from "@react-navigation/drawer";
-import commonScreenStyles from "../components/common/commonScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonScreenStyles from "../src/styles/commonScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 const RolesScreen = ({ navigation }) => {

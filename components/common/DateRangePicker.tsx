@@ -2,7 +2,7 @@ import React from "react";
 import {IconButton, TextInput, useTheme} from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
 import { View } from "react-native";
-import commonStyles from "./commonStyles";
+import commonStyles from "../../src/styles/commonStyles";
 
 interface DateRangePickerProps {
     range: any;

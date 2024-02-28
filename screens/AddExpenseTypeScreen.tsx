@@ -7,8 +7,8 @@ import Button from '../components/common/Button';
 import ExpenseTypesService from '../services/ExpenseTypesService'; // Adjust the path accordingly
 import { expenseTypesState } from '../recoil/atom'; // Adjust the path accordingly
 import SwitchInput from "../components/common/SwitchInput";
-import CommonAddScreenStyles from "../components/common/commonAddScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import CommonAddScreenStyles from "../src/styles/commonAddScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 interface AddExpenseTypeScreenProps {

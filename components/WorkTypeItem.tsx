@@ -3,7 +3,7 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card,Text, Title, IconButton } from 'react-native-paper';
 import { WorkType } from '../types';
-import commonItemStyles from "./common/commonItemStyles";
+import commonItemStyles from "../src/styles/commonItemStyles";
 
 interface WorkTypeItemProps {
     workType: WorkType;

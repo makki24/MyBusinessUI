@@ -3,6 +3,8 @@ import React, { useCallback } from 'react';
 import {View, StyleSheet} from 'react-native';
 import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates';
 import { Button, Text } from 'react-native-paper';
+import {UI_ELEMENTS_GAP} from "../../src/styles/constants";
+import commonAddScreenStyles from "../../src/styles/commonAddScreenStyles";
 
 interface DateTimePickerProps {
     label: string;
@@ -61,7 +63,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
             {/* Time picker */}
             <View style={[styles.row, styles.marginVerticalEight]}>
                 <View style={styles.section}>
-                    <Text maxFontSizeMultiplier={maxFontSizeMultiplier} style={styles.bold}>
+                    <Text maxFontSizeMultiplier={maxFontSizeMultiplier} style={commonAddScreenStyles.bold}>
                         Time
                     </Text>
                     <Text maxFontSizeMultiplier={maxFontSizeMultiplier}>
@@ -89,9 +91,6 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
 };
 
 const styles = StyleSheet.create({
-    bold: {
-        fontWeight: 'bold',
-    },
     row: {
         flexDirection: 'row',
     },
@@ -101,20 +100,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     marginVerticalEight: {
-        marginVertical: 8,
+        marginVertical: UI_ELEMENTS_GAP,
     },
     inputField: {
-        marginBottom: 8,
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        alignSelf: 'center', // Center the modal on the screen
-        width: '80%', // Set the width to a percentage of the screen width
-    },
-    modalButtonGap: {
-        height: 5,
+        marginBottom: UI_ELEMENTS_GAP,
     }
 });
 

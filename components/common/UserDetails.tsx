@@ -4,6 +4,7 @@ import { View, StyleSheet } from 'react-native';
 import { Avatar, Text } from 'react-native-paper';
 import {DEFAULT_AVATAR_URL} from "../../constants/mybusiness.constants";
 import {User} from "../../types";
+import {HEADING_SIZE, UI_ELEMENTS_GAP} from "../../src/styles/constants";
 
 interface UserDetailsProps {
     user: User;
@@ -29,7 +30,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user  }) => {
     return (
         <View style={styles.userContainer}>
             <Avatar.Image
-                size={40}
+                size={HEADING_SIZE * 2}
                 source={{ uri: (imageExists && user.picture) ? user.picture : DEFAULT_AVATAR_URL }}
                 style={styles.avatar}
             />
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     avatar: {
-        marginRight: 8,
+        marginRight: UI_ELEMENTS_GAP,
     },
     username: {
         fontWeight: 'bold',

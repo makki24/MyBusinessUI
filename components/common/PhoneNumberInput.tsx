@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback, memo } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { Button, TextInput, HelperText, Modal, Portal, List, Searchbar } from 'react-native-paper';
 import * as Contacts from 'expo-contacts';
+import {CONTAINER_PADDING} from "../../src/styles/constants";
 
 interface ContactItemProps {
     contact: any;
@@ -142,8 +143,8 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         backgroundColor: 'white',
-        padding: 20,
-        margin: 20,
+        padding: CONTAINER_PADDING,
+        margin: CONTAINER_PADDING,
         maxHeight: '80%', // Limit the height to 80% of the screen height
     },
 });

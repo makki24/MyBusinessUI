@@ -4,9 +4,9 @@ import {FAB, Text, Button, Modal, Portal, Card, Title, IconButton} from 'react-n
 import { useRecoilState } from 'recoil';
 import { tagsState } from '../recoil/atom';
 import TagsService from "../services/TagsService";
-import commonScreenStyles from "../components/common/commonScreenStyles";
-import commonItemStyles from "../components/common/commonItemStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonScreenStyles from "../src/styles/commonScreenStyles";
+import commonItemStyles from "../src/styles/commonItemStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError"; // Assuming you have a tags atom
 
 const TagsScreen = ({ navigation }) => {

@@ -7,8 +7,8 @@ import CustomDropDown from "../components/common/CustomDropdown";
 import UserDropDownItem from "../components/common/UserDropDownItem";
 import {LoanToHoldingTransaction, User} from "../types";
 import contributionService from "../services/ContributionService";
-import commonStyles from "../components/common/commonStyles";
-import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
+import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import LoadingError from "../components/common/LoadingError";
 
 const AddLoanClearTransaction = ({ navigation, route }) => {

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, FlatList } from 'react-native';
-import { Divider, TextInput, Button, IconButton, Snackbar, ActivityIndicator, List } from 'react-native-paper';
+import { View, StyleSheet, FlatList } from 'react-native';
+import { Divider, TextInput, Text,  Button, IconButton, Snackbar, ActivityIndicator, List } from 'react-native-paper';
 import RolesService from "../services/RolesService";
 import { User } from "../types";
 import UserService from "../services/UserService";
 import DropDownPicker from 'react-native-dropdown-picker';
 import CustomDropDown from "../components/common/CustomDropdown";
-import commonStyles from "../components/common/commonStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import {DROPDOWN_HEIGHT, HEADING_SIZE, UI_ELEMENTS_GAP} from "../src/styles/constants";
 
 const EditRoleScreen = ({ route }) => {
     const { role } = route.params;
@@ -111,7 +112,7 @@ const EditRoleScreen = ({ route }) => {
         <View style={commonStyles.container}>
             <LoadingError error={errorAllUsers} isLoading={loadingAllUsers} />
 
-            <Text style={styles.roleHeading}>{role.roleName}</Text>
+            <Text style={styles.roleHeading}>{role.name}</Text>
 
             <CustomDropDown
                 items={allUsers}
@@ -122,7 +123,7 @@ const EditRoleScreen = ({ route }) => {
                 searchable={true}
                 open={open}
                 setOpen={setOpen}
-                containerStyle={{ height: 40, marginBottom: 16 }}
+                containerStyle={{ height: DROPDOWN_HEIGHT, marginBottom: UI_ELEMENTS_GAP * 2 }}
                 value={value}
                 setValue={setValue}
                 itemSeparator={true}
@@ -134,7 +135,7 @@ const EditRoleScreen = ({ route }) => {
                 )}
                 mode="contained"
                 onPress={handleAddUser}
-                style={{ marginBottom: 16 }}
+                style={{ marginBottom: UI_ELEMENTS_GAP }}
             >
                 Add
             </Button>
@@ -170,9 +171,9 @@ const EditRoleScreen = ({ route }) => {
 
 const styles = StyleSheet.create({
     roleHeading: {
-        fontSize: 24,
+        fontSize: HEADING_SIZE,
         fontWeight: 'bold',
-        marginBottom: 16,
+        marginBottom: UI_ELEMENTS_GAP,
     },
 });
 
