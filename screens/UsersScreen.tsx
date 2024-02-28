@@ -6,8 +6,8 @@ import UserService from '../services/UserService';
 import UserItem from '../components/UserItem';
 import { usersState } from '../recoil/atom';
 import { User } from '../types';
-import commonScreenStyles from "../components/common/commonScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonScreenStyles from "../src/styles/commonScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 const UsersScreen = ({ navigation }) => {

@@ -1,18 +1,19 @@
 import { StyleSheet } from 'react-native';
+import {CONTAINER_PADDING, UI_ELEMENTS_GAP} from "./constants";
 
 const commonItemStyles = StyleSheet.create({
     card: {
-        marginBottom: 16,
+        marginBottom: CONTAINER_PADDING,
     },
     cardContent: {
-        paddingHorizontal: 16,
-        paddingBottom: 16,
+        paddingHorizontal: CONTAINER_PADDING,
+        paddingBottom: UI_ELEMENTS_GAP,
     },
     titleContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 8,
+        marginBottom: UI_ELEMENTS_GAP,
     },
     cardActions: {
         position: 'absolute',
@@ -22,18 +23,18 @@ const commonItemStyles = StyleSheet.create({
     tagsContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 8,
+        marginTop: UI_ELEMENTS_GAP,
     },
     tagsLabel: {
         fontWeight: 'bold',
-        marginRight: 8,
+        marginRight: UI_ELEMENTS_GAP,
     },
     tagChipsContainer: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     tagChip: {
-        marginHorizontal: 4,
+        marginHorizontal: UI_ELEMENTS_GAP/2,
     },
 });
 

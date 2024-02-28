@@ -3,7 +3,7 @@ import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import {Card, Title, Paragraph, Chip, Icon, MD3Colors} from 'react-native-paper';
 import {UserReport} from "../types";
-import commonItemStyles from "./common/commonItemStyles";
+import commonItemStyles from "../src/styles/commonItemStyles";
 
 interface ReportItemProps {
     reportData: UserReport;

@@ -51,6 +51,15 @@ import LoanTransactionScreen from "./screens/LoanTransactionsScreen";
 import {BottomSheetModalProvider} from "@gorhom/bottom-sheet";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {User} from "./types";
+import AdminScreen from "./screens/AdminScreen";
+import commonStyles from "./src/styles/commonStyles";
+import {
+    BORDER_RADIUS,
+    CONTAINER_PADDING,
+    DRAWER_CONTENT_MARGIN,
+    HEADING_SIZE,
+    MAIN_PROFILE_PIC, UI_ELEMENTS_GAP
+} from "./src/styles/constants";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -114,6 +123,7 @@ const HomeStack = () => {
     return (
         <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
             <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="AdminScreen" component={AdminScreen} />
         </Stack.Navigator>
     );
 };
@@ -303,15 +313,15 @@ const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
 
     return (
         <DrawerContentScrollView {...props}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: DRAWER_CONTENT_MARGIN }}>
                 <TouchableOpacity onPress={toggleDrawer}>
-                    <Avatar.Image source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }} size={60} />
+                    <Avatar.Image source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }} size={MAIN_PROFILE_PIC} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={navigateToEditAccount}>
-                    <IconButton icon="account-edit" size={30} />
+                    <IconButton icon="account-edit" size={MAIN_PROFILE_PIC / 2} />
                 </TouchableOpacity>
 
-                <View style={{ marginLeft: 'auto', marginRight: 10 }}>
+                <View style={{ marginLeft: 'auto', marginRight: DRAWER_CONTENT_MARGIN }}>
                     <TouchableOpacity onPress={navigateToContributionScreen}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <IconButton icon="wallet" style={{ margin: 0, padding: 0 }}/>
@@ -328,7 +338,7 @@ const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
             </View>
             <DrawerItemList state={state} descriptors={descriptors} navigation={navigation} {...props} />
             <TouchableOpacity onPress={handleLogout}>
-                <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: '#ccc' }}>
+                <View style={{ padding: CONTAINER_PADDING, borderTopWidth: 1, borderTopColor: '#ccc' }}>
                     <Text>Logout</Text>
                 </View>
             </TouchableOpacity>
@@ -346,15 +356,15 @@ const CustomHeader = () => {
     };
 
     return (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ ...commonStyles.row, alignItems: 'center', padding: UI_ELEMENTS_GAP }}>
+            <View style={commonStyles.simpleRow}>
                 {navigation.canGoBack() ? (
-                    <IconButton icon="arrow-left" size={20} onPress={() => goBack()} />
+                    <IconButton icon="arrow-left" size={HEADING_SIZE} onPress={() => goBack()} />
                 ) : null}
-                <Text style={{ fontSize: 20 }}>{title ?? route.name}</Text>
+                <Text style={{ fontSize: HEADING_SIZE }}>{title ?? route.name}</Text>
             </View>
             <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                <Image source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }}  style={{ width: 40, height: 40, borderRadius: 20 }} />
+                <Image source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }}  style={{ width: HEADING_SIZE * 2, height: HEADING_SIZE * 2, borderRadius: HEADING_SIZE }} />
             </TouchableOpacity>
         </View>
     );

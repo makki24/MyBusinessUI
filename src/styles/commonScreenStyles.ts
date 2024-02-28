@@ -2,10 +2,12 @@
 
 import { StyleSheet } from 'react-native';
 
+import {CONTAINER_PADDING} from "./constants";
+
 const commonScreenStyles = StyleSheet.create({
     fab: {
         position: 'absolute',
-        margin: 16,
+        margin: CONTAINER_PADDING,
         right: 0,
         bottom: 0,
     },

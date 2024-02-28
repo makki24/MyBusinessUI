@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, Title, IconButton } from 'react-native-paper';
 import { ExpenseType } from '../types';
-import commonItemStyles from "./common/commonItemStyles";
+import commonItemStyles from "../src/styles/commonItemStyles";
 
 interface ExpenseTypeItemProps {
     expenseType: ExpenseType;

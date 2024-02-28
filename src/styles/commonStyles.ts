@@ -1,5 +1,5 @@
 import {StyleSheet} from "react-native";
-import {CONTAINER_PADDING, UI_ELEMENTS_GAP} from "../../constants/mybusiness.constants";
+import {BORDER_RADIUS, CONTAINER_PADDING, UI_ELEMENTS_GAP} from "./constants";
 
 const commonStyles = StyleSheet.create({
     container: {
@@ -13,9 +13,9 @@ const commonStyles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     errorContainer: {
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
+        padding: UI_ELEMENTS_GAP,
+        marginBottom: UI_ELEMENTS_GAP,
+        borderRadius: BORDER_RADIUS / 2,
     },
     row: {
         flexDirection: 'row',
@@ -28,13 +28,13 @@ const commonStyles = StyleSheet.create({
     },
     modalContainer: {
         backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
+        padding: CONTAINER_PADDING,
+        borderRadius: BORDER_RADIUS,
         alignSelf: 'center', // Center the modal on the screen
         width: '80%', // Set the width to a percentage of the screen width
     },
     modalButtonGap: {
-        height: 5,
+        height: UI_ELEMENTS_GAP,
     },
 
     twoItemPerRowParagraph: {

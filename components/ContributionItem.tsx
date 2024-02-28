@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Card, Title, IconButton, Paragraph, Chip } from 'react-native-paper';
 import { Contribution } from '../types';
 import UserDetails from './common/UserDetails';
-import commonItemStyles from "./common/commonItemStyles";
+import commonItemStyles from "../src/styles/commonItemStyles";
 
 interface ContributionItemProps {
     contribution: Contribution;

@@ -9,6 +9,7 @@ import { userState } from '../recoil/atom';
 import {Text} from 'react-native-paper'
 import Button from "../components/common/Button";
 import LoadingError from "../components/common/LoadingError";
+import {MAIN_PROFILE_PIC, UI_ELEMENTS_GAP} from "../src/styles/constants";
 
 const LoginScreen = ({ navigation }) => {
     const [userInfo, setUserInfo] = useRecoilState(userState);
@@ -142,15 +143,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     profileImageContainer: {
-        marginRight: 10,
+        marginRight: UI_ELEMENTS_GAP,
     },
     profileImage: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: MAIN_PROFILE_PIC,
+        height: MAIN_PROFILE_PIC,
+        borderRadius: MAIN_PROFILE_PIC / 2,
     },
     button: {
-        marginTop: 10,
+        marginTop: UI_ELEMENTS_GAP,
     },
 });
 

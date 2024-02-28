@@ -7,11 +7,12 @@ import CustomDropDown from '../components/common/CustomDropdown';
 import { useRecoilState } from 'recoil';
 import ReportService from '../services/ReportService';
 import {ExpenseReport} from "../types";
-import commonItemStyles from "../components/common/commonItemStyles";
-import commonScreenStyles from "../components/common/commonScreenStyles";
-import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonItemStyles from "../src/styles/commonItemStyles";
+import commonScreenStyles from "../src/styles/commonScreenStyles";
+import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import {CONTAINER_PADDING, DROPDOWN_HEIGHT, HEADING_SIZE, ICON_SIZE, UI_ELEMENTS_GAP} from "../src/styles/constants";
 
 const ReportScreen = () => {
     const [error, setError] = useState<string | null>(null);
@@ -78,7 +79,7 @@ const ReportScreen = () => {
                     }}
                     open={tagOpen}
                     setOpen={setTagOpen}
-                    containerStyle={{ height: 40, marginBottom: 16 }}
+                    containerStyle={{ height: DROPDOWN_HEIGHT, marginBottom: CONTAINER_PADDING }}
                     value={selectedTags}
                     setValue={setSelectedTags}
                     itemSeparator={true}
@@ -103,10 +104,10 @@ const ReportScreen = () => {
                         <Card.Actions style={commonStyles.row}>
                             <View style={styles.profitOrLossContainer}>
                                 <View style={[styles.profitOrLossIcon, profitOrLoss <= 0 && styles.hidden]}>
-                                    <Icon source="arrow-up-bold-circle" color="green" size={20} />
+                                    <Icon source="arrow-up-bold-circle" color="green" size={ICON_SIZE} />
                                 </View>
                                 <View style={[styles.profitOrLossIcon, profitOrLoss > 0 && styles.hidden]}>
-                                    <Icon source="arrow-down-bold-circle" color="red" size={20} />
+                                    <Icon source="arrow-down-bold-circle" color="red" size={ICON_SIZE} />
                                 </View>
                                 <Paragraph style={styles.profitOrLossText}>
                                     {profitOrLoss > 0 ? (
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
     },
     profitOrLossIcon: {
-        marginRight: 5,
+        marginRight: UI_ELEMENTS_GAP/2,
     },
     profitOrLossText: {
         fontWeight: 'bold',

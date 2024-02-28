@@ -4,8 +4,8 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Card, Title, IconButton, Paragraph, Chip, Avatar } from 'react-native-paper';
 import { Sale } from '../types';
 import UserDetails from './common/UserDetails';
-import commonItemStyles from "./common/commonItemStyles";
-import commonStyles from "./common/commonStyles";
+import commonItemStyles from "../src/styles/commonItemStyles";
+import commonStyles from "../src/styles/commonStyles";
 import Labels from "./common/Labels";
 
 interface SaleItemProps {

@@ -10,8 +10,8 @@ import DateTimePicker from "../components/common/DateTimePicker";
 import SwitchInput from "../components/common/SwitchInput"; // Import SwitchInput component
 import { Contribution, Tag, User } from "../types";
 import contributionService from "../services/ContributionService";
-import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 let oldAmount = 0;

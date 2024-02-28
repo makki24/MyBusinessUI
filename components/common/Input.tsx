@@ -1,7 +1,7 @@
 // Input.tsx
 import React from 'react';
 import {KeyboardTypeOptions} from "react-native/Libraries/Components/TextInput/TextInput";
-import commonAddScreenStyles from "./commonAddScreenStyles";
+import commonAddScreenStyles from "../../src/styles/commonAddScreenStyles";
 import {TextInput} from "react-native-paper";
 
 interface InputProps {

@@ -1,5 +1,5 @@
 import {View, ActivityIndicator, useColorScheme} from 'react-native';
-import commonStyles from "./commonStyles";
+import commonStyles from "../../src/styles/commonStyles";
 import React from "react";
 import {MD3DarkTheme, MD3LightTheme, Text} from "react-native-paper";
 

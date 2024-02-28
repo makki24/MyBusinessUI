@@ -3,9 +3,9 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card, Title, IconButton, Paragraph, Chip } from 'react-native-paper';
 import { Expense } from '../types';
-import commonItemStyles from "./common/commonItemStyles";
+import commonItemStyles from "../src/styles/commonItemStyles";
 import UserDetails from "./common/UserDetails";
-import commonStyles from "./common/commonStyles";
+import commonStyles from "../src/styles/commonStyles";
 
 interface ExpenseItemProps {
     expense: Expense;

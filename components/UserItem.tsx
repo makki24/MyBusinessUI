@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import {Card, Title, Avatar, Paragraph, IconButton} from 'react-native-paper';
 import { User } from '../types';
 import UserDetails from "./common/UserDetails";
-import commonItemStyles from "./common/commonItemStyles";
+import commonItemStyles from "../src/styles/commonItemStyles";
 
 interface UserItemProps {
     user: User;

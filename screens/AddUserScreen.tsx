@@ -12,9 +12,10 @@ import { User } from '../types';
 import {DEFAULT_AVATAR_URL} from "../constants/mybusiness.constants";
 import {useRecoilState} from "recoil";
 import {rolesState} from "../recoil/atom";
-import commonAddScreenStyles from "../components/common/commonAddScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import {BORDER_RADIUS, IMAGE_UPLOAD_SIZE, UI_ELEMENTS_GAP} from "../src/styles/constants";
 
 
 const AddUserScreen = ({ route, navigation }) => {
@@ -119,7 +120,7 @@ const AddUserScreen = ({ route, navigation }) => {
 
     const renderImageOverlay = () => (
         <View style={styles.editIcon}>
-            <AntDesign name={picture ? 'edit' : 'upload'} size={24} color="white" />
+            <AntDesign name={picture ? 'edit' : 'upload'} size={IMAGE_UPLOAD_SIZE / 4} color="white" />
         </View>
     );
 
@@ -170,24 +171,24 @@ const AddUserScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
     imageContainer: {
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: UI_ELEMENTS_GAP,
         position: 'relative',
     },
 
     roundedImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
+        width: IMAGE_UPLOAD_SIZE,
+        height: IMAGE_UPLOAD_SIZE,
+        borderRadius: IMAGE_UPLOAD_SIZE / 2,
         overflow: 'hidden', // Ensure content is clipped to the rounded shape
-        marginBottom: 8,
+        marginBottom: UI_ELEMENTS_GAP,
     },
     editIcon: {
         position: 'absolute',
         bottom: 0,
         alignSelf: 'center',
         backgroundColor: 'black',
-        borderRadius: 12,
-        padding: 4,
+        borderRadius: BORDER_RADIUS,
+        padding: UI_ELEMENTS_GAP / 2,
         alignItems: 'center',
     },
 });

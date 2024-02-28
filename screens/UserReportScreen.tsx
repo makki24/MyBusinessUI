@@ -7,8 +7,8 @@ import ReportItem from '../components/ReportItem';
 import { userReportsState } from '../recoil/atom';
 import { UserReport } from '../types';
 import ReportService from "../services/ReportService";
-import commonScreenStyles from "../components/common/commonScreenStyles";
-import commonStyles from "../components/common/commonStyles";
+import commonScreenStyles from "../src/styles/commonScreenStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 const UserReportScreen = ({route}) => {

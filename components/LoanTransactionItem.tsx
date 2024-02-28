@@ -4,7 +4,7 @@ import { Card, Paragraph, Title, IconButton } from "react-native-paper";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import UserDetails from "./common/UserDetails";
 import {LoanToHoldingTransaction} from "../types";
-import commonItemStyles from "./common/commonItemStyles";
+import commonItemStyles from "../src/styles/commonItemStyles";
 
 interface LoanTransactionItemProps {
     transaction: LoanToHoldingTransaction;

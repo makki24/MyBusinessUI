@@ -6,7 +6,7 @@ import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import RolesService from "../services/RolesService";
 import { rolesState } from '../recoil/atom';
-import commonStyles from "../components/common/commonStyles";
+import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import {Role} from "../types"; // Adjust the path accordingly
 
