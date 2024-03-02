@@ -15,7 +15,7 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({ title, onPress, icon, disabled, mode = 'contained', style }) => {
     return (
-        <PaperButton style={style} icon={icon}  mode={mode} onPress={onPress} disabled={disabled} >
+        <PaperButton uppercase={false} style={style} icon={icon}  mode={mode} onPress={onPress} disabled={disabled} >
             {title}
         </PaperButton>
     );

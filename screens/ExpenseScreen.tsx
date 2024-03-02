@@ -61,8 +61,13 @@ const ExpenseScreen = ({ navigation }) => {
         fetchExpenses();
     }, []);
 
-    const handleEditExpense = (expense) => {
-        navigation.navigate('EditExpense', { expense });
+    const handleEditExpense = (expense: Expense) => {
+        const serializedDate = expense.date.toISOString();
+
+        navigation.navigate('ExpenseStack', {
+            screen: 'AddExpense',
+            params: { title: `Edit Expense`, expense: {...expense, date: serializedDate}, isEditMode: true },
+        });
     };
 
     const handleDeleteExpense = async (expense) => {

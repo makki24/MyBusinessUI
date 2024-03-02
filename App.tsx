@@ -24,7 +24,7 @@ import AddExpenseTypeScreen from "./screens/AddExpenseTypeScreen";
 import ExpenseTypesScreen from "./screens/ExpenseTypesScreen";
 import ExpenseScreen from "./screens/ExpenseScreen";
 import AddExpenseScreen from "./screens/AddExpenseScreen";
-import {rolesState, tagsState, usersState, userState} from "./recoil/atom";
+import {expenseTypesState, rolesState, tagsState, usersState, userState} from "./recoil/atom";
 import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {DEFAULT_AVATAR_URL} from "./constants/mybusiness.constants";
@@ -60,6 +60,7 @@ import {
     HEADING_SIZE,
     MAIN_PROFILE_PIC, UI_ELEMENTS_GAP
 } from "./src/styles/constants";
+import ExpenseTypesService from "./services/ExpenseTypesService";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -194,6 +195,7 @@ const AppContent = () => {
     const [users, setUsers] = useRecoilState(usersState);
     const [tags, setTags] = useRecoilState(tagsState);
     const [roles, setRoles] = useRecoilState(rolesState);
+    const [expenseTypes, setExpenseTypes] = useRecoilState(expenseTypesState);
 
     const fetchUsers = async () => {
         try {
@@ -224,10 +226,20 @@ const AppContent = () => {
         }
     };
 
+    const fetchExpenseTypes = async () => {
+        try {
+            const fetchedExpenseTypes = await ExpenseTypesService.getExpenseTypes();
+            setExpenseTypes(fetchedExpenseTypes);
+        } catch (error) {
+            console.error('Error fetching expense types:', error);
+        }
+    };
+
     useEffect(() => {
         fetchUsers();
         fetchTags();
         fetchRoles();
+        fetchExpenseTypes()
     }, [userInfo]);
 
     const colorScheme = useColorScheme();
