@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ActivityIndicator, ScrollView, Modal } from 'react-native';
 import { useRecoilState } from 'recoil';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Button, TextInput, Modal as PaperModal, Portal } from 'react-native-paper';
+import { TextInput, Modal as PaperModal, Portal } from 'react-native-paper';
 import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates';
 
 import {
@@ -15,20 +15,27 @@ import {
 import ExpenseService from '../services/ExpenseService';
 import ExpenseTypesService from '../services/ExpenseTypesService';
 import UserService from '../services/UserService';
-import {ExpenseType, Tag as Tags, User} from "../types";
+import {Expense, ExpenseType, Tag as Tags, User} from "../types";
 import CustomDropDown from "../components/common/CustomDropdown";
 import TagsService from "../services/TagsService";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import Button from "../components/common/Button";
 
 interface AddExpenseScreenProps {
     navigation: any;
+    route: {
+        params: {
+            isEditMode: boolean;
+            expense: Expense;
+        }
+    };
 }
 
 DropDownPicker.setListMode('SCROLLVIEW');
 
-const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
+const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ route, navigation }) => {
     const [expenseTypes, setExpenseTypes] = useRecoilState(expenseTypesState);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -53,6 +60,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
     const [modalMessage, setModalMessage] = useState('');
     const [isAmountHoldingLess, setIsAmountHoldingLess] = useState(false);
     const [tags, setTags] = useRecoilState(tagsState);
+    const [isEdit, setIsEdit] = useState(false);
 
 
     const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
@@ -100,9 +108,22 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
 
     // Fetch users on component mount
     useEffect(() => {
-        fetchUsers();
-        fetchTags();
-    }, []);
+        if (route.params?.isEditMode && route.params?.expense) {
+            setIsEdit(true);
+            const extractedExpense = route.params.expense;
+            const paramDate = new Date(extractedExpense.date);
+
+            setValue(extractedExpense.type.id);
+            setAmount(`${extractedExpense.amount}`);
+            setAdditionalInfo(extractedExpense.description);
+            setSelectedTags(extractedExpense.tags.map((tag) => tag.id));
+            setInputDate(paramDate);
+            setValue(extractedExpense.type.id)
+            setIsReceivingUser(!!extractedExpense.receiver)
+            setSelectedUser(extractedExpense.receiver ? extractedExpense.receiver.id : null);
+            setTime({ hours: paramDate.getHours(), minutes: paramDate.getMinutes() });
+        }
+    }, [route.params?.isEditMode, route.params?.expense]);
 
     const maxFontSizeMultiplier = 1.5;
     let timeDate = new Date();
@@ -118,16 +139,14 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
         }
     };
 
-    useEffect(() => {
-        fetchExpenseTypes();
-    }, []);
-
     // Handler for changing the selected expense type
     const handleExpenseTypeChange = (selectedExpenseType: string | null) => {
-        setSelectedUser(null);
-        setIsReceivingUser(
-            expenseTypes.some((type) => type.id === selectedExpenseType && type.isReceivingUser)
-        );
+        if (selectedExpenseType !== value) {
+            setSelectedUser(null);
+            setIsReceivingUser(
+                expenseTypes.some((type) => type.id === selectedExpenseType && type.isReceivingUser)
+            );
+        }
     };
 
     // New handler for changing the selected tags
@@ -151,7 +170,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
             const expenseDate = new Date(inputDate);
             expenseDate.setHours(time.hours, time.minutes);
 
-            const newExpense = await ExpenseService.addExpense({
+            let newExpense: Expense ={
                 date: expenseDate,
                 type: { id: value } as ExpenseType,
                 amount: parseFloat(amount),
@@ -159,11 +178,15 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
                 sender: loggedInUser,
                 receiver: selectedUser ? { id: selectedUser } as User : null,
                 tags: selectedTags.map(tag => ({id: tag})) as Tags[]
-                // Add tags if needed
-            });
+            };
+            if(isEdit)
+                newExpense.id = route.params.expense.id;
+
+            newExpense = await ExpenseService.addExpense(newExpense);
 
             newExpense.date = new Date(newExpense.date);
-            setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+
+            setExpenses((prevExpenses) => [...prevExpenses.filter((expenseItem) => expenseItem.id !== newExpense.id), newExpense]);
 
             setAmount('');
             setValue(null);
@@ -339,9 +362,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
                             : `Current Time: ${timeFormatter.format(new Date())}`}
                     </Text>
                 </View>
-                <Button onPress={() => setTimeOpen(true)} uppercase={false} mode="contained-tonal">
-                    Pick time
-                </Button>
+                <Button icon={'clock'} onPress={() => setTimeOpen(true)} mode="contained-tonal" title={'Pick time'} />
             </View>
 
             {/* Time picker modal */}
@@ -355,29 +376,21 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ navigation }) => {
             />
 
             {/* Button to add the expense */}
-            <Button mode="contained" onPress={handleAddExpense}>
-                Add Expense
-            </Button>
+            <Button icon={route.params?.isEditMode ? 'update' : 'credit-card-plus'} mode="contained" onPress={handleAddExpense} title={route.params?.isEditMode ? 'Update Expense' : ' Add Expense'} />
 
             <Portal>
                 <PaperModal visible={modalVisible} onDismiss={handleModalClose} contentContainerStyle={commonStyles.modalContainer}>
                     <Text>{modalMessage}</Text>
                     <View style={commonStyles.modalButtonGap} />
-                    <Button icon="check" mode="contained" onPress={submitExpense}>
-                        Continue
-                    </Button>
+                    <Button icon="check" mode="contained" onPress={submitExpense} title={'Continue'} />
                     {isAmountHoldingLess && (
                         <>
                             <View style={commonStyles.modalButtonGap} />
-                            <Button icon="account-cog" mode="contained" onPress={navigateToManageAmounts}>
-                                Manage Amounts
-                            </Button>
+                            <Button icon="account-cog" mode="contained" onPress={navigateToManageAmounts} title={"Manage Accounts"} />
                         </>
                     )}
                     <View style={commonStyles.modalButtonGap} />
-                    <Button icon="cancel" mode="outlined" onPress={handleModalClose}>
-                        Cancel
-                    </Button>
+                    <Button icon="cancel" mode="outlined" onPress={handleModalClose} title={"Cancel"} />
                 </PaperModal>
             </Portal>
         </ScrollView>
