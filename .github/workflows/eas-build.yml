@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - qa
+      - production
 jobs:
   build:
     name: Install, test, and build
@@ -25,7 +27,13 @@ jobs:
         run: npm test
       - name: Build on EAS
         run: |
-          BUILD_URL=$(eas build --profile production --platform android --non-interactive --no-wait | grep -o 'https://expo.dev/accounts/[^ ]*')
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)  # Get the current branch name
+          if [ "$BRANCH_NAME" = "main" ]; then
+             PROFILE="dev"
+          else
+             PROFILE="$BRANCH_NAME"
+          fi          
+          BUILD_URL=$(eas build --profile $PROFILE --platform android --non-interactive --no-wait | grep -o 'https://expo.dev/accounts/[^ ]*')
           echo $BUILD_URL > build_url.txt
       - name: Get build URL
         id: get_url
