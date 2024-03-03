@@ -7,15 +7,43 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_URL": "http://129.213.146.93:8085"
+        "EXPO_PUBLIC_URL": "http://129.213.146.93:8085",
+        "APP_VARIANT": "development",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "82740835529-a19jnqjanlffvd06ceqfol0hkoqe2k0h.apps.googleusercontent.com",
+        "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com"
       }
     },
     "preview": {
       "distribution": "internal"
     },
+    "dev": {
+      "env": {
+        "EXPO_PUBLIC_URL": "http://129.213.146.93:8085",
+        "APP_VARIANT": "development",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "82740835529-a19jnqjanlffvd06ceqfol0hkoqe2k0h.apps.googleusercontent.com",
+        "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "qa": {
+      "env": {
+        "EXPO_PUBLIC_URL": "http://129.213.146.93:9083",
+        "APP_VARIANT": "qa",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "82740835529-qc6eh8vj9f65l3gkin360p86n2u67okq.apps.googleusercontent.com",
+        "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
     "production": {
       "env": {
-        "EXPO_PUBLIC_URL": "http://129.213.146.93:8085"
+        "EXPO_PUBLIC_URL": "http://129.213.146.93:8090",
+        "APP_VARIANT": "prod",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "82740835529-o5ahaetmhfilc8ot561hp8hnhmvtfpp2.apps.googleusercontent.com",
+        "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com"
       },
       "android": {
         "buildType": "apk"

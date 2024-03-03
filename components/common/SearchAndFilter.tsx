@@ -3,7 +3,7 @@ import customBackDrop from "../CustomBackDrop";
 import FilterScreen from "./FilterScreen";
 import React, {useCallback, useMemo, useRef, useState} from "react";
 import {Filter, User} from "../../types";
-import {StyleSheet, View} from "react-native";
+import {BackHandler, StyleSheet, View} from "react-native";
 import commonStyles from "../../src/styles/commonStyles";
 import {IconButton, Searchbar, useTheme} from "react-native-paper";
 
@@ -25,6 +25,19 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({handleSearch, searchQu
 
     const openBottomSheet = useCallback(() => {
         bottomSheetModalRef.current?.present();
+
+        const backAction = () => {
+            bottomSheetModalRef.current.close()
+            return true;
+        };
+
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+
+        return () => backHandler.remove();
+
     }, []);
 
     const onApplyFilter = (arg: Filter) => {
