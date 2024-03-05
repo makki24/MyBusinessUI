@@ -73,6 +73,15 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ route, navigation }
         [setTimeOpen, setTime]
     );
 
+    useEffect(() => {
+        const isReceivingUser = expenseTypes.some((type) => type.id === value && type.isReceivingUser);
+        setSelectedUser(null)
+        setIsReceivingUser(isReceivingUser);
+        if (route.params?.isEditMode && route.params?.expense && isReceivingUser)
+            setSelectedUser(route.params.expense.receiver ? route.params.expense.receiver.id : null);
+
+    }, [value])
+
     const onDismissTime = useCallback(() => {
         setTimeOpen(false);
     }, [setTimeOpen]);
@@ -86,25 +95,6 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ route, navigation }
             }),
         []
     );
-
-    // Fetch users from the UserService
-    const fetchUsers = async () => {
-        try {
-            const fetchedUsers = await UserService.getUsers();
-            setUsers(fetchedUsers.filter((user) => user.id !== loggedInUser.id));
-        } catch (error) {
-            console.error('Error fetching users:', error);
-        }
-    };
-
-    const fetchTags = async () => {
-        try {
-            const fetchedTags = await TagsService.getTags();
-            setTags(fetchedTags)
-        } catch (error) {
-            setError(error.response?.message || 'Error getting tags'); // Set the error message
-        }
-    };
 
     // Fetch users on component mount
     useEffect(() => {
@@ -120,7 +110,6 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ route, navigation }
             setInputDate(paramDate);
             setValue(extractedExpense.type.id)
             setIsReceivingUser(!!extractedExpense.receiver)
-            setSelectedUser(extractedExpense.receiver ? extractedExpense.receiver.id : null);
             setTime({ hours: paramDate.getHours(), minutes: paramDate.getMinutes() });
         }
     }, [route.params?.isEditMode, route.params?.expense]);
@@ -130,23 +119,8 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ route, navigation }
     time.hours !== undefined && timeDate.setHours(time.hours);
     time.minutes !== undefined && timeDate.setMinutes(time.minutes);
 
-    const fetchExpenseTypes = async () => {
-        try {
-            const fetchedExpenseTypes = await ExpenseTypesService.getExpenseTypes();
-            setExpenseTypes(fetchedExpenseTypes);
-        } catch (error) {
-            console.error('Error fetching expense types:', error);
-        }
-    };
-
     // Handler for changing the selected expense type
     const handleExpenseTypeChange = (selectedExpenseType: string | null) => {
-        if (selectedExpenseType !== value) {
-            setSelectedUser(null);
-            setIsReceivingUser(
-                expenseTypes.some((type) => type.id === selectedExpenseType && type.isReceivingUser)
-            );
-        }
     };
 
     // New handler for changing the selected tags
@@ -284,11 +258,13 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ route, navigation }
                 setValue={setValue}
                 itemSeparator={true}
                 onChangeValue={handleExpenseTypeChange}
+                testID="expense-type-picker"
             />
 
             {/* Additional selector for users if required */}
             {value && isReceivingUser && (
                 <CustomDropDown
+                    testID="user-picker"
                     schema={{
                         label: 'name',
                         value: 'id',
@@ -311,6 +287,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ route, navigation }
             {/* New selector for tags */}
             {!isReceivingUser && ( // Add this condition
                 <CustomDropDown
+                    testID="tags-picker"
                     multiple={true}
                     items={tags}
                     zIndex={1000}
