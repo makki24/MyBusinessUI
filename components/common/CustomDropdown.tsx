@@ -23,6 +23,7 @@ interface CustomDropDownProps<T> {
     multiple?: any; // Added a new prop for multiple selections
     loading?: boolean;
     renderListItem?;
+    testID?: string
 }
 
 const CustomDropDown = <T,>({
@@ -42,6 +43,7 @@ const CustomDropDown = <T,>({
                                 multiple = false, // Default to false if not provided
                                 loading = false,
                                 renderListItem,
+                                testID
                             }: CustomDropDownProps<T>) => {
 
     const handleDelete = (itemValue: string) => {
@@ -54,6 +56,7 @@ const CustomDropDown = <T,>({
     return (
         <>
             <DropDownPicker
+                testID={testID}
                 loading={loading}
                 schema={schema}
                 zIndex={zIndex}
