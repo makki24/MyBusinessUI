@@ -11,4 +11,6 @@ export interface UserReport {
     type: string;
     description: string;
     sent: boolean;
+    amountHolding: number;
+    amountToReceive: number
 }
