@@ -9,3 +9,4 @@ export const CONTAINER_PADDING = 16;
 export const UI_ELEMENTS_GAP = 8;
 export const IMAGE_UPLOAD_SIZE = 100;
 export const DROPDOWN_HEIGHT = 40;
+export const REPORT_ICON_SIZE = 30;

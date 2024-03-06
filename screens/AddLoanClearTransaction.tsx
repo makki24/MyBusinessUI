@@ -41,10 +41,12 @@ const AddLoanClearTransaction = ({ navigation, route }) => {
         setError('');
         try {
             setIsLoading(true);
+            const currentDate = new Date();
+            currentDate.setSeconds(currentDate.getSeconds() - 1)
             const transaction: LoanToHoldingTransaction = {
                 createdBy: loggedInUser,
                 user: selectedUser ?  {id: selectedUser} as User : loggedInUser,
-                date: new Date(),
+                date: currentDate,
                 amount: parseFloat(amountToTransfer)
             }
             if (route.params?.isEditMode && route.params?.transaction) {
