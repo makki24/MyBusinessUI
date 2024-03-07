@@ -36,7 +36,6 @@ const uploadImgtoImgBB = async (imageUri: string) => {
     const axiosResponse = await axios.post(apiUrl, formData, axiosConfig);
 
     if (axiosResponse.status !== 200) {
-      console.log("after response", axiosResponse);
       throw new Error("Image upload failed");
     }
 
@@ -48,7 +47,6 @@ const uploadImgtoImgBB = async (imageUri: string) => {
       throw new Error("Invalid response from ImgBB");
     }
   } catch (error) {
-    console.log("after catch", error);
     throw new Error(`Failed to upload image: ${error.message}`);
   }
 };

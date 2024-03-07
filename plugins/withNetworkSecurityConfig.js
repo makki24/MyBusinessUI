@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable  no-undef */
+
 const { withAndroidManifest, AndroidConfig } = require("@expo/config-plugins");
 const { Paths } = require("@expo/config-plugins/build/android");
 const path = require("path");
@@ -14,7 +17,6 @@ const withNetworkSecurityConfig = (config) => {
 };
 
 async function setCustomConfigAsync(config, androidManifest) {
-  console.log("stareted doin it");
   const src_file_path = path.join(
     __dirname,
     "..",
@@ -30,11 +32,7 @@ async function setCustomConfigAsync(config, androidManifest) {
   if (!fs.existsSync(res_dir)) {
     await fsPromises.mkdir(res_dir);
   }
-  try {
-    await fsPromises.copyFile(src_file_path, res_file_path);
-  } catch (e) {
-    throw e;
-  }
+  await fsPromises.copyFile(src_file_path, res_file_path);
   const mainApplication = getMainApplicationOrThrow(androidManifest);
   mainApplication.$["android:networkSecurityConfig"] =
     "@xml/network_security_config";

@@ -1,14 +1,7 @@
 // src/components/SaleItem.tsx
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import {
-  Card,
-  Title,
-  IconButton,
-  Paragraph,
-  Chip,
-  Avatar,
-} from "react-native-paper";
+import { Card, Title, IconButton, Paragraph } from "react-native-paper";
 import { Sale } from "../types";
 import UserDetails from "./common/UserDetails";
 import commonItemStyles from "../src/styles/commonItemStyles";

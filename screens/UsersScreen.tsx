@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-} from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import { FAB, Text, Button, Modal, Portal, Snackbar } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import UserService from "../services/UserService";
@@ -15,8 +9,13 @@ import { User } from "../types";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const UsersScreen = ({ navigation }) => {
+type UsersScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
+
+const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
   const [users, setUsers] = useRecoilState(usersState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,10 +28,9 @@ const UsersScreen = ({ navigation }) => {
   const fetchUsers = async () => {
     try {
       setIsRefreshing(true);
-      let usersData = await UserService.getUsers();
+      const usersData = await UserService.getUsers();
       setUsers(usersData);
     } catch (error) {
-      console.error("Error fetching users:", error.message || "Unknown error");
       setError(error.message || "Error fetching users. Please try again.");
     } finally {
       setIsRefreshing(false);
@@ -44,7 +42,6 @@ const UsersScreen = ({ navigation }) => {
   }, [users]);
 
   const handleEditUser = (user: User) => {
-    console.log("edit", JSON.stringify(user));
     if (user.roles.findIndex((role) => role.name === "MEMBER") === -1) {
       return;
     }
@@ -61,10 +58,6 @@ const UsersScreen = ({ navigation }) => {
     try {
       setIsDeleteModalVisible(true);
     } catch (error) {
-      console.error(
-        "Error checking user details:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.response?.data ||
           "Error checking user details. Please try again.",
@@ -91,10 +84,6 @@ const UsersScreen = ({ navigation }) => {
       );
       setSnackbarVisible(true); // Show Snackbar on successful deletion
     } catch (error) {
-      console.error(
-        "Error deleting user:",
-        error.response?.data || "Unknown error",
-      );
       setError(error.message || "Error deleting user. Please try again.");
     } finally {
       setIsLoading(false);

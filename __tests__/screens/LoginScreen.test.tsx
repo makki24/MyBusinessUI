@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  render,
-  fireEvent,
-  waitFor,
-  cleanup,
-  act,
-} from "@testing-library/react-native";
+import { render, waitFor, cleanup, act } from "@testing-library/react-native";
 import LoginScreen from "../../screens/LoginScreen";
 
 // Mock the fetch function
@@ -26,7 +20,7 @@ jest.mock("@react-native-async-storage/async-storage", () => {
   return {
     __esModule: true,
     default: {
-      getItem: jest.fn((key: string) => Promise.resolve("dummyToken")),
+      getItem: jest.fn(() => Promise.resolve("dummyToken")),
       setItem: jest.fn((key: string, value: string) => {
         mockStorage[key] = value;
         return Promise.resolve();
@@ -49,8 +43,6 @@ jest.mock("expo-auth-session/providers/google", () => ({
 }));
 
 describe("LoginScreen", () => {
-  const controller = new AbortController();
-
   afterEach(() => {
     // Clean up on exiting
     cleanup();
@@ -67,7 +59,7 @@ describe("LoginScreen", () => {
       navigate: jest.fn(),
     };
 
-    const { queryByText, findByText } = render(
+    const { findByText } = render(
       <RecoilRoot>
         <PaperProvider>
           <LoginScreen navigation={navigation} />
@@ -96,7 +88,7 @@ describe("LoginScreen", () => {
     const getItemSpy = jest.spyOn(AsyncStorage, "getItem");
     getItemSpy.mockResolvedValue("abcd"); // Use mockResolvedValue for clarity
 
-    const { queryByText, findByText } = render(
+    const { queryByText } = render(
       <RecoilRoot>
         <PaperProvider>
           <LoginScreen navigation={navigation} />

@@ -1,18 +1,10 @@
 // src/components/WorkItem.tsx
 import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
-import {
-  Card,
-  Title,
-  IconButton,
-  Paragraph,
-  Chip,
-  Avatar,
-} from "react-native-paper";
+import { View, Text, TouchableOpacity } from "react-native";
+import { Card, Title, IconButton, Paragraph } from "react-native-paper";
 import { Work } from "../types";
 import UserDetails from "./common/UserDetails";
 import commonItemStyles from "../src/styles/commonItemStyles";
-import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import Labels from "./common/Labels";
 

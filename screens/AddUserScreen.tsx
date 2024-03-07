@@ -4,9 +4,6 @@ import {
   ScrollView,
   View,
   StyleSheet,
-  ActivityIndicator,
-  Text,
-  Image,
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
@@ -22,15 +19,32 @@ import { DEFAULT_AVATAR_URL } from "../constants/mybusiness.constants";
 import { useRecoilState } from "recoil";
 import { rolesState } from "../recoil/atom";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
-import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import {
   BORDER_RADIUS,
   IMAGE_UPLOAD_SIZE,
   UI_ELEMENTS_GAP,
 } from "../src/styles/constants";
+import { ImageSourcePropType } from "react-native/Libraries/Image/Image";
+import { StyleProp } from "react-native/Libraries/StyleSheet/StyleSheet";
+import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 
-const AddUserScreen = ({ route, navigation }) => {
+interface AddUserScreenProps {
+  route: {
+    params: {
+      isEditMode: boolean;
+      user: User;
+    };
+  };
+}
+
+interface CustomRoundImageProps {
+  source: ImageSourcePropType;
+  style: StyleProp<ViewStyle>; // Example: Assume 'style' is an object representing CSS properties
+  children?: React.ReactNode; // Optional children prop
+}
+
+const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [username, setUsername] = useState("");
@@ -39,10 +53,10 @@ const AddUserScreen = ({ route, navigation }) => {
   const [amountToReceive, setAmountToReceive] = useState("");
   const [amountHolding, setAmountHolding] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [pictureUrl, setPictureUrl] = useState("");
+  const [_, setPictureUrl] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [emailValid, setEmailValid] = useState(true);
-  const [roles, setRoles] = useRecoilState(rolesState);
+  const [roles] = useRecoilState(rolesState);
 
   const onSnackbarDismiss = () => {
     setSnackbarVisible(false);
@@ -100,7 +114,6 @@ const AddUserScreen = ({ route, navigation }) => {
 
       setSnackbarVisible(true);
     } catch (error) {
-      console.log(error);
       setError(
         error?.message ?? "Error adding/updating user. Please try again.",
       );
@@ -122,11 +135,18 @@ const AddUserScreen = ({ route, navigation }) => {
     }
   };
 
-  const CustomRoundImage = ({ source, style, children }) => {
+  const CustomRoundImage: React.FC<CustomRoundImageProps> = ({
+    source,
+    style,
+    children,
+  }) => {
     return (
       <TouchableOpacity
         onPress={pickImage}
-        style={[style, { borderRadius: style.width / 2, overflow: "hidden" }]}
+        style={[
+          style,
+          { borderRadius: IMAGE_UPLOAD_SIZE / 2, overflow: "hidden" },
+        ]}
       >
         <ImageBackground source={source} style={style}>
           {children}

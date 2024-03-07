@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable  no-undef */
+
 const { withAndroidManifest } = require("@expo/config-plugins");
 
 const withCustomConfig = (config) => {

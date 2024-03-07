@@ -2,18 +2,15 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import {
   Divider,
-  TextInput,
   Text,
   Button,
   IconButton,
   Snackbar,
-  ActivityIndicator,
   List,
 } from "react-native-paper";
 import RolesService from "../services/RolesService";
-import { User } from "../types";
+import { Role, User } from "../types";
 import UserService from "../services/UserService";
-import DropDownPicker from "react-native-dropdown-picker";
 import CustomDropDown from "../components/common/CustomDropdown";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
@@ -23,7 +20,15 @@ import {
   UI_ELEMENTS_GAP,
 } from "../src/styles/constants";
 
-const EditRoleScreen = ({ route }) => {
+type EditRoleScreenProps = {
+  route: {
+    params: {
+      role: Role;
+    };
+  }; // Adjust this type based on your navigation stack
+};
+
+const EditRoleScreen: React.FC<EditRoleScreenProps> = ({ route }) => {
   const { role } = route.params;
   const [assignedUsers, setAssignedUsers] = useState<User[]>([]);
   const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -42,10 +47,6 @@ const EditRoleScreen = ({ route }) => {
         const assignedUsersData = await RolesService.getUsersAssigned(role.id);
         setAssignedUsers(assignedUsersData);
       } catch (error) {
-        console.error(
-          "Error fetching assigned users:",
-          error.response?.data || "Unknown error",
-        );
         setErrorAssignedUsers(
           error.response?.data ??
             "Error fetching assigned users. Please try again.",
@@ -72,10 +73,6 @@ const EditRoleScreen = ({ route }) => {
           ),
         );
       } catch (error) {
-        console.error(
-          "Error fetching all users:",
-          error.response?.data || "Unknown error",
-        );
         setErrorAllUsers(
           error.response?.data ?? "Error fetching all users. Please try again.",
         );
@@ -99,10 +96,6 @@ const EditRoleScreen = ({ route }) => {
           setSnackbarVisible(true);
         }
       } catch (error) {
-        console.error(
-          error.response?.data ?? "Error assigning user to role:",
-          error,
-        );
         setErrorAllUsers(
           error.response?.data ??
             "Error assigning user to role. Please try again.",
@@ -126,11 +119,6 @@ const EditRoleScreen = ({ route }) => {
       );
       setSnackbarRemoveVisible(true);
     } catch (error) {
-      console.error(
-        error.response?.data.error ?? "Error removing user from role:",
-        error,
-      );
-
       // Update the state with the error information
       setErrorAssignedUsers(
         error.response?.data.error ??

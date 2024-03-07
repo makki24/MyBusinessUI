@@ -1,12 +1,6 @@
 // src/screens/ExpenseScreen.tsx
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-} from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import { FAB, Text, Button, Modal, Portal } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import ExpenseService from "../services/ExpenseService";
@@ -17,10 +11,14 @@ import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import SearchAndFilter from "../components/common/SearchAndFilter";
-import workService from "../services/WorkService";
 import expenseService from "../services/ExpenseService";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const ExpenseScreen = ({ navigation }) => {
+type ExpenseScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
+
+const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   const [expenses, setExpenses] = useRecoilState(expensesState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,9 +41,9 @@ const ExpenseScreen = ({ navigation }) => {
     try {
       setIsRefreshing(true);
 
-      let expensesData = await ExpenseService.getExpenses();
-      let sendersSet: User[] = [];
-      let receiverSet: User[] = [];
+      const expensesData = await ExpenseService.getExpenses();
+      const sendersSet: User[] = [];
+      const receiverSet: User[] = [];
       expensesData.forEach((expn) => {
         if (
           expn.sender &&
@@ -62,10 +60,6 @@ const ExpenseScreen = ({ navigation }) => {
       setReceivers([...receiverSet]);
       transFormAndSetExpense(expensesData);
     } catch (error) {
-      console.error(
-        "Error fetching expenses:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.response?.data || "Error fetching expenses. Please try again.",
       );
@@ -98,10 +92,6 @@ const ExpenseScreen = ({ navigation }) => {
     try {
       setIsDeleteModalVisible(true);
     } catch (error) {
-      console.error(
-        "Error checking expense details:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.response?.data ||
           "Error checking expense details. Please try again.",
@@ -120,10 +110,6 @@ const ExpenseScreen = ({ navigation }) => {
         prevExpenses.filter((expense) => expense.id !== selectedExpense.id),
       );
     } catch (error) {
-      console.error(
-        "Error deleting expense:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.response?.data || "Error deleting expense. Please try again.",
       );

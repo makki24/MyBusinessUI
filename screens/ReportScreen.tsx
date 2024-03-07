@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import {
   Button,
   Card,
@@ -22,14 +16,11 @@ import { useRecoilState } from "recoil";
 import ReportService from "../services/ReportService";
 import { ExpenseReport } from "../types";
 import commonItemStyles from "../src/styles/commonItemStyles";
-import commonScreenStyles from "../src/styles/commonScreenStyles";
-import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import {
   CONTAINER_PADDING,
   DROPDOWN_HEIGHT,
-  HEADING_SIZE,
   ICON_SIZE,
   UI_ELEMENTS_GAP,
 } from "../src/styles/constants";
@@ -39,8 +30,8 @@ const ReportScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [tagOpen, setTagOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<number>(null);
-  const [tags, setTags] = useRecoilState(tagsState);
-  const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
+  const [tags] = useRecoilState(tagsState);
+  const [isDataLoading] = useState<boolean>(false);
   const [report, setReport] = useState<ExpenseReport>(null);
   const [profitOrLoss, setProfitOrLoss] = useState<number>();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -59,7 +50,6 @@ const ReportScreen = () => {
       );
       setReport(reportsRes);
     } catch (err) {
-      console.error("Error generating report:", err);
       setError(err.message ?? "An error occurred while generating the report");
     } finally {
       setIsLoading(false);

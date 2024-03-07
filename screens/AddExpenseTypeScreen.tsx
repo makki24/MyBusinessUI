@@ -1,18 +1,18 @@
 // src/screens/AddExpenseTypeScreen.tsx
 import React, { useState } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import { useRecoilState } from "recoil";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import ExpenseTypesService from "../services/ExpenseTypesService"; // Adjust the path accordingly
 import { expenseTypesState } from "../recoil/atom"; // Adjust the path accordingly
 import SwitchInput from "../components/common/SwitchInput";
-import CommonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 interface AddExpenseTypeScreenProps {
-  navigation: any; // Adjust the type based on your navigation prop type
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 }
 
 const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
@@ -20,7 +20,7 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
 }) => {
   const [expenseTypeName, setExpenseTypeName] = useState("");
   const [isReceivingUser, setIsReceivingUser] = useState(false); // New state for the switch
-  const [expenseTypes, setExpenseTypes] = useRecoilState(expenseTypesState);
+  const [_, setExpenseTypes] = useRecoilState(expenseTypesState);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,7 +45,6 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
       ]);
       navigation.goBack();
     } catch (error) {
-      console.error("Error adding expense type:", error.response.data);
       setError(
         error.response.data?.error ||
           error.response?.data ||

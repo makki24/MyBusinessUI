@@ -1,32 +1,23 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  ActivityIndicator,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, ScrollView } from "react-native";
 import { useRecoilState } from "recoil";
-import { Button, TextInput, Icon } from "react-native-paper";
+import { Button, TextInput } from "react-native-paper";
 
 import { userState, usersState, tagsState, worksState } from "../recoil/atom";
 import WorkService from "../services/WorkService";
-import UserService from "../services/UserService";
 import { WorkType, Tag as Tags, User, Work } from "../types";
 import CustomDropDown from "../components/common/CustomDropdown";
-import TagsService from "../services/TagsService";
 import SwitchInput from "../components/common/SwitchInput";
-import UserDetails from "../components/common/UserDetails";
 import DateTimePicker from "../components/common/DateTimePicker";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import UserDropDownItem from "../components/common/UserDropDownItem";
 import NumberInput from "../components/common/NumberInput";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 interface AddWorkScreenProps {
-  navigation: any;
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
   route: {
     params: {
       isEditMode: boolean;
@@ -55,15 +46,15 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
     hours: new Date().getHours(),
     minutes: new Date().getMinutes(),
   });
-  const [users, setUsers] = useRecoilState(usersState);
+  const [users] = useRecoilState(usersState);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [tags, setTags] = useRecoilState(tagsState);
-  const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
+  const [tags] = useRecoilState(tagsState);
+  const [loggedInUser] = useRecoilState(userState);
   const [showPricePerUnit, setShowPricePerUnit] = useState(false);
   const [showAmount, setShowAmount] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
-  const [allWorks, setAllWorks] = useRecoilState(worksState);
+  const [isDataLoading] = useState<boolean>(false);
+  const [_, setAllWorks] = useRecoilState(worksState);
 
   useEffect(() => {
     // Check if the screen is in edit mode and workType data is provided
@@ -97,38 +88,11 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
     }
   }, [route.params?.isEditMode, route.params?.work]);
 
-  const fetchUsers = async () => {
-    try {
-      const fetchedUsers = await UserService.getUsers();
-      setUsers(fetchedUsers);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      setError(error.message || "Error getting tags");
-    }
-  };
-
-  const fetchTags = async () => {
-    try {
-      setIsDataLoading(true);
-      const fetchedTags = await TagsService.getTags();
-      setTags(fetchedTags);
-    } catch (error) {
-      setError(error.message || "Error getting tags");
-    } finally {
-      setIsDataLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-    fetchTags();
-  }, []);
-
-  let timeDate = new Date();
+  const timeDate = new Date();
   time.hours !== undefined && timeDate.setHours(time.hours);
   time.minutes !== undefined && timeDate.setMinutes(time.minutes);
 
-  const handleTagChange = (tag: string | null) => {
+  const handleTagChange = () => {
     // Handle tag change logic if needed
   };
 
@@ -155,8 +119,8 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
       let newWork: Work = {
         date: workDate,
         type: workType,
-        quantity: parseInt(quantity),
-        pricePerUnit: parseFloat(pricePerUnit),
+        quantity: showAmount ? 1 : parseInt(quantity),
+        pricePerUnit: showAmount ? calculatedAmount : parseFloat(pricePerUnit),
         amount: calculatedAmount,
         description,
         user: selectedUser ? ({ id: selectedUser } as User) : null,
@@ -185,7 +149,6 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
 
       navigation.goBack();
     } catch (err) {
-      console.error("Error adding work:", err);
       setError(err.message ?? "An error occurred while adding the work");
     } finally {
       setIsLoading(false);
@@ -257,6 +220,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
           setValue={handleUserChange}
           itemSeparator={true}
           placeholder="Select User"
+          testID={"user-select"}
           onChangeValue={handleUserChange}
           renderListItem={({ item }) => (
             <UserDropDownItem

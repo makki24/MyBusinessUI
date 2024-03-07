@@ -1,16 +1,16 @@
 // src/screens/AddWorkTypeScreen.tsx
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import { useRecoilState } from "recoil";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import { workTypesState } from "../recoil/atom"; // Adjust the path accordingly
 import { WorkType } from "../types";
 import WorkService from "../services/WorkService";
-import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import NumberInput from "../components/common/NumberInput";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 interface AddWorkTypeScreenProps {
   route: {
@@ -19,7 +19,7 @@ interface AddWorkTypeScreenProps {
       isEditMode: boolean;
     };
   };
-  navigation: any; // Adjust the type based on your navigation prop type
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 }
 
 const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
@@ -29,7 +29,7 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
   const [typeName, setTypeName] = useState("");
   const [unit, setUnit] = useState("");
   const [defaultPrice, setDefaultPrice] = useState("");
-  const [workTypes, setWorkTypes] = useRecoilState(workTypesState); // Adjust the atom accordingly
+  const [_, setWorkTypes] = useRecoilState(workTypesState); // Adjust the atom accordingly
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -78,7 +78,6 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
       // Navigate back to the Work Types screen
       navigation.goBack();
     } catch (error) {
-      console.error("Error adding work type:", error);
       setError(error.message || "An error occurred"); // Set the error message
     } finally {
       setIsLoading(false); // Set loading to false regardless of success or failure

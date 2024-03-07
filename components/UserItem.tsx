@@ -1,7 +1,7 @@
 // src/components/UserItem.tsx
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Card, Title, Avatar, Paragraph, IconButton } from "react-native-paper";
+import { View, TouchableOpacity } from "react-native";
+import { Card, Paragraph, IconButton } from "react-native-paper";
 import { User } from "../types";
 import UserDetails from "./common/UserDetails";
 import commonItemStyles from "../src/styles/commonItemStyles";

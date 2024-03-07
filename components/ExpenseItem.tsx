@@ -1,6 +1,6 @@
 // src/components/ExpenseItem.tsx
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Card, Title, IconButton, Paragraph, Chip } from "react-native-paper";
 import { Expense } from "../types";
 import commonItemStyles from "../src/styles/commonItemStyles";

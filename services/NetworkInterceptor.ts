@@ -37,8 +37,8 @@ axiosInstance.interceptors.request.use(
 
       return config;
     } catch (error) {
-      error = extractError(error);
-      return Promise.reject(error);
+      const extractedError = extractError(error);
+      return Promise.reject(extractedError);
     }
   },
   (error) => {

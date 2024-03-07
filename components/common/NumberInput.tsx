@@ -1,8 +1,6 @@
 import React from "react";
 import { TextInput } from "react-native-paper";
 import commonAddScreenStyles from "../../src/styles/commonAddScreenStyles";
-import { StyleProp } from "react-native/Libraries/StyleSheet/StyleSheet";
-import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 
 interface NumberInputProps {
   label: string;
@@ -18,9 +16,10 @@ const NumberInput: React.FC<NumberInputProps> = ({
   return (
     <TextInput
       keyboardType="numeric"
-      label="Amount to Add"
+      label={label}
       value={value}
       onChangeText={onChangeText}
+      testID={label.split(" ").join("")}
       style={commonAddScreenStyles.inputField}
     />
   );

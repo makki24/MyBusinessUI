@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, ActivityIndicator, ScrollView, Modal } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { useRecoilState } from "recoil";
 import DropDownPicker from "react-native-dropdown-picker";
 import { TextInput, Modal as PaperModal, Portal } from "react-native-paper";
@@ -13,19 +13,17 @@ import {
   tagsState,
 } from "../recoil/atom";
 import ExpenseService from "../services/ExpenseService";
-import ExpenseTypesService from "../services/ExpenseTypesService";
-import UserService from "../services/UserService";
-import { Expense, ExpenseType, Tag as Tags, User } from "../types";
+import { DateTime, Expense, ExpenseType, Tag as Tags, User } from "../types";
 import CustomDropDown from "../components/common/CustomDropdown";
-import TagsService from "../services/TagsService";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import Button from "../components/common/Button";
 import NumberInput from "../components/common/NumberInput";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 interface AddExpenseScreenProps {
-  navigation: any;
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
   route: {
     params: {
       isEditMode: boolean;
@@ -40,7 +38,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   route,
   navigation,
 }) => {
-  const [expenseTypes, setExpenseTypes] = useRecoilState(expenseTypesState);
+  const [expenseTypes] = useRecoilState(expenseTypesState);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -51,28 +49,25 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   const [amount, setAmount] = useState("");
   const [additionalInfo, setAdditionalInfo] = useState("");
   const [inputDate, setInputDate] = useState(new Date());
-  const [time, setTime] = useState<{
-    hours: number | undefined;
-    minutes: number | undefined;
-  }>({
+  const [time, setTime] = useState<DateTime>({
     hours: new Date().getHours(),
     minutes: new Date().getMinutes(),
   });
   const [timeOpen, setTimeOpen] = useState(false);
-  const [users, setUsers] = useRecoilState(usersState);
+  const [users] = useRecoilState(usersState);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [isReceivingUser, setIsReceivingUser] = useState<boolean>(false);
-  const [expenses, setExpenses] = useRecoilState(expensesState);
+  const [_, setExpenses] = useRecoilState(expensesState);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isAmountHoldingLess, setIsAmountHoldingLess] = useState(false);
-  const [tags, setTags] = useRecoilState(tagsState);
+  const [tags] = useRecoilState(tagsState);
   const [isEdit, setIsEdit] = useState(false);
 
   const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
 
   const onConfirmTime = useCallback(
-    ({ hours, minutes }: any) => {
+    ({ hours, minutes }: DateTime) => {
       setTimeOpen(false);
       setTime({ hours, minutes });
     },
@@ -124,15 +119,15 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   }, [route.params?.isEditMode, route.params?.expense]);
 
   const maxFontSizeMultiplier = 1.5;
-  let timeDate = new Date();
+  const timeDate = new Date();
   time.hours !== undefined && timeDate.setHours(time.hours);
   time.minutes !== undefined && timeDate.setMinutes(time.minutes);
 
   // Handler for changing the selected expense type
-  const handleExpenseTypeChange = (selectedExpenseType: string | null) => {};
+  const handleExpenseTypeChange = () => {};
 
   // New handler for changing the selected tags
-  const handleTagChange = (tag: string | null) => {
+  const handleTagChange = () => {
     // Handle tag change logic if needed
   };
 
@@ -189,7 +184,6 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
 
       navigation.goBack();
     } catch (err) {
-      console.error("Error adding expense:", err);
       setError(
         err.response?.data ??
           err.message ??

@@ -5,16 +5,14 @@ import { DatePickerInput, TimePickerModal } from "react-native-paper-dates";
 import { Button, Text } from "react-native-paper";
 import { UI_ELEMENTS_GAP } from "../../src/styles/constants";
 import commonAddScreenStyles from "../../src/styles/commonAddScreenStyles";
+import { DateTime } from "../../types";
 
 interface DateTimePickerProps {
   label: string;
   dateValue: Date;
   onDateChange: (date: Date) => void;
-  onTimeChange: (time: {
-    hours: number | undefined;
-    minutes: number | undefined;
-  }) => void;
-  timeValue: { hours: number | undefined; minutes: number | undefined };
+  onTimeChange: (time: DateTime) => void;
+  timeValue: DateTime;
 }
 
 const DateTimePicker: React.FC<DateTimePickerProps> = ({
@@ -39,7 +37,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
   const maxFontSizeMultiplier = 1.5;
 
   const onConfirmTime = useCallback(
-    ({ hours, minutes }: any) => {
+    ({ hours, minutes }: DateTime) => {
       setTimeOpen(false);
       onTimeChange({ hours, minutes });
     },

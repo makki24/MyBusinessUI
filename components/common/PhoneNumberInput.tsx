@@ -12,13 +12,31 @@ import {
 } from "react-native-paper";
 import * as Contacts from "expo-contacts";
 import { CONTAINER_PADDING } from "../../src/styles/constants";
+import { StyleProp } from "react-native/Libraries/StyleSheet/StyleSheet";
+import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
+
+interface PhoneNumbers {
+  number: string;
+}
+
+interface Contact {
+  name: string;
+  phoneNumbers: PhoneNumbers[];
+}
 
 interface ContactItemProps {
-  contact: any;
+  contact: Contact;
   onPress: () => void;
 }
 
-const ContactItem = memo(({ contact, onPress }: ContactItemProps) => (
+interface PhoneNumberInputProps {
+  label: string;
+  phoneNumber: string;
+  setPhoneNumber: React.Dispatch<React.SetStateAction<string>>;
+  style: StyleProp<ViewStyle>;
+}
+
+const ContactItem = ({ contact, onPress }: ContactItemProps) => (
   <List.Item
     title={contact.name}
     description={
@@ -28,9 +46,16 @@ const ContactItem = memo(({ contact, onPress }: ContactItemProps) => (
     }
     onPress={onPress}
   />
-));
+);
 
-const PhoneNumberInput = ({ label, phoneNumber, setPhoneNumber, style }) => {
+const ContactItemMemo = memo(ContactItem);
+
+const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
+  label,
+  phoneNumber,
+  setPhoneNumber,
+  style,
+}) => {
   const [phoneNumberError, setPhoneNumberError] = useState("");
   const [contacts, setContacts] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -107,7 +132,10 @@ const PhoneNumberInput = ({ label, phoneNumber, setPhoneNumber, style }) => {
 
   const renderItem = useCallback(
     ({ item }) => (
-      <ContactItem contact={item} onPress={() => handleContactSelect(item)} />
+      <ContactItemMemo
+        contact={item}
+        onPress={() => handleContactSelect(item)}
+      />
     ),
     [],
   );

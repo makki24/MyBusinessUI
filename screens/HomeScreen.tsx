@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import { Card, Title } from "react-native-paper";
 import homeScreenStyles from "../src/styles/homeScreenStyles";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const HomeScreen = ({ navigation }) => {
+type HomeScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
+
+const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const images = [
     { uri: "https://via.placeholder.com/300", interval: 5000 },
     { uri: "https://via.placeholder.com/300/FF5733/FFFFFF", interval: 3000 },
@@ -13,9 +18,7 @@ const HomeScreen = ({ navigation }) => {
     // Add more image URLs with different intervals as needed
   ];
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(
-    Array(images.length).fill(0),
-  );
+  const [_, setCurrentImageIndex] = useState(Array(images.length).fill(0));
 
   useEffect(() => {
     const intervals = images.map((image, i) =>
