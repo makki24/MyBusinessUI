@@ -10,6 +10,7 @@ import WorkService from "../services/WorkService";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import NumberInput from "../components/common/NumberInput";
 
 interface AddWorkTypeScreenProps {
     route: {
@@ -87,11 +88,10 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({ route, navigation
             value={typeName}
             onChangeText={setTypeName}
         />
-        <Input
-            placeholder="Enter default price"
+        <NumberInput
+            label="Enter default price"
             value={defaultPrice}
             onChangeText={setDefaultPrice}
-            keyboardType="numeric"
         />
          <Input
              placeholder="Enter unit"
