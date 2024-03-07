@@ -1,5 +1,3 @@
-import { exp } from "@gorhom/bottom-sheet/lib/typescript/utilities/easingExp";
-
 export const BORDER_RADIUS = 10;
 export const HEADING_SIZE = 20;
 export const ICON_SIZE = 20;

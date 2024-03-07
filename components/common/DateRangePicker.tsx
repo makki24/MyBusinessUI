@@ -4,9 +4,14 @@ import { DatePickerModal } from "react-native-paper-dates";
 import { View } from "react-native";
 import commonStyles from "../../src/styles/commonStyles";
 
+interface Range {
+  startDate: Date;
+  endDate: Date;
+}
+
 interface DateRangePickerProps {
-  range: any;
-  setRange: any;
+  range: Range;
+  setRange: React.Dispatch<React.SetStateAction<Range>>;
 }
 
 const DateRangePicker: React.FC<DateRangePickerProps> = ({

@@ -1,15 +1,9 @@
 import fetchMock from "jest-fetch-mock";
 import React from "react";
-import {
-  render,
-  fireEvent,
-  waitFor,
-  act,
-  cleanup,
-} from "@testing-library/react-native";
+import { render, fireEvent, cleanup } from "@testing-library/react-native";
 import AddExpenseScreen from "../../screens/AddExpenseScreen";
 import { PaperProvider } from "react-native-paper";
-import { RecoilRoot, useRecoilState } from "recoil";
+import { RecoilRoot } from "recoil";
 import { expenseTypesState } from "../../recoil/atom";
 jest.useFakeTimers();
 
@@ -21,7 +15,7 @@ jest.mock("@react-native-async-storage/async-storage", () => {
   return {
     __esModule: true,
     default: {
-      getItem: jest.fn((key: string) => Promise.resolve("dummyToken")),
+      getItem: jest.fn(() => Promise.resolve("dummyToken")),
       setItem: jest.fn((key: string, value: string) => {
         mockStorage[key] = value;
         return Promise.resolve();

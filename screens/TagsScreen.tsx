@@ -1,37 +1,24 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-  TouchableOpacity,
-} from "react-native";
-import {
-  FAB,
-  Text,
-  Button,
-  Modal,
-  Portal,
-  Card,
-  Title,
-  IconButton,
-} from "react-native-paper";
+import { View, FlatList, RefreshControl, TouchableOpacity } from "react-native";
+import { FAB, Card, Title } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import { tagsState } from "../recoil/atom";
 import TagsService from "../services/TagsService";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonItemStyles from "../src/styles/commonItemStyles";
 import commonStyles from "../src/styles/commonStyles";
-import LoadingError from "../components/common/LoadingError"; // Assuming you have a tags atom
+import LoadingError from "../components/common/LoadingError";
+import { NavigationProp, ParamListBase } from "@react-navigation/native"; // Assuming you have a tags atom
 
-const TagsScreen = ({ navigation }) => {
+interface TagsScreenProps {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+}
+
+const TagsScreen: React.FC<TagsScreenProps> = ({ navigation }) => {
   const [tags, setTags] = useRecoilState(tagsState);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [selectedTag, setSelectedTag] = useState(null);
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
   const fetchTags = async () => {
     try {
@@ -53,7 +40,7 @@ const TagsScreen = ({ navigation }) => {
     fetchTags();
   }, []);
 
-  const handleEditTag = (tag) => {};
+  const handleEditTag = () => {};
 
   const handleRefresh = () => {
     fetchTags();
@@ -67,7 +54,7 @@ const TagsScreen = ({ navigation }) => {
         <FlatList
           data={tags}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleEditTag(item)}>
+            <TouchableOpacity onPress={() => handleEditTag()}>
               <Card style={commonItemStyles.card}>
                 <Card.Content>
                   <Title>{item.name}</Title>

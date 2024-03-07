@@ -1,12 +1,6 @@
 // src/screens/ContributionScreen.tsx
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-} from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import { FAB, Text, Button, Modal, Portal } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import ContributionService from "../services/ContributionService";
@@ -16,8 +10,15 @@ import { Contribution } from "../types";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const ContributionScreen = ({ navigation }) => {
+type ContributionScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
+
+const ContributionScreen: React.FC<ContributionScreenProps> = ({
+  navigation,
+}) => {
   const [contributions, setContributions] = useRecoilState(contributionsState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +26,7 @@ const ContributionScreen = ({ navigation }) => {
   const [selectedContribution, setSelectedContribution] =
     useState<Contribution>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
+  const [_, setLoggedInUser] = useRecoilState(userState);
 
   const fetchContributions = async () => {
     try {
@@ -38,10 +39,6 @@ const ContributionScreen = ({ navigation }) => {
       }));
       setContributions(contributionsData);
     } catch (error) {
-      console.error(
-        "Error fetching contributions:",
-        error.message || "Unknown error",
-      );
       setError(
         error.message || "Error fetching contributions. Please try again.",
       );
@@ -74,10 +71,6 @@ const ContributionScreen = ({ navigation }) => {
     try {
       setIsDeleteModalVisible(true);
     } catch (error) {
-      console.error(
-        "Error checking contribution details:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.message ||
           "Error checking contribution details. Please try again.",
@@ -102,10 +95,6 @@ const ContributionScreen = ({ navigation }) => {
         amountHolding: currVal.amountHolding - selectedContribution.amount,
       }));
     } catch (error) {
-      console.error(
-        "Error deleting contribution:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.message || "Error deleting contribution. Please try again.",
       );

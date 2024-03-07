@@ -4,14 +4,13 @@ import { View } from "react-native";
 import React, { useState } from "react";
 import DateRangePicker from "./DateRangePicker";
 import { useRecoilState } from "recoil";
-import { tagsState, usersState } from "../../recoil/atom";
+import { tagsState } from "../../recoil/atom";
 import { Filter, Tag, User } from "../../types";
 
 import Labels from "./Labels";
 import Button from "./Button";
 import SecondaryButton from "./SecondaryButton";
 import TertiaryButton from "./TertiaryButton";
-import { UI_ELEMENTS_GAP } from "../../src/styles/constants";
 
 interface FilterScreenProps {
   user: User[];
@@ -36,14 +35,10 @@ const FilterScreen: React.FC<FilterScreenProps> = ({
       : { startDate: undefined, endDate: undefined },
   );
   const [selectedOption, setSelectedOption] = useState("custom");
-  const [tags, setTags] = useRecoilState(tagsState);
+  const [tags] = useRecoilState(tagsState);
   const [selectedTags, setSelectedTags] = useState<Tag[]>(
     defaultFilter ? defaultFilter.tags : [],
   );
-
-  const [userOpen, setUserOpen] = useState(false);
-  const [allUsers, setAllUsers] = useRecoilState(usersState);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
   const [selectedUsers, setSelectedUsers] = useState<User[]>(
     defaultFilter ? defaultFilter.user : [],

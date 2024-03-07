@@ -1,27 +1,28 @@
 // src/screens/ReportScreen.tsx
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-} from "react-native";
-import { Text, Card } from "react-native-paper";
+import { View, FlatList, RefreshControl } from "react-native";
 import { useRecoilState } from "recoil";
 import ReportItem from "../components/ReportItem";
 import { userReportsState } from "../recoil/atom";
-import { UserReport } from "../types";
 import ReportService from "../services/ReportService";
-import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const UserReportScreen = ({ route }) => {
+interface UserReportScreenProps {
+  navigation: NavigationProp<ParamListBase>;
+  route: {
+    params: {
+      userId: number;
+    };
+  };
+}
+
+const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
   const { userId } = route.params;
   const [reports, setReports] = useRecoilState(userReportsState);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchReports = async () => {
@@ -38,10 +39,6 @@ const UserReportScreen = ({ route }) => {
       }));
       setReports(reportsData);
     } catch (error) {
-      console.error(
-        "Error fetching reports:",
-        error.message || "Unknown error",
-      );
       setError(error.message || "Error fetching reports. Please try again.");
     } finally {
       setIsRefreshing(false);

@@ -4,74 +4,54 @@ import { User } from "../types";
 
 const UserService = {
   getUsers: async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/api/users`);
+    const response = await axios.get(`/api/users`);
 
-      if (!response.data) {
-        throw new Error(`Error fetching roles: ${response.statusText}`);
-      }
-
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
+    if (!response.data) {
+      throw new Error(`Error fetching roles: ${response.statusText}`);
     }
+
+    return response.data;
   },
 
   assignUserToRole: async (userId, roleId) => {
-    try {
-      const response = await axios.post(`${apiUrl}/api/assign/add-role`, {
-        userId,
-        roleId,
-      });
+    const response = await axios.post(`${apiUrl}/api/assign/add-role`, {
+      userId,
+      roleId,
+    });
 
-      if (!response.data) {
-        throw new Error(`Error assigning role: ${response.statusText}`);
-      }
-
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
+    if (!response.data) {
+      throw new Error(`Error assigning role: ${response.statusText}`);
     }
+
+    return response.data;
   },
 
   removeUserRole: async (userId, roleId) => {
-    try {
-      const response = await axios.post(`${apiUrl}/api/assign/remove-role`, {
-        userId,
-        roleId,
-      });
+    const response = await axios.post(`${apiUrl}/api/assign/remove-role`, {
+      userId,
+      roleId,
+    });
 
-      if (!response.data) {
-        throw new Error(`Error removing role: ${response.statusText}`);
-      }
-
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
+    if (!response.data) {
+      throw new Error(`Error removing role: ${response.statusText}`);
     }
+
+    return response.data;
   },
 
   addUser: async (user: User): Promise<User> => {
-    try {
-      const response = await axios.post(`/api/users`, user);
+    const response = await axios.post(`/api/users`, user);
 
-      if (!response.data) {
-        throw new Error(`No data in response.data`);
-      }
-
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
+    if (!response.data) {
+      throw new Error(`No data in response.data`);
     }
+
+    return response.data;
   },
 
   deleteUser: async (id: number) => {
-    try {
-      const response = await axios.delete(`/api/users/${id}`);
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
-    }
+    const response = await axios.delete(`/api/users/${id}`);
+    return response.data;
   },
 };
 

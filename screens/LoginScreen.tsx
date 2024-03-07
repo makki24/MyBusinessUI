@@ -1,12 +1,6 @@
 // LoginScreen.tsx
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-} from "react-native";
+import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiUrl, androidClientId, expoClientId } from "../app-env.config";
@@ -16,6 +10,7 @@ import { Text } from "react-native-paper";
 import Button from "../components/common/Button";
 import LoadingError from "../components/common/LoadingError";
 import { MAIN_PROFILE_PIC, UI_ELEMENTS_GAP } from "../src/styles/constants";
+import PropTypes from "prop-types";
 
 const LoginScreen = ({ navigation }) => {
   const [userInfo, setUserInfo] = useRecoilState(userState);
@@ -54,15 +49,16 @@ const LoginScreen = ({ navigation }) => {
         },
       });
       if (!response.ok) {
-        console.log(response);
-        throw new Error("Token is invalid or expired");
+        // throw new Error("براہ کرم دوبارہ لاگ ان کریں۔");
+        throw new Error(
+          "Token is invalid or expired / براہ کرم دوبارہ لاگ ان کریں۔",
+        );
       }
       const user = await response.json();
       if (url === "loginOrSignUp") saveToken(response);
       setUserInfo(user);
       navigation.navigate("Home");
     } catch (error) {
-      console.error("Failed to fetch user data:", error);
       setUserInfo(null);
       throw new Error(error.message);
     } finally {
@@ -74,10 +70,7 @@ const LoginScreen = ({ navigation }) => {
     const authHeader = response.headers.get("Authorization");
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const token = authHeader.slice(7); // Remove 'Bearer ' prefix
-      console.log("Bearer token:", token);
       AsyncStorage.setItem("@token", token);
-    } else {
-      console.log("No Bearer token found in headers");
     }
   };
 
@@ -168,5 +161,9 @@ const styles = StyleSheet.create({
     marginTop: UI_ELEMENTS_GAP,
   },
 });
+
+LoginScreen.propTypes = {
+  navigation: PropTypes.object.isRequired, // navigation prop is required
+};
 
 export default LoginScreen;

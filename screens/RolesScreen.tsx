@@ -1,31 +1,24 @@
 // roles-screen/RolesScreen.js
 
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-} from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import { FAB, Text, Button, Modal, Portal } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import { rolesState } from "../recoil/atom";
 import RolesService from "../services/RolesService";
 import RoleItem from "../components/RoleItem";
 import { Role } from "../types";
-import { StackActions, useNavigation } from "@react-navigation/native";
-import { DrawerNavigationProp } from "@react-navigation/drawer";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import PropTypes from "prop-types";
 
 const RolesScreen = ({ navigation }) => {
   const [roles, setRoles] = useRecoilState(rolesState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedRole, setSelectedRole] = useState<Role>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isAssignModalVisible, setIsAssignModalVisible] = useState(false);
   const [assignedUsers, setAssignedUsers] = useState([]);
@@ -37,10 +30,6 @@ const RolesScreen = ({ navigation }) => {
       const rolesData = await RolesService.getRoles();
       setRoles(rolesData);
     } catch (error) {
-      console.error(
-        "Error fetching roles:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.response?.data || "Error fetching roles. Please try again.",
       );
@@ -71,10 +60,6 @@ const RolesScreen = ({ navigation }) => {
         setIsDeleteModalVisible(true);
       }
     } catch (error) {
-      console.error(
-        "Error checking assigned users:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.response?.data ||
           "Error checking assigned users. Please try again.",
@@ -93,10 +78,6 @@ const RolesScreen = ({ navigation }) => {
         prevRoles.filter((role) => role.id !== selectedRole.id),
       );
     } catch (error) {
-      console.error(
-        "Error deleting role:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.response?.data || "Error deleting role. Please try again.",
       );
@@ -187,6 +168,11 @@ const RolesScreen = ({ navigation }) => {
       </Portal>
     </View>
   );
+};
+
+// Define prop types for the component
+RolesScreen.propTypes = {
+  navigation: PropTypes.object.isRequired, // navigation prop is required
 };
 
 export default RolesScreen;
