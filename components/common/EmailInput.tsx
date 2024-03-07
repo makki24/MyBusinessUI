@@ -1,13 +1,29 @@
 // EmailInput.js
 import React, { useEffect, useState } from "react";
 import { HelperText, TextInput } from "react-native-paper";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { StyleProp } from "react-native/Libraries/StyleSheet/StyleSheet";
+import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 
-const EmailInput = ({ label, email, setEmail, onValidationChange, style }) => {
+type EmailInputProps = {
+  label: string;
+  email: string;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
+  onValidationChange: (arg1: boolean) => void;
+  style: StyleProp<ViewStyle>;
+};
+
+const EmailInput: React.FC<EmailInputProps> = ({
+  label,
+  email,
+  setEmail,
+  onValidationChange,
+  style,
+}) => {
   const [emailError, setEmailError] = useState("");
 
   const validateEmail = (email) => {
-    var re =
+    const re =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
   };

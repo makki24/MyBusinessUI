@@ -1,12 +1,6 @@
 // src/screens/WorksScreen.tsx
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-} from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import { FAB, Text, Button, Modal, Portal } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import WorkService from "../services/WorkService";
@@ -18,13 +12,18 @@ import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import SearchAndFilter from "../components/common/SearchAndFilter";
 import workService from "../services/WorkService";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const WorksScreen = ({ navigation }) => {
+type WorksScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
+
+const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
   const [works, setWorks] = useRecoilState(worksState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [selectedWork, setSelectedWork] = useState(null);
+  const [selectedWork, setSelectedWork] = useState<Work>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [workUsers, setWorkUsers] = useState<User[]>();
@@ -41,15 +40,14 @@ const WorksScreen = ({ navigation }) => {
     try {
       setIsRefreshing(true);
 
-      let worksData = await WorkService.getWorks();
-      let userSet = new Set<User>();
+      const worksData = await WorkService.getWorks();
+      const userSet = new Set<User>();
       worksData.forEach((expn) => {
         userSet.add(expn.user);
       });
       setWorkUsers([...userSet]);
       transformAndSetWork(worksData);
     } catch (error) {
-      console.error("Error fetching works:", error.message || "Unknown error");
       setError(error.message || "Error fetching works. Please try again.");
     } finally {
       setIsRefreshing(false);
@@ -82,10 +80,6 @@ const WorksScreen = ({ navigation }) => {
     try {
       setIsDeleteModalVisible(true);
     } catch (error) {
-      console.error(
-        "Error checking work details:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.response?.data ||
           "Error checking work details. Please try again.",
@@ -99,15 +93,11 @@ const WorksScreen = ({ navigation }) => {
     setIsLoading(true);
 
     try {
-      await WorkService.deleteWork(selectedWork.workID);
+      await WorkService.deleteWork(selectedWork.id);
       setWorks((prevWorks) =>
-        prevWorks.filter((work) => work.id !== selectedWork.workID),
+        prevWorks.filter((work) => work.id !== selectedWork.id),
       );
     } catch (error) {
-      console.error(
-        "Error deleting work:",
-        error.response?.data || "Unknown error",
-      );
       setError(error.message || "Error deleting work. Please try again.");
     } finally {
       setIsLoading(false);

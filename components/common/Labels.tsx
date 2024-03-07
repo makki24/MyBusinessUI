@@ -1,7 +1,7 @@
 import commonItemStyles from "../../src/styles/commonItemStyles";
 import { View } from "react-native";
 import { Chip, Text } from "react-native-paper";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 
 interface Item {
   id?: string | number;

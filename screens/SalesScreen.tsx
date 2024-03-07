@@ -1,30 +1,28 @@
 // src/screens/SaleScreen.tsx
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-} from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import { FAB, Text, Button, Modal, Portal } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import SaleService from "../services/SaleService";
 import SaleItem from "../components/SaleItem";
-import { salesState, userState } from "../recoil/atom";
+import { salesState } from "../recoil/atom";
 import { Sale } from "../types";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const SaleScreen = ({ navigation }) => {
+type SaleScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
+
+const SaleScreen: React.FC<SaleScreenProps> = ({ navigation }) => {
   const [sales, setSales] = useRecoilState(salesState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedSale, setSelectedSale] = useState<Sale>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
 
   const fetchSales = async () => {
     try {
@@ -37,7 +35,6 @@ const SaleScreen = ({ navigation }) => {
       }));
       setSales(salesData);
     } catch (error) {
-      console.error("Error fetching sales:", error.message || "Unknown error");
       setError(error.message || "Error fetching sales. Please try again.");
     } finally {
       setIsRefreshing(false);
@@ -68,10 +65,6 @@ const SaleScreen = ({ navigation }) => {
     try {
       setIsDeleteModalVisible(true);
     } catch (error) {
-      console.error(
-        "Error checking sale details:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.message || "Error checking sale details. Please try again.",
       );
@@ -89,10 +82,6 @@ const SaleScreen = ({ navigation }) => {
         prevSales.filter((sale) => sale.id !== selectedSale.id),
       );
     } catch (error) {
-      console.error(
-        "Error deleting sale:",
-        error.response?.data || "Unknown error",
-      );
       setError(error.message || "Error deleting sale. Please try again.");
     } finally {
       setIsLoading(false);

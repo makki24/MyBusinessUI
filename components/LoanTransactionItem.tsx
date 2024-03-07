@@ -1,7 +1,7 @@
 // src/components/LoanTransactionItem.tsx
 import React from "react";
-import { Card, Paragraph, Title, IconButton } from "react-native-paper";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { Card, Paragraph, IconButton } from "react-native-paper";
+import { View, Text, TouchableOpacity } from "react-native";
 import UserDetails from "./common/UserDetails";
 import { LoanToHoldingTransaction } from "../types";
 import commonItemStyles from "../src/styles/commonItemStyles";

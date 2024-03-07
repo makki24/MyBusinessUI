@@ -1,19 +1,6 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { View, FlatList, RefreshControl, StyleSheet } from "react-native";
-import {
-  FAB,
-  Text,
-  Modal,
-  Portal,
-  Searchbar,
-  IconButton,
-} from "react-native-paper"; // Import Searchbar
+import React, { useEffect, useState } from "react";
+import { View, FlatList, RefreshControl } from "react-native";
+import { FAB, Text, Modal, Portal } from "react-native-paper"; // Import Searchbar
 import { useRecoilState } from "recoil";
 import { workTypesState } from "../recoil/atom";
 import WorkTypeItem from "../components/WorkTypeItem";
@@ -24,8 +11,13 @@ import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import Button from "../components/common/Button";
 import SearchAndFilter from "../components/common/SearchAndFilter";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const WorkTypeScreen = ({ navigation }) => {
+type WorkTypeScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
+
+const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({ navigation }) => {
   const [workTypes, setWorkTypes] = useRecoilState(workTypesState);
   const [filteredWorkTypes, setFilteredWorkTypes] = useState([]);
   const [error, setError] = useState(null);
@@ -43,10 +35,6 @@ const WorkTypeScreen = ({ navigation }) => {
       setWorkTypes(workTypesData);
       setFilteredWorkTypes(workTypesData);
     } catch (error) {
-      console.error(
-        "Error fetching work types:",
-        error.response?.data || "Unknown error",
-      );
       setError(error.message || "Error fetching work types. Please try again.");
     } finally {
       setIsRefreshing(false);
@@ -80,10 +68,6 @@ const WorkTypeScreen = ({ navigation }) => {
         prevWorkTypes.filter((wt) => wt.id !== selectedWorkType.id),
       );
     } catch (error) {
-      console.error(
-        "Error deleting work type:",
-        error.response?.data || "Unknown error",
-      );
       setError(error.message || "Error deleting work type. Please try again.");
     } finally {
       setIsLoading(false);

@@ -1,18 +1,18 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import {
   render,
   fireEvent,
-  screen,
   act,
   waitFor,
   cleanup,
 } from "@testing-library/react-native";
 import LoanTransactionScreen from "../../screens/LoanTransactionsScreen";
-import { LoanToHoldingTransaction } from "../../types";
 import { RecoilRoot } from "recoil";
 import { PaperProvider } from "react-native-paper";
-import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 // Mock the entire module
 jest.mock("../../services/ContributionService.ts", () => ({
@@ -36,14 +36,16 @@ describe("LoanTransactionScreen", () => {
   afterEach(cleanup);
 
   it("renders correctly", async () => {
-    const mockTransactions = [
-      { id: 1, amount: 100 },
-    ] as LoanToHoldingTransaction[];
-
     const { getByTestId, getByText } = render(
       <RecoilRoot>
         <PaperProvider>
-          <LoanTransactionScreen navigation={{ navigate: jest.fn() }} />
+          <LoanTransactionScreen
+            navigation={
+              {
+                navigate: jest.fn(),
+              } as unknown as NavigationProp<ParamListBase>
+            }
+          />
         </PaperProvider>
       </RecoilRoot>,
     );
@@ -65,7 +67,13 @@ describe("LoanTransactionScreen", () => {
     const { getByTestId } = render(
       <RecoilRoot>
         <PaperProvider>
-          <LoanTransactionScreen navigation={{ navigate: jest.fn() }} />
+          <LoanTransactionScreen
+            navigation={
+              {
+                navigate: jest.fn(),
+              } as unknown as NavigationProp<ParamListBase>
+            }
+          />
         </PaperProvider>
       </RecoilRoot>,
     );
@@ -92,7 +100,9 @@ describe("LoanTransactionScreen", () => {
   it("navigates to Edit screen when editing a transaction", async () => {
     // Mock the navigate function
     const mockNavigate = jest.fn();
-    const nav = { navigate: mockNavigate };
+    const nav = {
+      navigate: mockNavigate,
+    } as unknown as NavigationProp<ParamListBase>;
     jest
       .spyOn(require("@react-navigation/native"), "useNavigation")
       .mockReturnValue({
