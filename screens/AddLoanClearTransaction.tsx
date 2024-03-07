@@ -10,6 +10,7 @@ import contributionService from "../services/ContributionService";
 import commonStyles from "../src/styles/commonStyles";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import LoadingError from "../components/common/LoadingError";
+import NumberInput from "../components/common/NumberInput";
 
 const AddLoanClearTransaction = ({ navigation, route }) => {
     const [amountToTransfer, setAmountToTransfer] = useState('');
@@ -104,13 +105,10 @@ const AddLoanClearTransaction = ({ navigation, route }) => {
             {displayUser &&  (<Text>Amount to Receive: {displayUser.amountToReceive}</Text>)}
             <Text style={{marginBottom: 5}}>Amount Holding: {displayUser.amountHolding}</Text>
 
-
-            <TextInput
+            <NumberInput
                 label="Amount to Transfer"
                 value={amountToTransfer}
                 onChangeText={setAmountToTransfer}
-                style={commonAddScreenStyles.inputField}
-                keyboardType={'numeric'}
             />
 
             <Button icon="arrow-right" mode="contained" onPress={handleTransferAmount}>

@@ -13,6 +13,7 @@ import SwitchInput from "../components/common/SwitchInput";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import NumberInput from "../components/common/NumberInput";
 
 interface AddSaleScreenProps {
     navigation: any;
@@ -227,12 +228,30 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
                 loading={isDataLoading}
             />
 
-            {showAmount && <TextInput label="Amount" value={amount} onChangeText={setAmount} keyboardType="numeric" style={commonAddScreenStyles.inputField} />}
+            {showAmount &&
+                <NumberInput
+                    label="Amount"
+                    value={amount}
+                    onChangeText={setAmount}
+                />
+            }
 
 
-            {!showAmount && <TextInput label="Price per unit" value={pricePerUnit} onChangeText={setPricePerUnit} keyboardType="numeric" style={commonAddScreenStyles.inputField} />}
+            {!showAmount &&
+                <NumberInput
+                    label="Price per unit"
+                    value={pricePerUnit}
+                    onChangeText={setPricePerUnit}
+                />
+            }
 
-            {!showAmount && <TextInput label="Quantity" value={quantity} onChangeText={setQuantity} keyboardType="numeric" style={commonAddScreenStyles.inputField} />}
+            {!showAmount &&
+                <NumberInput
+                    label="Quantity"
+                    value={quantity}
+                    onChangeText={setQuantity}
+                />
+            }
 
             <TextInput label="Description (optional)" value={description} onChangeText={setDescription} style={commonAddScreenStyles.inputField} />
 
