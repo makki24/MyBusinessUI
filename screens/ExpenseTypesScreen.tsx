@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-} from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import { FAB, Text, Button, Modal, Portal, Snackbar } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import { expenseTypesState } from "../recoil/atom";
 import ExpenseTypesService from "../services/ExpenseTypesService";
 import ExpenseTypeItem from "../components/ExpenseTypeItem";
-import { ExpenseType } from "../types";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const ExpenseTypesScreen = ({ navigation }) => {
+type ExpenseTypesScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
+
+const ExpenseTypesScreen: React.FC<ExpenseTypesScreenProps> = ({
+  navigation,
+}) => {
   const [expenseTypes, setExpenseTypes] = useRecoilState(expenseTypesState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,10 +33,6 @@ const ExpenseTypesScreen = ({ navigation }) => {
       setExpenseTypes(expenseTypesData);
       setError(null); // Clear any previous errors
     } catch (error) {
-      console.error(
-        "Error fetching expense types:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.response?.data?.error ??
           (error.response?.data ||
@@ -72,10 +68,6 @@ const ExpenseTypesScreen = ({ navigation }) => {
       );
       setSnackbarVisible(true);
     } catch (error) {
-      console.error(
-        "Error deleting expense type:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.response?.data ||
           "Error deleting expense type. Please try again.",

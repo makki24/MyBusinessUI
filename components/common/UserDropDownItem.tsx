@@ -1,10 +1,18 @@
 import UserDetails from "./UserDetails";
 import { Icon, MD3DarkTheme, MD3LightTheme } from "react-native-paper";
-import { StyleSheet, TouchableOpacity, useColorScheme } from "react-native";
+import { TouchableOpacity, useColorScheme } from "react-native";
 import React from "react";
 import commonAddScreenStyles from "../../src/styles/commonAddScreenStyles";
+import { User } from "../../types";
 
-const UserDropDownItem = ({
+interface UserDropDownItemProps {
+  selectedUser: string;
+  setSelectedUser: React.Dispatch<React.SetStateAction<string>>;
+  setUserOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  item: User;
+}
+
+const UserDropDownItem: React.FC<UserDropDownItemProps> = ({
   selectedUser,
   setSelectedUser,
   setUserOpen,

@@ -3,7 +3,12 @@ import commonStyles from "../../src/styles/commonStyles";
 import React from "react";
 import { MD3DarkTheme, MD3LightTheme, Text } from "react-native-paper";
 
-const LoadingError = ({ isLoading, error }) => {
+type LoadingErrorProps = {
+  isLoading: boolean;
+  error: string;
+};
+
+const LoadingError: React.FC<LoadingErrorProps> = ({ isLoading, error }) => {
   const colorScheme = useColorScheme();
   const theme = colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme;
 

@@ -1,24 +1,24 @@
 // src/screens/LoanTransactionScreen.tsx
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-  ScrollView,
-} from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import { FAB, Text, Button, Modal, Portal, Snackbar } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import LoanTransactionItem from "../components/LoanTransactionItem";
-import { loanToHoldingTransactionState, userState } from "../recoil/atom";
+import { loanToHoldingTransactionState } from "../recoil/atom";
 import { LoanToHoldingTransaction } from "../types";
 import contributionService from "../services/ContributionService";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const LoanTransactionScreen = ({ navigation }) => {
+type LoanTransactionScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
+
+const LoanTransactionScreen: React.FC<LoanTransactionScreenProps> = ({
+  navigation,
+}) => {
   const [loanTransactions, setLoanTransactions] = useRecoilState(
     loanToHoldingTransactionState,
   );
@@ -28,7 +28,6 @@ const LoanTransactionScreen = ({ navigation }) => {
   const [selectedTransaction, setSelectedTransaction] =
     useState<LoanToHoldingTransaction>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   const fetchLoanTransactions = async () => {
@@ -43,10 +42,6 @@ const LoanTransactionScreen = ({ navigation }) => {
       }));
       setLoanTransactions(transactionsData);
     } catch (error) {
-      console.error(
-        "Error fetching loan transactions:",
-        error.message || "Unknown error",
-      );
       setError(
         error.message || "Error fetching loan transactions. Please try again.",
       );
@@ -83,10 +78,6 @@ const LoanTransactionScreen = ({ navigation }) => {
     try {
       setIsDeleteModalVisible(true);
     } catch (error) {
-      console.error(
-        "Error checking loan transaction details:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.message ||
           "Error checking loan transaction details. Please try again.",
@@ -110,10 +101,6 @@ const LoanTransactionScreen = ({ navigation }) => {
         ),
       );
     } catch (error) {
-      console.error(
-        "Error deleting loan transaction:",
-        error.response?.data || "Unknown error",
-      );
       setError(
         error.message || "Error deleting loan transaction. Please try again.",
       );

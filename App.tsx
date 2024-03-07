@@ -7,6 +7,8 @@ import {
   useRoute,
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
+  ParamListBase,
+  DrawerNavigationState,
 } from "@react-navigation/native";
 import {
   createDrawerNavigator,
@@ -70,7 +72,6 @@ import { User } from "./types";
 import AdminScreen from "./screens/AdminScreen";
 import commonStyles from "./src/styles/commonStyles";
 import {
-  BORDER_RADIUS,
   CONTAINER_PADDING,
   DRAWER_CONTENT_MARGIN,
   HEADING_SIZE,
@@ -78,6 +79,10 @@ import {
   UI_ELEMENTS_GAP,
 } from "./src/styles/constants";
 import ExpenseTypesService from "./services/ExpenseTypesService";
+import type {
+  DrawerDescriptorMap,
+  DrawerNavigationHelpers,
+} from "@react-navigation/drawer/src/types";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -212,17 +217,17 @@ const ReportStack = () => {
 
 const AppContent = () => {
   const userInfo = useRecoilValue(userState);
-  const [users, setUsers] = useRecoilState(usersState);
-  const [tags, setTags] = useRecoilState(tagsState);
-  const [roles, setRoles] = useRecoilState(rolesState);
-  const [expenseTypes, setExpenseTypes] = useRecoilState(expenseTypesState);
+  const [_users, setUsers] = useRecoilState(usersState);
+  const [_tags, setTags] = useRecoilState(tagsState);
+  const [_roles, setRoles] = useRecoilState(rolesState);
+  const [_expenseTypes, setExpenseTypes] = useRecoilState(expenseTypesState);
 
   const fetchUsers = async () => {
     try {
       const fetchedUsers = await UserService.getUsers();
       setUsers(fetchedUsers);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      error;
     }
   };
 
@@ -231,7 +236,7 @@ const AppContent = () => {
       const fetchedTags = await TagsService.getTags();
       setTags(fetchedTags);
     } catch (error) {
-      console.error("Error fetching tags:", error);
+      error;
     }
   };
 
@@ -240,7 +245,7 @@ const AppContent = () => {
       const fetchedRoles = await RolesService.getRoles();
       setRoles(fetchedRoles);
     } catch (error) {
-      console.error("Error fetching roles:", error);
+      error;
     }
   };
 
@@ -249,7 +254,7 @@ const AppContent = () => {
       const fetchedExpenseTypes = await ExpenseTypesService.getExpenseTypes();
       setExpenseTypes(fetchedExpenseTypes);
     } catch (error) {
-      console.error("Error fetching expense types:", error);
+      error;
     }
   };
 
@@ -366,7 +371,19 @@ const App = () => {
   );
 };
 
-const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
+interface CustomDrawerContentProps {
+  navigation: DrawerNavigationHelpers;
+  state: DrawerNavigationState<ParamListBase>; // Adjust this type based on your navigation stack
+  descriptors: DrawerDescriptorMap;
+  userInfo: User;
+}
+
+const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
+  navigation,
+  state,
+  descriptors,
+  ...props
+}) => {
   const userInfo = props.userInfo as User;
   const [_, setUserInfo] = useRecoilState(userState);
 
@@ -465,7 +482,7 @@ const CustomDrawerContent = ({ navigation, state, descriptors, ...props }) => {
 };
 
 const CustomHeader = () => {
-  const navigation = useNavigation<DrawerNavigationProp<any>>();
+  const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
   const route = useRoute<RouteProp<Record<string, RouteParams>, string>>();
   const userInfo = useRecoilValue(userState);
   const title = route.params?.title || route.name;

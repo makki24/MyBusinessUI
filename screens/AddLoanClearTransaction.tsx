@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
-import { Button, TextInput, Text, Snackbar } from "react-native-paper";
+import { View, StyleSheet, ScrollView } from "react-native";
+import { Button, Text, Snackbar } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import {
   loanToHoldingTransactionState,
@@ -12,22 +12,34 @@ import UserDropDownItem from "../components/common/UserDropDownItem";
 import { LoanToHoldingTransaction, User } from "../types";
 import contributionService from "../services/ContributionService";
 import commonStyles from "../src/styles/commonStyles";
-import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import LoadingError from "../components/common/LoadingError";
 import NumberInput from "../components/common/NumberInput";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const AddLoanClearTransaction = ({ navigation, route }) => {
+interface AddLoanClearTransactionProps {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+  route: {
+    params: {
+      isEditMode: boolean;
+      transaction: LoanToHoldingTransaction;
+    };
+  };
+}
+
+const AddLoanClearTransaction: React.FC<AddLoanClearTransactionProps> = ({
+  route,
+}) => {
   const [amountToTransfer, setAmountToTransfer] = useState("");
-  const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
+  const [loggedInUser] = useRecoilState(userState);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [allUsers, setAllUsers] = useRecoilState(usersState);
+  const [allUsers] = useRecoilState(usersState);
   const [userOpen, setUserOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<string | null>(
     loggedInUser.id,
   );
   const [displayUser, setDisplayUser] = useState<User>(loggedInUser);
-  const [loanTransactions, setLoanTransactions] = useRecoilState(
+  const [_, setLoanTransactions] = useRecoilState(
     loanToHoldingTransactionState,
   );
   const [snackbarVisible, setSnackbarVisible] = useState(false);

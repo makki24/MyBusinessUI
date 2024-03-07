@@ -1,6 +1,6 @@
 // src/components/WorkTypeItem.tsx
 import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { Card, Text, Title, IconButton } from "react-native-paper";
 import { WorkType } from "../types";
 import commonItemStyles from "../src/styles/commonItemStyles";
