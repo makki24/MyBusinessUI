@@ -16,6 +16,7 @@ import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import UserDropDownItem from "../components/common/UserDropDownItem";
+import NumberInput from "../components/common/NumberInput";
 
 interface AddWorkScreenProps {
     navigation: any;
@@ -266,14 +267,28 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
 
             {/* Input fields for quantity, price per unit, amount, and description */}
             {showPricePerUnit && (
-                <TextInput label="Price per unit" value={pricePerUnit} onChangeText={setPricePerUnit} keyboardType="numeric" style={commonAddScreenStyles.inputField} />
+                <NumberInput
+                    label="Price per unit"
+                    value={pricePerUnit}
+                    onChangeText={setPricePerUnit}
+                />
             )}
 
             {!showAmount && (
-                <TextInput label="Quantity" value={quantity} onChangeText={setQuantity} keyboardType="numeric" style={commonAddScreenStyles.inputField} />
+                <NumberInput
+                    label="Quantity"
+                    value={quantity}
+                    onChangeText={setQuantity}
+                />
             )}
 
-            {showAmount && <TextInput label="Amount" value={amount} onChangeText={setAmount} keyboardType="numeric" style={commonAddScreenStyles.inputField} />}
+            {showAmount &&
+                <NumberInput
+                    label="Amount"
+                    value={amount}
+                    onChangeText={setAmount}
+                />
+            }
 
             <TextInput label="Description (optional)" value={description} onChangeText={setDescription} style={commonAddScreenStyles.inputField} />
 

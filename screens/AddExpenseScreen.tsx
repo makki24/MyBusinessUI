@@ -22,6 +22,7 @@ import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import Button from "../components/common/Button";
+import NumberInput from "../components/common/NumberInput";
 
 interface AddExpenseScreenProps {
     navigation: any;
@@ -308,7 +309,11 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({ route, navigation }
             )}
 
             {/* Input fields for amount and additional information */}
-            <TextInput label="Amount" value={amount} onChangeText={setAmount} keyboardType="numeric" style={commonAddScreenStyles.inputField} />
+            <NumberInput
+                label="Amount"
+                value={amount}
+                onChangeText={setAmount}
+            />
 
             <TextInput
                 label="Additional information (optional)"

@@ -13,6 +13,7 @@ import contributionService from "../services/ContributionService";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import NumberInput from "../components/common/NumberInput";
 
 let oldAmount = 0;
 
@@ -164,11 +165,10 @@ const AddContributionScreen = ({ navigation, route }) => {
                 />
             )}
 
-            <TextInput
+            <NumberInput
                 label="Amount to Add"
                 value={amountToAdd}
                 onChangeText={setAmountToAdd}
-                style={commonAddScreenStyles.inputField}
             />
 
             <DateTimePicker
