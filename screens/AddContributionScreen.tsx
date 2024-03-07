@@ -1,7 +1,7 @@
 // AddContributionScreen.tsx
 import React, { useState, useEffect } from "react";
-import { View, ActivityIndicator, ScrollView } from "react-native";
-import { Button, TextInput, Text, Portal, Modal } from "react-native-paper";
+import { View, ScrollView } from "react-native";
+import { Button, Text, Portal, Modal } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import { tagsState, usersState, userState } from "../recoil/atom";
 import UserDropDownItem from "../components/common/UserDropDownItem";
@@ -14,15 +14,29 @@ import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import NumberInput from "../components/common/NumberInput";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 let oldAmount = 0;
 
-const AddContributionScreen = ({ navigation, route }) => {
+interface AddContributionScreenProps {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+  route: {
+    params: {
+      isEditMode: boolean;
+      contribution: Contribution;
+    };
+  };
+}
+
+const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
+  navigation,
+  route,
+}) => {
   const [amountToAdd, setAmountToAdd] = useState("");
   const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [allUsers, setAllUsers] = useRecoilState(usersState);
+  const [allUsers] = useRecoilState(usersState);
   const [userOpen, setUserOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [inputDate, setInputDate] = useState(new Date());
@@ -32,7 +46,7 @@ const AddContributionScreen = ({ navigation, route }) => {
   });
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [tagOpen, setTagOpen] = useState(false);
-  const [tags, setTags] = useRecoilState(tagsState);
+  const [tags] = useRecoilState(tagsState);
   const [isSelf, setIsSelf] = useState(false); // State for SwitchInput
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -44,7 +58,7 @@ const AddContributionScreen = ({ navigation, route }) => {
 
       setAmountToAdd(`${extractedContribution.amount}`);
       oldAmount = extractedContribution.amount;
-      setSelectedUser(extractedContribution.sendingMember?.id || null);
+      setSelectedUser(extractedContribution.sender?.id || null);
       setInputDate(paramDate);
       setTime({ hours: paramDate.getHours(), minutes: paramDate.getMinutes() });
       setSelectedTags(extractedContribution.tags.map((tag) => tag.id));
@@ -53,11 +67,6 @@ const AddContributionScreen = ({ navigation, route }) => {
 
   const handleModalClose = () => {
     setModalVisible(false);
-  };
-
-  const navigateToManageAmounts = () => {
-    // Implement navigation logic to manage amounts screen
-    handleModalClose();
   };
 
   const submitContribution = async () => {
@@ -79,8 +88,7 @@ const AddContributionScreen = ({ navigation, route }) => {
         newAmount = newAmount - oldAmount;
       }
 
-      const response =
-        await contributionService.updateContribution(contribution);
+      await contributionService.updateContribution(contribution);
       setLoggedInUser((user) => ({
         ...user,
         amountHolding: newAmount,

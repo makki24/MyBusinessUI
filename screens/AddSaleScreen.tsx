@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 
 import { salesState, tagsState, usersState, userState } from "../recoil/atom";
@@ -14,9 +14,10 @@ import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import NumberInput from "../components/common/NumberInput";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 interface AddSaleScreenProps {
-  navigation: any;
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
   route: {
     params: {
       isEditMode: boolean;
@@ -44,13 +45,13 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
     hours: new Date().getHours(),
     minutes: new Date().getMinutes(),
   });
-  const [tags, setTags] = useRecoilState(tagsState);
-  const [sales, setSales] = useRecoilState(salesState);
-  const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
+  const [tags] = useRecoilState(tagsState);
+  const [_, setSales] = useRecoilState(salesState);
+  const [loggedInUser] = useRecoilState(userState);
   const [isEdit, setIsEdit] = useState(false);
-  const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
+  const [isDataLoading] = useState<boolean>(false);
   const [userOpen, setUserOpen] = useState(false);
-  const [allUsers, setAllUsers] = useRecoilState(usersState);
+  const [allUsers] = useRecoilState(usersState);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [showAmount, setShowAmount] = useState(false);
 
@@ -74,7 +75,7 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
     }
   }, [route.params?.isEditMode, route.params?.sale]);
 
-  const handleTagChange = (tag: string | null) => {
+  const handleTagChange = () => {
     // Handle tag change logic if needed
     // ...
   };
@@ -125,7 +126,6 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
 
       navigation.goBack();
     } catch (err) {
-      console.error("Error adding sale:", err);
       setError(err.message ?? "An error occurred while adding the sale");
     } finally {
       setIsLoading(false);

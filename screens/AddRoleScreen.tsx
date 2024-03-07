@@ -8,15 +8,16 @@ import RolesService from "../services/RolesService";
 import { rolesState } from "../recoil/atom";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
-import { Role } from "../types"; // Adjust the path accordingly
+import { Role } from "../types";
+import { NavigationProp, ParamListBase } from "@react-navigation/native"; // Adjust the path accordingly
 
 interface AddRoleScreenProps {
-  navigation: any; // Adjust the type based on your navigation prop type
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 }
 
 const AddRoleScreen: React.FC<AddRoleScreenProps> = ({ navigation }) => {
   const [roleName, setRoleName] = useState("");
-  const [roles, setRoles] = useRecoilState(rolesState);
+  const [_, setRoles] = useRecoilState(rolesState);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,7 +39,6 @@ const AddRoleScreen: React.FC<AddRoleScreenProps> = ({ navigation }) => {
       // Navigate back to the Roles screen
       navigation.goBack();
     } catch (error) {
-      console.error("Error adding role:", error);
       setError(error.response?.data || "An error occurred"); // Set the error message
     } finally {
       setIsLoading(false); // Set loading to false regardless of success or failure

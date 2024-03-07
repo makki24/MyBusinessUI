@@ -3,87 +3,53 @@ import { Filter, Work, WorkType } from "../types";
 
 const WorkService = {
   getWorkTypes: async (): Promise<WorkType[]> => {
-    try {
-      const response = await axios.get(`/api/work-types`);
-      if (!response.data) {
-        throw new Error(`No data in response.data`);
-      }
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
+    const response = await axios.get(`/api/work-types`);
+    if (!response.data) {
+      throw new Error(`No data in response.data`);
     }
+    return response.data;
   },
 
   addWorkType: async (type: WorkType) => {
-    try {
-      const response = await axios.post(`/api/work-types`, type);
-
-      if (!response.data) {
-        throw new Error(`No data in response.data`);
-      }
-
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
+    const response = await axios.post(`/api/work-types`, type);
+    if (!response.data) {
+      throw new Error(`No data in response.data`);
     }
+    return response.data;
   },
 
   deleteWorkType: async (id: number) => {
-    try {
-      const response = await axios.delete(`/api/work-types/${id}`);
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
-    }
+    const response = await axios.delete(`/api/work-types/${id}`);
+    return response.data;
   },
 
   getWorks: async (): Promise<Work[]> => {
-    try {
-      const response = await axios.get(`/api/works`);
-      if (!response.data) {
-        throw new Error(`No data in response.data`);
-      }
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
+    const response = await axios.get(`/api/works`);
+    if (!response.data) {
+      throw new Error(`No data in response.data`);
     }
+    return response.data;
   },
 
   addWork: async (work: Work) => {
-    try {
-      const response = await axios.post(`/api/works`, work);
-
-      if (!response.data) {
-        throw new Error(`No data in response.data`);
-      }
-
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
+    const response = await axios.post(`/api/works`, work);
+    if (!response.data) {
+      throw new Error(`No data in response.data`);
     }
+    return response.data;
   },
 
   deleteWork: async (id: number) => {
-    try {
-      const response = await axios.delete(`/api/works/${id}`);
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
-    }
+    const response = await axios.delete(`/api/works/${id}`);
+    return response.data;
   },
 
   filterWork: async (filter: Filter): Promise<Work[]> => {
-    try {
-      const response = await axios.post(`/api/works/filter`, filter);
-
-      if (!response.data) {
-        throw new Error(`No data in response.data`);
-      }
-
-      return response.data;
-    } catch (error) {
-      throw error; // You can handle the error further or let the caller handle it
+    const response = await axios.post(`/api/works/filter`, filter);
+    if (!response.data) {
+      throw new Error(`No data in response.data`);
     }
+    return response.data;
   },
 };
 

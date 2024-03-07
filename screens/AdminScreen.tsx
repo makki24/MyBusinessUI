@@ -2,8 +2,13 @@ import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { Card, Title } from "react-native-paper";
 import homeScreenStyles from "../src/styles/homeScreenStyles";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const AdminScreen = ({ navigation }) => {
+type AdminScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
+
+const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
   const images = [
     { uri: "https://via.placeholder.com/300/FF5733/FFFFFF", interval: 3000 },
     { uri: "https://via.placeholder.com/300/33FF57/FFFFFF", interval: 7000 },
@@ -12,9 +17,7 @@ const AdminScreen = ({ navigation }) => {
     // Add more image URLs with different intervals as needed
   ];
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(
-    Array(images.length).fill(0),
-  );
+  const [_, setCurrentImageIndex] = useState(Array(images.length).fill(0));
 
   useEffect(() => {
     const intervals = images.map((image, i) =>
