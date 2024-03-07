@@ -1,132 +1,170 @@
 // src/screens/SaleScreen.tsx
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
-import { FAB, Text, Button, Modal, Portal } from 'react-native-paper';
-import { useRecoilState } from 'recoil';
-import SaleService from '../services/SaleService';
-import SaleItem from '../components/SaleItem';
-import {salesState, userState} from '../recoil/atom';
-import { Sale } from '../types';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  RefreshControl,
+} from "react-native";
+import { FAB, Text, Button, Modal, Portal } from "react-native-paper";
+import { useRecoilState } from "recoil";
+import SaleService from "../services/SaleService";
+import SaleItem from "../components/SaleItem";
+import { salesState, userState } from "../recoil/atom";
+import { Sale } from "../types";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 
 const SaleScreen = ({ navigation }) => {
-    const [sales, setSales] = useRecoilState(salesState);
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isRefreshing, setIsRefreshing] = useState(false);
-    const [selectedSale, setSelectedSale] = useState<Sale>(null);
-    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-    const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
+  const [sales, setSales] = useRecoilState(salesState);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedSale, setSelectedSale] = useState<Sale>(null);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
 
-    const fetchSales = async () => {
-        try {
-            setIsRefreshing(true);
+  const fetchSales = async () => {
+    try {
+      setIsRefreshing(true);
 
-            let salesData = await SaleService.getSales();
-            salesData = salesData.map(sale => ({
-                ...sale,
-                date: new Date(sale.date)
-            }))
-            setSales(salesData);
-        } catch (error) {
-            console.error('Error fetching sales:', error.message || 'Unknown error');
-            setError(error.message || 'Error fetching sales. Please try again.');
-        } finally {
-            setIsRefreshing(false);
-        }
-    };
+      let salesData = await SaleService.getSales();
+      salesData = salesData.map((sale) => ({
+        ...sale,
+        date: new Date(sale.date),
+      }));
+      setSales(salesData);
+    } catch (error) {
+      console.error("Error fetching sales:", error.message || "Unknown error");
+      setError(error.message || "Error fetching sales. Please try again.");
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchSales();
-    }, []);
+  useEffect(() => {
+    fetchSales();
+  }, []);
 
-    const handleEditSale = (sale: Sale) => {
-        const serializedDate = sale.date.toISOString();
+  const handleEditSale = (sale: Sale) => {
+    const serializedDate = sale.date.toISOString();
 
-        navigation.navigate('SaleStack', {
-            screen: 'AddSale',
-            params: { title: `Edit Sale`, sale: {...sale, date: serializedDate}, isEditMode: true },
-        });
-    };
+    navigation.navigate("SaleStack", {
+      screen: "AddSale",
+      params: {
+        title: `Edit Sale`,
+        sale: { ...sale, date: serializedDate },
+        isEditMode: true,
+      },
+    });
+  };
 
-    const handleDeleteSale = async (sale) => {
-        setSelectedSale(sale);
-        setIsLoading(true);
+  const handleDeleteSale = async (sale) => {
+    setSelectedSale(sale);
+    setIsLoading(true);
 
-        try {
-            setIsDeleteModalVisible(true);
-        } catch (error) {
-            console.error('Error checking sale details:', error.response?.data || 'Unknown error');
-            setError(error.message  || 'Error checking sale details. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    try {
+      setIsDeleteModalVisible(true);
+    } catch (error) {
+      console.error(
+        "Error checking sale details:",
+        error.response?.data || "Unknown error",
+      );
+      setError(
+        error.message || "Error checking sale details. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    const confirmDeleteSale = async () => {
-        setIsLoading(true);
+  const confirmDeleteSale = async () => {
+    setIsLoading(true);
 
-        try {
-            await SaleService.deleteSale(selectedSale.id);
-            setSales((prevSales) => prevSales.filter((sale) => sale.id !== selectedSale.id));
-        } catch (error) {
-            console.error('Error deleting sale:', error.response?.data || 'Unknown error');
-            setError(error.message  || 'Error deleting sale. Please try again.');
-        } finally {
-            setIsLoading(false);
-            setSelectedSale(null);
-            setIsDeleteModalVisible(false);
-        }
-    };
+    try {
+      await SaleService.deleteSale(selectedSale.id);
+      setSales((prevSales) =>
+        prevSales.filter((sale) => sale.id !== selectedSale.id),
+      );
+    } catch (error) {
+      console.error(
+        "Error deleting sale:",
+        error.response?.data || "Unknown error",
+      );
+      setError(error.message || "Error deleting sale. Please try again.");
+    } finally {
+      setIsLoading(false);
+      setSelectedSale(null);
+      setIsDeleteModalVisible(false);
+    }
+  };
 
-    const handleRefresh = () => {
-        fetchSales();
-    };
+  const handleRefresh = () => {
+    fetchSales();
+  };
 
-    return (
-        <View style={commonStyles.container}>
-            <LoadingError error={error} isLoading={isLoading} />
+  return (
+    <View style={commonStyles.container}>
+      <LoadingError error={error} isLoading={isLoading} />
 
-            {!error && (
-                <FlatList
-                    data={sales}
-                    renderItem={({ item }) => (
-                        <SaleItem
-                            sale={item}
-                            onPress={() => handleEditSale(item)}
-                            onDelete={() => handleDeleteSale(item)}
-                        />
-                    )}
-                    keyExtractor={(item) => item.id.toString()} // Ensure key is a string
-                    refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
-                />
-            )}
-
-            <FAB
-                style={commonScreenStyles.fab}
-                icon="plus"
-                onPress={() => navigation.navigate('SaleStack', { screen: 'AddSale', params: { title: 'Create Sale' } })}
+      {!error && (
+        <FlatList
+          data={sales}
+          renderItem={({ item }) => (
+            <SaleItem
+              sale={item}
+              onPress={() => handleEditSale(item)}
+              onDelete={() => handleDeleteSale(item)}
             />
+          )}
+          keyExtractor={(item) => item.id.toString()} // Ensure key is a string
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+            />
+          }
+        />
+      )}
 
-            {/* Delete Sale Modal */}
-            <Portal>
-                <Modal visible={isDeleteModalVisible} onDismiss={() => setIsDeleteModalVisible(false)} contentContainerStyle={commonStyles.modalContainer}>
-                    <Text>Are you sure you want to delete this sale?</Text>
-                    <View style={commonStyles.modalButtonGap} />
-                    <View style={commonStyles.modalButtonGap} />
-                    <Button icon="cancel" mode="outlined" onPress={() => setIsDeleteModalVisible(false)}>
-                        Cancel
-                    </Button>
-                    <View style={commonStyles.modalButtonGap} />
-                    <Button icon="delete" mode="contained" onPress={confirmDeleteSale}>
-                        Delete
-                    </Button>
-                </Modal>
-            </Portal>
-        </View>
-    );
+      <FAB
+        style={commonScreenStyles.fab}
+        icon="plus"
+        onPress={() =>
+          navigation.navigate("SaleStack", {
+            screen: "AddSale",
+            params: { title: "Create Sale" },
+          })
+        }
+      />
+
+      {/* Delete Sale Modal */}
+      <Portal>
+        <Modal
+          visible={isDeleteModalVisible}
+          onDismiss={() => setIsDeleteModalVisible(false)}
+          contentContainerStyle={commonStyles.modalContainer}
+        >
+          <Text>Are you sure you want to delete this sale?</Text>
+          <View style={commonStyles.modalButtonGap} />
+          <View style={commonStyles.modalButtonGap} />
+          <Button
+            icon="cancel"
+            mode="outlined"
+            onPress={() => setIsDeleteModalVisible(false)}
+          >
+            Cancel
+          </Button>
+          <View style={commonStyles.modalButtonGap} />
+          <Button icon="delete" mode="contained" onPress={confirmDeleteSale}>
+            Delete
+          </Button>
+        </Modal>
+      </Portal>
+    </View>
+  );
 };
 
 export default SaleScreen;

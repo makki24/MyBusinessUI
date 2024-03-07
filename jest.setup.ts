@@ -1,1 +1,1 @@
-jest.setMock('node-fetch', require('jest-fetch-mock'));
+jest.setMock("node-fetch", require("jest-fetch-mock"));
