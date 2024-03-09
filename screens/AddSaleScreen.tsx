@@ -162,11 +162,11 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
         <SwitchInput
           label={"Enter amount directly"}
           value={showAmount}
-          onValueChange={(showAmount) => {
-            if (showAmount) {
+          onValueChange={(showAmountParam) => {
+            if (showAmountParam) {
               setPricePerUnit(null);
             }
-            setShowAmount(showAmount);
+            setShowAmount(showAmountParam);
           }}
         />
       </View>

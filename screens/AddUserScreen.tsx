@@ -79,8 +79,10 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
     setIsLoading(true);
     setError("");
     try {
-      if (!username || !phoneNumber) {
-        throw new Error("Username and Phone Number are mandatory fields.");
+      if (!username || !phoneNumber || !email) {
+        throw new Error(
+          "Username, Email and Phone Number are mandatory fields.",
+        );
       }
 
       if (!emailValid) {
@@ -113,9 +115,9 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
       user = await userService.addUser(user);
 
       setSnackbarVisible(true);
-    } catch (error) {
+    } catch (addError) {
       setError(
-        error?.message ?? "Error adding/updating user. Please try again.",
+        addError?.message ?? "Error adding/updating user. Please try again.",
       );
     } finally {
       setIsLoading(false);
@@ -188,7 +190,7 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
       />
       <EmailInput
         style={commonAddScreenStyles.inputField}
-        label="Email"
+        label="Email*"
         setEmail={setEmail}
         onValidationChange={setEmailValid}
         email={email}

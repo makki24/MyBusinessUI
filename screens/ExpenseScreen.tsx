@@ -59,9 +59,10 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
       setSenders(sendersSet);
       setReceivers([...receiverSet]);
       transFormAndSetExpense(expensesData);
-    } catch (error) {
+    } catch (fetchError) {
       setError(
-        error.response?.data || "Error fetching expenses. Please try again.",
+        fetchError.response?.data ||
+          "Error fetching expenses. Please try again.",
       );
     } finally {
       setIsRefreshing(false);
@@ -87,18 +88,8 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
 
   const handleDeleteExpense = async (expense) => {
     setSelectedExpense(expense);
-    setIsLoading(true);
 
-    try {
-      setIsDeleteModalVisible(true);
-    } catch (error) {
-      setError(
-        error.response?.data ||
-          "Error checking expense details. Please try again.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    setIsDeleteModalVisible(true);
   };
 
   const confirmDeleteExpense = async () => {
@@ -109,9 +100,10 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
       setExpenses((prevExpenses) =>
         prevExpenses.filter((expense) => expense.id !== selectedExpense.id),
       );
-    } catch (error) {
+    } catch (deleteError) {
       setError(
-        error.response?.data || "Error deleting expense. Please try again.",
+        deleteError.response?.data ||
+          "Error deleting expense. Please try again.",
       );
     } finally {
       setIsLoading(false);
