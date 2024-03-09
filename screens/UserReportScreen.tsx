@@ -38,8 +38,10 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
         date: new Date(contribution.date),
       }));
       setReports(reportsData);
-    } catch (error) {
-      setError(error.message || "Error fetching reports. Please try again.");
+    } catch (fetchError) {
+      setError(
+        fetchError.message || "Error fetching reports. Please try again.",
+      );
     } finally {
       setIsRefreshing(false);
     }

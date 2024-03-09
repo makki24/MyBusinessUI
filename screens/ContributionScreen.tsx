@@ -38,9 +38,9 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
         date: new Date(contribution.date),
       }));
       setContributions(contributionsData);
-    } catch (error) {
+    } catch (fetchError) {
       setError(
-        error.message || "Error fetching contributions. Please try again.",
+        fetchError.message || "Error fetching contributions. Please try again.",
       );
     } finally {
       setIsRefreshing(false);
@@ -66,18 +66,8 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
 
   const handleDeleteContribution = async (contribution) => {
     setSelectedContribution(contribution);
-    setIsLoading(true);
 
-    try {
-      setIsDeleteModalVisible(true);
-    } catch (error) {
-      setError(
-        error.message ||
-          "Error checking contribution details. Please try again.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    setIsDeleteModalVisible(true);
   };
 
   const confirmDeleteContribution = async () => {
@@ -94,9 +84,9 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
         ...currVal,
         amountHolding: currVal.amountHolding - selectedContribution.amount,
       }));
-    } catch (error) {
+    } catch (deleteError) {
       setError(
-        error.message || "Error deleting contribution. Please try again.",
+        deleteError.message || "Error deleting contribution. Please try again.",
       );
     } finally {
       setIsLoading(false);
