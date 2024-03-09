@@ -30,8 +30,8 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
       setIsRefreshing(true);
       const usersData = await UserService.getUsers();
       setUsers(usersData);
-    } catch (error) {
-      setError(error.message || "Error fetching users. Please try again.");
+    } catch (fetchError) {
+      setError(fetchError.message || "Error fetching users. Please try again.");
     } finally {
       setIsRefreshing(false);
     }
@@ -53,18 +53,8 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
 
   const handleDeleteUser = async (user) => {
     setSelectedUser(user);
-    setIsLoading(true);
 
-    try {
-      setIsDeleteModalVisible(true);
-    } catch (error) {
-      setError(
-        error.response?.data ||
-          "Error checking user details. Please try again.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    setIsDeleteModalVisible(true);
   };
 
   const navigateToTransactions = (clickedUser: User) => {
@@ -83,8 +73,8 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
         prevUsers.filter((user) => user.id !== selectedUser.id),
       );
       setSnackbarVisible(true); // Show Snackbar on successful deletion
-    } catch (error) {
-      setError(error.message || "Error deleting user. Please try again.");
+    } catch (deleteError) {
+      setError(deleteError.message || "Error deleting user. Please try again.");
     } finally {
       setIsLoading(false);
       setSelectedUser(null);

@@ -29,7 +29,8 @@
     "@typescript-eslint/no-var-requires": [
       "error",
       { "allow": ["withNetworkSecurityConfig.js"] }
-    ]
+    ],
+    "@typescript-eslint/no-shadow": "error"
   },
   "settings": {
     "react": {

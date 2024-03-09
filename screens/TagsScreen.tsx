@@ -25,15 +25,15 @@ const TagsScreen: React.FC<TagsScreenProps> = ({ navigation }) => {
       setIsRefreshing(true);
       const tagsData = await TagsService.getTags();
       setTags(tagsData);
-    } catch (error) {
-      handleError(error, "Error fetching tags. Please try again.");
+    } catch (fetchError) {
+      handleError(fetchError, "Error fetching tags. Please try again.");
     } finally {
       setIsRefreshing(false);
     }
   };
 
-  const handleError = (error, defaultMessage) => {
-    setError(error.message || defaultMessage);
+  const handleError = (errorArg, defaultMessage) => {
+    setError(errorArg.message || defaultMessage);
   };
 
   useEffect(() => {

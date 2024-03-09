@@ -34,8 +34,8 @@ const SaleScreen: React.FC<SaleScreenProps> = ({ navigation }) => {
         date: new Date(sale.date),
       }));
       setSales(salesData);
-    } catch (error) {
-      setError(error.message || "Error fetching sales. Please try again.");
+    } catch (fetchError) {
+      setError(fetchError.message || "Error fetching sales. Please try again.");
     } finally {
       setIsRefreshing(false);
     }
@@ -60,17 +60,8 @@ const SaleScreen: React.FC<SaleScreenProps> = ({ navigation }) => {
 
   const handleDeleteSale = async (sale) => {
     setSelectedSale(sale);
-    setIsLoading(true);
 
-    try {
-      setIsDeleteModalVisible(true);
-    } catch (error) {
-      setError(
-        error.message || "Error checking sale details. Please try again.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    setIsDeleteModalVisible(true);
   };
 
   const confirmDeleteSale = async () => {
@@ -81,8 +72,8 @@ const SaleScreen: React.FC<SaleScreenProps> = ({ navigation }) => {
       setSales((prevSales) =>
         prevSales.filter((sale) => sale.id !== selectedSale.id),
       );
-    } catch (error) {
-      setError(error.message || "Error deleting sale. Please try again.");
+    } catch (deleteError) {
+      setError(deleteError.message || "Error deleting sale. Please try again.");
     } finally {
       setIsLoading(false);
       setSelectedSale(null);

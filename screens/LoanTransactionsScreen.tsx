@@ -41,9 +41,10 @@ const LoanTransactionScreen: React.FC<LoanTransactionScreenProps> = ({
         date: new Date(transaction.date),
       }));
       setLoanTransactions(transactionsData);
-    } catch (error) {
+    } catch (fetchError) {
       setError(
-        error.message || "Error fetching loan transactions. Please try again.",
+        fetchError.message ||
+          "Error fetching loan transactions. Please try again.",
       );
     } finally {
       setIsRefreshing(false);
@@ -73,18 +74,8 @@ const LoanTransactionScreen: React.FC<LoanTransactionScreenProps> = ({
 
   const handleDeleteTransaction = async (transaction) => {
     setSelectedTransaction(transaction);
-    setIsLoading(true);
 
-    try {
-      setIsDeleteModalVisible(true);
-    } catch (error) {
-      setError(
-        error.message ||
-          "Error checking loan transaction details. Please try again.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    setIsDeleteModalVisible(true);
   };
 
   const confirmDeleteTransaction = async () => {
@@ -100,9 +91,10 @@ const LoanTransactionScreen: React.FC<LoanTransactionScreenProps> = ({
           (transaction) => transaction.id !== selectedTransaction.id,
         ),
       );
-    } catch (error) {
+    } catch (deleteError) {
       setError(
-        error.message || "Error deleting loan transaction. Please try again.",
+        deleteError.message ||
+          "Error deleting loan transaction. Please try again.",
       );
     } finally {
       setIsLoading(false);

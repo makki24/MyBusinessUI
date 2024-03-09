@@ -75,12 +75,16 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   );
 
   useEffect(() => {
-    const isReceivingUser = expenseTypes.some(
+    const isReceivingUserlocal = expenseTypes.some(
       (type) => type.id === value && type.isReceivingUser,
     );
     setSelectedUser(null);
-    setIsReceivingUser(isReceivingUser);
-    if (route.params?.isEditMode && route.params?.expense && isReceivingUser)
+    setIsReceivingUser(isReceivingUserlocal);
+    if (
+      route.params?.isEditMode &&
+      route.params?.expense &&
+      isReceivingUserlocal
+    )
       setSelectedUser(
         route.params.expense.receiver ? route.params.expense.receiver.id : null,
       );

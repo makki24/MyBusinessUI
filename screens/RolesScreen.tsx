@@ -29,9 +29,9 @@ const RolesScreen = ({ navigation }) => {
 
       const rolesData = await RolesService.getRoles();
       setRoles(rolesData);
-    } catch (error) {
+    } catch (fetchError) {
       setError(
-        error.response?.data || "Error fetching roles. Please try again.",
+        fetchError.response?.data || "Error fetching roles. Please try again.",
       );
     } finally {
       setIsRefreshing(false);
@@ -59,9 +59,9 @@ const RolesScreen = ({ navigation }) => {
       } else {
         setIsDeleteModalVisible(true);
       }
-    } catch (error) {
+    } catch (deleteError) {
       setError(
-        error.response?.data ||
+        deleteError.response?.data ||
           "Error checking assigned users. Please try again.",
       );
     } finally {
@@ -77,9 +77,9 @@ const RolesScreen = ({ navigation }) => {
       setRoles((prevRoles) =>
         prevRoles.filter((role) => role.id !== selectedRole.id),
       );
-    } catch (error) {
+    } catch (deleteError) {
       setError(
-        error.response?.data || "Error deleting role. Please try again.",
+        deleteError.response?.data || "Error deleting role. Please try again.",
       );
     } finally {
       setIsLoading(false);

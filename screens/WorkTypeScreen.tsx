@@ -34,8 +34,10 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({ navigation }) => {
       const workTypesData = await WorkService.getWorkTypes();
       setWorkTypes(workTypesData);
       setFilteredWorkTypes(workTypesData);
-    } catch (error) {
-      setError(error.message || "Error fetching work types. Please try again.");
+    } catch (fetchError) {
+      setError(
+        fetchError.message || "Error fetching work types. Please try again.",
+      );
     } finally {
       setIsRefreshing(false);
     }
@@ -67,8 +69,10 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({ navigation }) => {
       setFilteredWorkTypes((prevWorkTypes) =>
         prevWorkTypes.filter((wt) => wt.id !== selectedWorkType.id),
       );
-    } catch (error) {
-      setError(error.message || "Error deleting work type. Please try again.");
+    } catch (deleteError) {
+      setError(
+        deleteError.message || "Error deleting work type. Please try again.",
+      );
     } finally {
       setIsLoading(false);
       setSelectedWorkType(null);
@@ -97,7 +101,11 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({ navigation }) => {
     navigation.navigate("WorkStack", {
       screen: "AddWork",
       params: {
-        title: `Add ${workType.name} (${workType.pricePerUnit} per ${workType.unit})`,
+        title:
+          `Add ${workType.name}` +
+          (workType.unit !== "null"
+            ? ` (${workType.pricePerUnit} per ${workType.unit})`
+            : ""),
         workType,
       },
     });
@@ -139,7 +147,10 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({ navigation }) => {
         style={commonScreenStyles.fab}
         icon="plus"
         onPress={() =>
-          navigation.navigate("WorkStack", { screen: "AddWorkType" })
+          navigation.navigate("WorkStack", {
+            screen: "AddWorkType",
+            params: { title: "Add Work type" },
+          })
         }
       />
 

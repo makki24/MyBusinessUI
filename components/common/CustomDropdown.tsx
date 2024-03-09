@@ -13,8 +13,10 @@ interface CustomDropDownProps<T> {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   containerStyle?: object;
-  value: string | string[] | number[];
-  setValue: React.Dispatch<React.SetStateAction<string | string[] | number[]>>;
+  value: string | string[] | number[] | number;
+  setValue: React.Dispatch<
+    React.SetStateAction<string | string[] | number[] | number>
+  >;
   itemSeparator?: boolean;
   onChangeValue?: (value: string | null) => void;
   zIndex?: number;
@@ -96,7 +98,9 @@ const CustomDropDown = <T,>({
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {Array.isArray(value) &&
           value.map((v: string | number) => {
-            const item = items.find((item: T) => item[schema.value] === v);
+            const item = items.find(
+              (itemLocal: T) => itemLocal[schema.value] === v,
+            );
             return (
               <Chip
                 key={v}

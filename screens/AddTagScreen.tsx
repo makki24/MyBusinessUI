@@ -37,8 +37,8 @@ const AddTagScreen: React.FC<AddTagScreenProps> = ({ navigation }) => {
 
       // Navigate back to the Tags screen
       navigation.goBack();
-    } catch (error) {
-      setError(error.message || "An error occurred"); // Set the error message
+    } catch (addError) {
+      setError(addError.message || "An error occurred"); // Set the error message
     } finally {
       setIsLoading(false); // Set loading to false regardless of success or failure
     }

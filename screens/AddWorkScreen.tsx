@@ -61,6 +61,10 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
     if (route.params?.workType) {
       setWorkType(route.params.workType);
       setPricePerUnit(`${route.params.workType.pricePerUnit}`);
+      if (route.params.workType.enterAmountDirectly) {
+        setShowAmount(true);
+        setAmount(`${route.params.workType.pricePerUnit}`);
+      }
     }
   }, [route.params?.workType]);
 
@@ -188,12 +192,12 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
         <SwitchInput
           label={"Enter amount directly"}
           value={showAmount}
-          onValueChange={(showAmount) => {
-            if (showAmount) {
+          onValueChange={(showAmountParam) => {
+            if (showAmountParam) {
               setShowPricePerUnit(false);
               setQuantity(`1`);
             }
-            setShowAmount(showAmount);
+            setShowAmount(showAmountParam);
           }}
         />
       </View>
