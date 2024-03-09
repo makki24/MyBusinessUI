@@ -10,9 +10,12 @@ const fsPromises = fs.promises;
 const { getMainApplicationOrThrow } = AndroidConfig.Manifest;
 
 const withNetworkSecurityConfig = (config) => {
-  return withAndroidManifest(config, async (config) => {
-    config.modResults = await setCustomConfigAsync(config, config.modResults);
-    return config;
+  return withAndroidManifest(config, async (exportedConfigWithProps) => {
+    exportedConfigWithProps.modResults = await setCustomConfigAsync(
+      exportedConfigWithProps,
+      exportedConfigWithProps.modResults,
+    );
+    return exportedConfigWithProps;
   });
 };
 

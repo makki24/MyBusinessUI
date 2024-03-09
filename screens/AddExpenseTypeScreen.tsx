@@ -44,10 +44,10 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
         newExpenseType,
       ]);
       navigation.goBack();
-    } catch (error) {
+    } catch (addError) {
       setError(
-        error.response.data?.error ||
-          error.response?.data ||
+        addError.response.data?.error ||
+          addError.response?.data ||
           "An error occurred",
       );
     } finally {

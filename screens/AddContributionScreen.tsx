@@ -95,8 +95,10 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
       }));
       setAmountToAdd("");
       navigation.goBack();
-    } catch (error) {
-      setError(error.message ?? "An error occurred while updating the amount");
+    } catch (addError) {
+      setError(
+        addError.message ?? "An error occurred while updating the amount",
+      );
     } finally {
       setIsLoading(false);
     }

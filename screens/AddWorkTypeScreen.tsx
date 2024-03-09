@@ -11,6 +11,7 @@ import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import NumberInput from "../components/common/NumberInput";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import SwitchInput from "../components/common/SwitchInput";
 
 interface AddWorkTypeScreenProps {
   route: {
@@ -33,6 +34,8 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [isEnterAmountDirectly, setIsEnterAmountDirectly] = useState(false); // New state for the switch
+  const [showUnit, setShowUnit] = useState(true); // New state for the switch
 
   useEffect(() => {
     // Check if the screen is in edit mode and workType data is provided
@@ -42,6 +45,7 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
       setTypeName(workType.name);
       setUnit(workType.unit);
       setDefaultPrice(workType.pricePerUnit.toString());
+      setIsEnterAmountDirectly(workType.enterAmountDirectly);
       // ... set other state variables with workType data
     }
   }, [route.params?.isEditMode, route.params?.workType]);
@@ -61,6 +65,7 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
         name: typeName,
         pricePerUnit: parseFloat(defaultPrice),
         unit: unit,
+        enterAmountDirectly: isEnterAmountDirectly,
       };
 
       if (isEdit) {
@@ -77,12 +82,22 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
 
       // Navigate back to the Work Types screen
       navigation.goBack();
-    } catch (error) {
-      setError(error.message || "An error occurred"); // Set the error message
+    } catch (addError) {
+      setError(addError.message || "An error occurred"); // Set the error message
     } finally {
       setIsLoading(false); // Set loading to false regardless of success or failure
     }
   };
+
+  useEffect(() => {
+    if (isEnterAmountDirectly) {
+      setUnit("null");
+      setShowUnit(false);
+    } else {
+      setUnit("");
+      setShowUnit(true);
+    }
+  }, [isEnterAmountDirectly]);
 
   return (
     <View style={commonStyles.container}>
@@ -98,7 +113,14 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
         value={defaultPrice}
         onChangeText={setDefaultPrice}
       />
-      <Input placeholder="Enter unit" value={unit} onChangeText={setUnit} />
+      {showUnit && (
+        <Input placeholder="Enter unit" value={unit} onChangeText={setUnit} />
+      )}
+      <SwitchInput
+        label="Enter Amount Directly"
+        value={isEnterAmountDirectly}
+        onValueChange={(value) => setIsEnterAmountDirectly(value)}
+      />
       <Button
         title={isEdit ? "Save Work Type" : "Add Work Type"}
         onPress={handleAddWorkType}
