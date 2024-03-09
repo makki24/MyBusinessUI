@@ -47,8 +47,8 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
       });
       setWorkUsers([...userSet]);
       transformAndSetWork(worksData);
-    } catch (error) {
-      setError(error.message || "Error fetching works. Please try again.");
+    } catch (fetchError) {
+      setError(fetchError.message || "Error fetching works. Please try again.");
     } finally {
       setIsRefreshing(false);
     }
@@ -73,20 +73,10 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
     });
   };
 
-  const handleDeleteWork = async (work) => {
+  const handleDeleteWork = (work) => {
     setSelectedWork(work);
-    setIsLoading(true);
 
-    try {
-      setIsDeleteModalVisible(true);
-    } catch (error) {
-      setError(
-        error.response?.data ||
-          "Error checking work details. Please try again.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    setIsDeleteModalVisible(true);
   };
 
   const confirmDeleteWork = async () => {
@@ -97,8 +87,8 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
       setWorks((prevWorks) =>
         prevWorks.filter((work) => work.id !== selectedWork.id),
       );
-    } catch (error) {
-      setError(error.message || "Error deleting work. Please try again.");
+    } catch (deleteError) {
+      setError(deleteError.message || "Error deleting work. Please try again.");
     } finally {
       setIsLoading(false);
       setSelectedWork(null);

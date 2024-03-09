@@ -32,10 +32,10 @@ const ExpenseTypesScreen: React.FC<ExpenseTypesScreenProps> = ({
       const expenseTypesData = await ExpenseTypesService.getExpenseTypes();
       setExpenseTypes(expenseTypesData);
       setError(null); // Clear any previous errors
-    } catch (error) {
+    } catch (fetchError) {
       setError(
-        error.response?.data?.error ??
-          (error.response?.data ||
+        fetchError.response?.data?.error ??
+          (fetchError.response?.data ||
             "Error fetching expense types. Please try again."),
       );
     } finally {
@@ -67,9 +67,9 @@ const ExpenseTypesScreen: React.FC<ExpenseTypesScreenProps> = ({
         ),
       );
       setSnackbarVisible(true);
-    } catch (error) {
+    } catch (deleteExpenseError) {
       setError(
-        error.response?.data ||
+        deleteExpenseError.response?.data ||
           "Error deleting expense type. Please try again.",
       );
     } finally {

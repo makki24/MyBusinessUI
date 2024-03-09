@@ -55,7 +55,10 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
         <Card
           style={homeScreenStyles.card}
           onPress={() =>
-            navigation.navigate("ExpenseTypeStack", { screen: "ExpenseTypes" })
+            navigation.navigate("ExpenseTypeStack", {
+              screen: "ExpenseTypes",
+              params: { title: "Expense types" },
+            })
           }
         >
           <Card.Cover source={require("../assets/expense_types.jpeg")} />
@@ -77,7 +80,10 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
         <Card
           style={homeScreenStyles.card}
           onPress={() =>
-            navigation.navigate("WorkStack", { screen: "WorkType" })
+            navigation.navigate("WorkStack", {
+              screen: "WorkType",
+              params: { title: "Work type" },
+            })
           }
         >
           <Card.Cover source={require("../assets/work_type.jpeg")} />

@@ -6,6 +6,7 @@ export interface WorkType {
   name: string;
   unit: string;
   pricePerUnit?: number;
+  enterAmountDirectly: boolean;
 }
 
 export interface Work {

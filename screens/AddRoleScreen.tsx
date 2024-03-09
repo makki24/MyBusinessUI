@@ -38,8 +38,8 @@ const AddRoleScreen: React.FC<AddRoleScreenProps> = ({ navigation }) => {
 
       // Navigate back to the Roles screen
       navigation.goBack();
-    } catch (error) {
-      setError(error.response?.data || "An error occurred"); // Set the error message
+    } catch (addError) {
+      setError(addError.response?.data || "An error occurred"); // Set the error message
     } finally {
       setIsLoading(false); // Set loading to false regardless of success or failure
     }

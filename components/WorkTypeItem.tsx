@@ -23,7 +23,8 @@ const WorkTypeItem: React.FC<WorkTypeItemProps> = ({
       <Card.Content style={commonItemStyles.cardContent}>
         <Title>{workType.name}</Title>
         <Text>
-          Default Value Per {workType.unit}: {workType.pricePerUnit}
+          Default Value {workType.unit !== "null" ? `Per ${workType.unit}` : ""}{" "}
+          : {workType.pricePerUnit}
         </Text>
       </Card.Content>
       <Card.Actions style={commonItemStyles.cardActions}>
