@@ -1,4 +1,4 @@
-name: Run Unit Tests
+name: PR Build
 on:
   pull_request:
     branches:

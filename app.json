@@ -27,6 +27,17 @@
         {
           "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "useLegacyPackaging": true
+          },
+          "ios": {
+            "useLegacyPackaging": true
+          }
+        }
       ]
     ],
     "web": {
