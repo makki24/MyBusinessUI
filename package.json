@@ -85,5 +85,8 @@
       "!**/jest.setup.js",
       "!**/android/**"
     ]
+  },
+  "overrides": {
+    "semver": "^7.5.3"
   }
 }
