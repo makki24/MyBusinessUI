@@ -49,7 +49,7 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
   const [error, setError] = useState(null);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [picture, setPicture] = useState(null);
+  const [picture, setPicture] = useState<string>(null);
   const [amountToReceive, setAmountToReceive] = useState("");
   const [amountHolding, setAmountHolding] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -91,8 +91,12 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
 
       let imageUrl;
       if (picture) {
-        imageUrl = await uploadImgtoImgBB(picture);
-        setPictureUrl(imageUrl);
+        if (!picture.includes("googleusercontent")) {
+          imageUrl = await uploadImgtoImgBB(picture);
+          setPictureUrl(imageUrl);
+        } else {
+          imageUrl = picture;
+        }
       }
 
       // Add your logic to add/update the user here
@@ -103,7 +107,9 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
         email,
         picture: imageUrl,
         phoneNumber,
-        roles: [memberRole],
+        roles: route.params?.isEditMode
+          ? route.params?.user.roles
+          : [memberRole],
         amountHolding: parseFloat(amountHolding),
         amountToReceive: parseFloat(amountToReceive),
       };
@@ -187,6 +193,7 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
         value={username}
         onChangeText={setUsername}
         style={commonAddScreenStyles.inputField}
+        testID={"username"}
       />
       <EmailInput
         style={commonAddScreenStyles.inputField}

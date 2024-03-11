@@ -50,6 +50,7 @@ const EmailInput: React.FC<EmailInputProps> = ({
         onChangeText={handleEmailChange}
         error={!!emailError}
         style={style}
+        testID={label.split(" ").join("")}
       />
       {!!emailError && (
         <HelperText type="error" visible={!!emailError}>
