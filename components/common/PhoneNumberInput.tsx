@@ -149,6 +149,7 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
           onChangeText={handlePhoneNumberChange}
           error={!!phoneNumberError}
           style={[style, styles.flex]}
+          testID={label.split(" ").join("")}
         />
         <Button onPress={() => setModalVisible(true)}>
           Select from Contacts
