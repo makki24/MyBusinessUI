@@ -3,35 +3,20 @@ import { View, Text, ScrollView } from "react-native";
 import { Card, Title } from "react-native-paper";
 import homeScreenStyles from "../src/styles/homeScreenStyles";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import { useRecoilState } from "recoil";
+import { userState } from "../recoil/atom";
 
 type AdminScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 };
 
 const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
-  const images = [
-    { uri: "https://via.placeholder.com/300/FF5733/FFFFFF", interval: 3000 },
-    { uri: "https://via.placeholder.com/300/33FF57/FFFFFF", interval: 7000 },
-    { uri: "https://via.placeholder.com/300/5733FF/FFFFFF", interval: 4000 },
-    { uri: "https://via.placeholder.com/300/FF33FF/FFFFFF", interval: 6000 }, // New Expense Card Image
-    // Add more image URLs with different intervals as needed
-  ];
-
-  const [_, setCurrentImageIndex] = useState(Array(images.length).fill(0));
+  const [loggedInUser] = useRecoilState(userState);
+  const [impersonate, setImpersonate] = useState<boolean>(false);
 
   useEffect(() => {
-    const intervals = images.map((image, i) =>
-      setInterval(() => {
-        setCurrentImageIndex((prevIndex) =>
-          prevIndex.map((index, j) =>
-            i === j ? (index === images.length - 1 ? 0 : index + 1) : index,
-          ),
-        );
-      }, image.interval),
-    );
-
-    return () => intervals.forEach(clearInterval);
-  }, []); // Empty dependency array
+    setImpersonate(loggedInUser.roles.some((role) => role.name === "ADMIN"));
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={homeScreenStyles.container}>
@@ -91,6 +76,23 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
             <Title style={homeScreenStyles.cardTitle}>Manage Work Type</Title>
           </View>
         </Card>
+
+        {impersonate && (
+          <Card
+            style={homeScreenStyles.card}
+            onPress={() =>
+              navigation.navigate("HomeStack", {
+                screen: "ImpersonationScreen",
+                params: { title: "Impersonatione user" },
+              })
+            }
+          >
+            <Card.Cover source={require("../assets/work_type.jpeg")} />
+            <View style={homeScreenStyles.textOverlay}>
+              <Title style={homeScreenStyles.cardTitle}>Impersonate</Title>
+            </View>
+          </Card>
+        )}
       </View>
     </ScrollView>
   );
