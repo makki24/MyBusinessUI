@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { apiUrl, androidClientId, expoClientId } from "../app-env.config";
+import { androidClientId, expoClientId } from "../app-env.config";
 import { useRecoilState } from "recoil";
 import { userState } from "../recoil/atom";
 import { Text } from "react-native-paper";
@@ -11,6 +11,7 @@ import Button from "../components/common/Button";
 import LoadingError from "../components/common/LoadingError";
 import { MAIN_PROFILE_PIC, UI_ELEMENTS_GAP } from "../src/styles/constants";
 import PropTypes from "prop-types";
+import loginService from "../services/LoginService";
 
 const LoginScreen = ({ navigation }) => {
   const [userInfo, setUserInfo] = useRecoilState(userState);
@@ -41,21 +42,7 @@ const LoginScreen = ({ navigation }) => {
     if (!token) return;
     setLoading(true); // Start loading
     try {
-      const userResponse = await fetch(`${apiUrl}/${url}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!userResponse.ok) {
-        // throw new Error("براہ کرم دوبارہ لاگ ان کریں۔");
-        throw new Error(
-          "Token is invalid or expired / براہ کرم دوبارہ لاگ ان کریں۔",
-        );
-      }
-      const user = await userResponse.json();
-      if (url === "loginOrSignUp") saveToken(userResponse);
+      const user = await loginService.login(token, url);
       setUserInfo(user);
       navigation.navigate("Home");
     } catch (loginError) {
@@ -63,14 +50,6 @@ const LoginScreen = ({ navigation }) => {
       throw new Error(loginError.message);
     } finally {
       setLoading(false); // End loading
-    }
-  };
-
-  const saveToken = (responseArg) => {
-    const authHeader = responseArg.headers.get("Authorization");
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      const token = authHeader.slice(7); // Remove 'Bearer ' prefix
-      AsyncStorage.setItem("@token", token);
     }
   };
 

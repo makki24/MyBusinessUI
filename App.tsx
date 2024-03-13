@@ -83,6 +83,7 @@ import type {
   DrawerDescriptorMap,
   DrawerNavigationHelpers,
 } from "@react-navigation/drawer/src/types";
+import ImpersonationScreen from "./screens/ImpersonationScreen";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -146,6 +147,10 @@ const HomeStack = () => {
     <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="AdminScreen" component={AdminScreen} />
+      <Stack.Screen
+        name="ImpersonationScreen"
+        component={ImpersonationScreen}
+      />
     </Stack.Navigator>
   );
 };
