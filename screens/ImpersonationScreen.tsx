@@ -9,9 +9,8 @@ import { Contribution } from "../types";
 import LoadingError from "../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import Button from "../components/common/Button";
-import { CONTAINER_PADDING } from "../src/styles/constants";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import loginService from "../services/LoginService";
+import { CONTAINER_PADDING, UI_ELEMENTS_GAP } from "../src/styles/constants";
+import adminService from "../services/AdminService";
 
 interface ImpersonationScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -36,19 +35,37 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
   const submitContribution = async () => {
     try {
       setIsLoading(true);
-      const token = await AsyncStorage.getItem("@token");
-      if (token) {
-        const impersonatedUser = await loginService.impersonate(
-          token,
-          allUsers.filter((user) => user.id === selectedUser)[0],
-        );
-        setLoggedInUser(impersonatedUser);
-      }
+      const impersonatedUser = await adminService.impersonate(
+        allUsers.filter((user) => user.id === selectedUser)[0],
+      );
+      setLoggedInUser(impersonatedUser);
       navigation.goBack();
     } catch (addError) {
       setError(
         addError.message ?? "An error occurred while updating the amount",
       );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const backupDb = async () => {
+    try {
+      setIsLoading(true);
+      await adminService.upload();
+    } catch (uploadError) {
+      setError(uploadError.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const restore = async () => {
+    try {
+      setIsLoading(true);
+      await adminService.restore();
+    } catch (uploadError) {
+      setError(uploadError.message);
     } finally {
       setIsLoading(false);
     }
@@ -94,6 +111,22 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
         mode="contained"
         onPress={submitContribution}
         title="Impersonate User"
+      />
+      <Button
+        style={{ marginTop: UI_ELEMENTS_GAP }}
+        icon={"upload"}
+        mode="contained"
+        onPress={backupDb}
+        title="Backup Database"
+      />
+
+      <Button
+        style={{ marginTop: UI_ELEMENTS_GAP }}
+        icon={"reply"}
+        mode="contained"
+        onPress={restore}
+        title="Restore"
+        disabled={true}
       />
     </ScrollView>
   );
