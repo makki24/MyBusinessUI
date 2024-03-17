@@ -1,7 +1,7 @@
 // src/screens/WorksScreen.tsx
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
-import { FAB, Text, Button, Modal, Portal } from "react-native-paper";
+import { FAB } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import WorkService from "../services/WorkService";
 import WorkItem from "../components/WorkItem";
@@ -13,6 +13,7 @@ import LoadingError from "../components/common/LoadingError";
 import SearchAndFilter from "../components/common/SearchAndFilter";
 import workService from "../services/WorkService";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import ConfirmationModal from "../components/common/ConfirmationModal";
 
 type WorksScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -158,28 +159,12 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
       />
 
       {/* Delete Work Modal */}
-      <Portal>
-        <Modal
-          visible={isDeleteModalVisible}
-          onDismiss={() => setIsDeleteModalVisible(false)}
-          contentContainerStyle={commonStyles.modalContainer}
-        >
-          <Text>Are you sure you want to delete this work?</Text>
-          <View style={commonStyles.modalButtonGap} />
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            icon="cancel"
-            mode="outlined"
-            onPress={() => setIsDeleteModalVisible(false)}
-          >
-            Cancel
-          </Button>
-          <View style={commonStyles.modalButtonGap} />
-          <Button icon="delete" mode="contained" onPress={confirmDeleteWork}>
-            Delete
-          </Button>
-        </Modal>
-      </Portal>
+      <ConfirmationModal
+        warningMessage={"Are you sure you want to delete this work?"}
+        isModalVisible={isDeleteModalVisible}
+        setIsModalVisible={setIsDeleteModalVisible}
+        onConfirm={confirmDeleteWork}
+      />
     </View>
   );
 };

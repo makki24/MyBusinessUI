@@ -18,7 +18,7 @@ const ExpenseTypeItem: React.FC<ExpenseTypeItemProps> = ({
     <Card.Content style={commonItemStyles.cardContent}>
       <Title>{expenseType.name}</Title>
     </Card.Content>
-    <Card.Actions style={commonItemStyles.cardActions}>
+    <Card.Actions style={commonItemStyles.cardActionsWithTags}>
       <IconButton icon="delete" onPress={onDelete} />
     </Card.Actions>
   </Card>

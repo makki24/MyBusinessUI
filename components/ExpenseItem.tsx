@@ -1,7 +1,14 @@
 // src/components/ExpenseItem.tsx
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Card, Title, IconButton, Paragraph, Chip } from "react-native-paper";
+import { View, TouchableOpacity } from "react-native";
+import {
+  Card,
+  Title,
+  IconButton,
+  Paragraph,
+  Chip,
+  Text,
+} from "react-native-paper";
 import { Expense } from "../types";
 import commonItemStyles from "../src/styles/commonItemStyles";
 import UserDetails from "./common/UserDetails";
@@ -58,7 +65,11 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({
         )}
       </Card.Content>
       <Card.Actions
-        style={expense.tags.length ? commonItemStyles.cardActions : {}}
+        style={
+          expense.tags.length
+            ? commonItemStyles.cardActionsWithTags
+            : commonItemStyles.cardActions
+        }
       >
         <IconButton icon="delete" onPress={onDelete} />
       </Card.Actions>

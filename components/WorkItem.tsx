@@ -60,7 +60,11 @@ const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
           {work.tags.length > 0 && <Labels label={"Tags"} items={work.tags} />}
         </Card.Content>
         <Card.Actions
-          style={work.tags.length ? commonItemStyles.cardActions : {}}
+          style={
+            work.tags.length
+              ? commonItemStyles.cardActionsWithTags
+              : commonItemStyles.cardActions
+          }
         >
           <IconButton icon="delete" onPress={onDelete} />
         </Card.Actions>

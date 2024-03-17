@@ -6,6 +6,7 @@ import { Filter, User } from "../../types";
 import { BackHandler, StyleSheet, View } from "react-native";
 import commonStyles from "../../src/styles/commonStyles";
 import { IconButton, Searchbar, useTheme } from "react-native-paper";
+import { DROPDOWN_HEIGHT, UI_ELEMENTS_GAP } from "../../src/styles/constants";
 
 interface SearchAndFilterProps {
   handleSearch: (query: string) => void;
@@ -14,6 +15,7 @@ interface SearchAndFilterProps {
   sender?: User[];
   receiver?: User[];
   onApply: (arg: Filter) => void;
+  searchBar?: boolean;
 }
 
 const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
@@ -23,6 +25,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   sender,
   receiver,
   onApply,
+  searchBar = true,
 }) => {
   const theme = useTheme();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -53,12 +56,15 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
 
   return (
     <View style={commonStyles.row}>
-      <Searchbar
-        placeholder="Search"
-        onChangeText={handleSearch}
-        value={searchQuery}
-        style={styles.searchBar}
-      />
+      {searchBar && (
+        <Searchbar
+          placeholder="Search"
+          onChangeText={handleSearch}
+          value={searchQuery}
+          style={styles.searchBar}
+          inputStyle={{ minHeight: DROPDOWN_HEIGHT }}
+        />
+      )}
       <IconButton icon="filter" mode={"contained"} onPress={openBottomSheet} />
       <BottomSheetModal
         ref={bottomSheetModalRef}
@@ -83,6 +89,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
 const styles = StyleSheet.create({
   searchBar: {
     width: "80%",
+    marginBottom: UI_ELEMENTS_GAP,
   },
 });
 

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
-import { FAB, Text, Button, Modal, Portal } from "react-native-paper";
+import { FAB, Text, Button } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import { rolesState } from "../recoil/atom";
 import RolesService from "../services/RolesService";
@@ -12,6 +12,8 @@ import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import PropTypes from "prop-types";
+import ConfirmationModal from "../components/common/ConfirmationModal";
+import Modal from "../components/common/Modal";
 
 const RolesScreen = ({ navigation }) => {
   const [roles, setRoles] = useRecoilState(rolesState);
@@ -123,49 +125,31 @@ const RolesScreen = ({ navigation }) => {
       />
 
       {/* Delete Role Modal */}
-      <Portal>
-        <Modal
-          visible={isDeleteModalVisible}
-          onDismiss={() => setIsDeleteModalVisible(false)}
-          contentContainerStyle={commonStyles.modalContainer}
-        >
-          <Text>Are you sure you want to delete this role?</Text>
-          <View style={commonStyles.modalButtonGap} />
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            icon="cancel"
-            mode="outlined"
-            onPress={() => setIsDeleteModalVisible(false)}
-          >
-            Cancel
-          </Button>
-          <View style={commonStyles.modalButtonGap} />
-          <Button icon="delete" mode="contained" onPress={confirmDeleteRole}>
-            Delete
-          </Button>
-        </Modal>
-      </Portal>
+      <ConfirmationModal
+        warningMessage={"Are you sure you want to delete this role?"}
+        isModalVisible={isDeleteModalVisible}
+        setIsModalVisible={setIsDeleteModalVisible}
+        onConfirm={confirmDeleteRole}
+      />
 
       {/* Assign Warning Modal */}
-      <Portal>
-        <Modal
-          visible={isAssignModalVisible}
-          onDismiss={() => setIsAssignModalVisible(false)}
-          contentContainerStyle={commonStyles.modalContainer}
+      <Modal
+        isModalVisible={isAssignModalVisible}
+        setIsModalVisible={() => setIsAssignModalVisible(false)}
+        contentContainerStyle={commonStyles.modalContainer}
+      >
+        <Text>This role cannot be deleted as it is assigned to users.</Text>
+        {assignedUsers.map((user, index) => (
+          <Text key={index}>{user.name}</Text>
+        ))}
+        <Button
+          icon="check"
+          mode="contained"
+          onPress={() => setIsAssignModalVisible(false)}
         >
-          <Text>This role cannot be deleted as it is assigned to users.</Text>
-          {assignedUsers.map((user, index) => (
-            <Text key={index}>{user.username}</Text>
-          ))}
-          <Button
-            icon="check"
-            mode="contained"
-            onPress={() => setIsAssignModalVisible(false)}
-          >
-            OK
-          </Button>
-        </Modal>
-      </Portal>
+          OK
+        </Button>
+      </Modal>
     </View>
   );
 };

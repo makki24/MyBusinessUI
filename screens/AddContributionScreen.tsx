@@ -1,7 +1,7 @@
 // AddContributionScreen.tsx
 import React, { useState, useEffect } from "react";
 import { View, ScrollView } from "react-native";
-import { Button, Text, Portal, Modal } from "react-native-paper";
+import { Button, Text } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import { tagsState, usersState, userState } from "../recoil/atom";
 import UserDropDownItem from "../components/common/UserDropDownItem";
@@ -15,6 +15,7 @@ import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import NumberInput from "../components/common/NumberInput";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import Modal from "../components/common/Modal";
 
 let oldAmount = 0;
 
@@ -212,23 +213,21 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
           : "Declare the contribution"}
       </Button>
 
-      <Portal>
-        <Modal
-          visible={modalVisible}
-          onDismiss={handleModalClose}
-          contentContainerStyle={commonStyles.modalContainer}
-        >
-          <Text>{modalMessage}</Text>
-          <View style={commonStyles.modalButtonGap} />
-          <Button icon="check" mode="contained" onPress={submitContribution}>
-            Continue
-          </Button>
-          <View style={commonStyles.modalButtonGap} />
-          <Button icon="cancel" mode="outlined" onPress={handleModalClose}>
-            Cancel
-          </Button>
-        </Modal>
-      </Portal>
+      <Modal
+        isModalVisible={modalVisible}
+        setIsModalVisible={handleModalClose}
+        contentContainerStyle={commonStyles.modalContainer}
+      >
+        <Text>{modalMessage}</Text>
+        <View style={commonStyles.modalButtonGap} />
+        <Button icon="check" mode="contained" onPress={submitContribution}>
+          Continue
+        </Button>
+        <View style={commonStyles.modalButtonGap} />
+        <Button icon="cancel" mode="outlined" onPress={handleModalClose}>
+          Cancel
+        </Button>
+      </Modal>
     </ScrollView>
   );
 };

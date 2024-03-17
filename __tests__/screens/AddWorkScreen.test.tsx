@@ -71,7 +71,7 @@ describe("AddWorkScreen", () => {
     const mockRouteParams = {
       params: {
         isEditMode: false,
-        workType: { pricePerUnit: 5 } as WorkType, // Mocking the pricePerUnit for workType
+        workType: { pricePerUnit: 5.39 } as WorkType, // Mocking the pricePerUnit for workType
         work: null,
       },
     };
@@ -90,7 +90,7 @@ describe("AddWorkScreen", () => {
     // fireEvent(userSelectDropdown, 'handleUserChange', "1");
 
     // Fill input fields
-    fireEvent.changeText(getByTestId("Quantity"), "10");
+    fireEvent.changeText(getByTestId("Quantity"), "10.73");
 
     // Mock WorkService.addWork implementation
     (
@@ -104,10 +104,10 @@ describe("AddWorkScreen", () => {
     await waitFor(() => {
       expect(WorkService.addWork).toHaveBeenCalledWith({
         date: expect.any(Date),
-        type: { pricePerUnit: 5 } as WorkType,
-        quantity: 10,
-        pricePerUnit: 5, // Mocked pricePerUnit from workType
-        amount: 50,
+        type: { pricePerUnit: 5.39 } as WorkType,
+        quantity: 10.73,
+        pricePerUnit: 5.39, // Mocked pricePerUnit from workType
+        amount: 57.8347,
         user: { id: "1" },
         tags: [],
         description: "",

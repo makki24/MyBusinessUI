@@ -5,8 +5,10 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import { useColorScheme } from "react-native";
 
 const CustomBackdrop = ({ animatedIndex, style }: BottomSheetBackdropProps) => {
+  const colorScheme = useColorScheme();
   // animated variables
   const containerAnimatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
@@ -22,7 +24,8 @@ const CustomBackdrop = ({ animatedIndex, style }: BottomSheetBackdropProps) => {
     () => [
       style,
       {
-        backgroundColor: "rgba(0,0,0,0.2)",
+        backgroundColor:
+          colorScheme === "light" ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)",
       },
       containerAnimatedStyle,
     ],

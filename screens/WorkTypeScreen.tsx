@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
-import { FAB, Text, Modal, Portal } from "react-native-paper"; // Import Searchbar
+import { FAB } from "react-native-paper"; // Import Searchbar
 import { useRecoilState } from "recoil";
 import { workTypesState } from "../recoil/atom";
 import WorkTypeItem from "../components/WorkTypeItem";
@@ -9,9 +9,9 @@ import WorkService from "../services/WorkService";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
-import Button from "../components/common/Button";
 import SearchAndFilter from "../components/common/SearchAndFilter";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import ConfirmationModal from "../components/common/ConfirmationModal";
 
 type WorkTypeScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -155,30 +155,12 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({ navigation }) => {
       />
 
       {/* Delete Work Type Modal */}
-      <Portal>
-        <Modal
-          visible={isDeleteModalVisible}
-          onDismiss={() => setIsDeleteModalVisible(false)}
-          contentContainerStyle={commonStyles.modalContainer}
-        >
-          <Text>Are you sure you want to delete this work type?</Text>
-          <View style={commonStyles.modalButtonGap} />
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            title={"Cancel"}
-            icon="cancel"
-            mode="outlined"
-            onPress={() => setIsDeleteModalVisible(false)}
-          />
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            title={"Delete"}
-            icon="delete"
-            mode="contained"
-            onPress={confirmDeleteWorkType}
-          />
-        </Modal>
-      </Portal>
+      <ConfirmationModal
+        warningMessage={"Are you sure you want to delete this work type?"}
+        isModalVisible={isDeleteModalVisible}
+        setIsModalVisible={setIsDeleteModalVisible}
+        onConfirm={confirmDeleteWorkType}
+      />
     </View>
   );
 };

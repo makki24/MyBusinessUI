@@ -50,7 +50,7 @@ const ContributionItem: FC<ContributionItemProps> = ({
             </View>
           )}
         </Card.Content>
-        <Card.Actions style={commonItemStyles.cardActions}>
+        <Card.Actions style={commonItemStyles.cardActionsWithTags}>
           <IconButton icon="delete" onPress={onDelete} />
         </Card.Actions>
       </Card>

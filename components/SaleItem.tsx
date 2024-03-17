@@ -22,7 +22,7 @@ const SaleItem: React.FC<SaleItemProps> = ({ sale, onPress, onDelete }) => {
           style={sale.tags.length ? commonItemStyles.cardContent : {}}
         >
           <View style={commonItemStyles.titleContainer}>
-            <Title>{sale.type}</Title>
+            <Title>{sale.amount}</Title>
             <Text>
               {sale.user && <UserDetails user={sale.user} />}{" "}
               {/* Use UserDetails component */}
@@ -30,12 +30,16 @@ const SaleItem: React.FC<SaleItemProps> = ({ sale, onPress, onDelete }) => {
           </View>
           <View style={commonStyles.row}>
             <Paragraph>{`Date: ${sale.date.toDateString()}`}</Paragraph>
-            <Paragraph>{`Quantity: ${sale.quantity}`}</Paragraph>
+            {sale.quantity && (
+              <Paragraph>{`Quantity: ${sale.quantity}`}</Paragraph>
+            )}
           </View>
-          <View style={commonStyles.row}>
-            <Paragraph>{`Price Per Unit: ${sale.pricePerUnit}`}</Paragraph>
-            <Paragraph>{`Amount: ${sale.amount}`}</Paragraph>
-          </View>
+
+          {sale.pricePerUnit && (
+            <View style={commonStyles.row}>
+              <Paragraph>{`Price Per Unit: ${sale.pricePerUnit}`}</Paragraph>
+            </View>
+          )}
           <View style={commonStyles.row}>
             {sale.description && (
               <Paragraph>{`Description: ${sale.description}`}</Paragraph>
@@ -44,7 +48,11 @@ const SaleItem: React.FC<SaleItemProps> = ({ sale, onPress, onDelete }) => {
           {sale.tags.length > 0 && <Labels label={"Tags"} items={sale.tags} />}
         </Card.Content>
         <Card.Actions
-          style={sale.tags.length ? commonItemStyles.cardActions : {}}
+          style={
+            sale.tags.length
+              ? commonItemStyles.cardActionsWithTags
+              : commonItemStyles.cardActions
+          }
         >
           <IconButton icon="delete" onPress={onDelete} />
         </Card.Actions>
