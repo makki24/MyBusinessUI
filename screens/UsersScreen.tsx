@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
-import { FAB, Text, Button, Modal, Portal, Snackbar } from "react-native-paper";
+import { FAB, Snackbar } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import UserService from "../services/UserService";
 import UserItem from "../components/UserItem";
@@ -10,6 +10,7 @@ import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import ConfirmationModal from "../components/common/ConfirmationModal";
 
 type UsersScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -127,28 +128,12 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
       />
 
       {/* Delete User Modal */}
-      <Portal>
-        <Modal
-          visible={isDeleteModalVisible}
-          onDismiss={() => setIsDeleteModalVisible(false)}
-          contentContainerStyle={commonStyles.modalContainer}
-        >
-          <Text>Are you sure you want to delete this user?</Text>
-          <View style={commonStyles.modalButtonGap} />
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            icon="cancel"
-            mode="outlined"
-            onPress={() => setIsDeleteModalVisible(false)}
-          >
-            Cancel
-          </Button>
-          <View style={commonStyles.modalButtonGap} />
-          <Button icon="delete" mode="contained" onPress={confirmDeleteUser}>
-            Delete
-          </Button>
-        </Modal>
-      </Portal>
+      <ConfirmationModal
+        warningMessage={"Are you sure you want to delete this user?"}
+        isModalVisible={isDeleteModalVisible}
+        setIsModalVisible={setIsDeleteModalVisible}
+        onConfirm={confirmDeleteUser}
+      />
 
       {/* Snackbar for successful deletion */}
       <Snackbar

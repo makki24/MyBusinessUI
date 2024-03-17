@@ -1,7 +1,7 @@
 // src/screens/LoanTransactionScreen.tsx
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
-import { FAB, Text, Button, Modal, Portal, Snackbar } from "react-native-paper";
+import { FAB, Snackbar } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import LoanTransactionItem from "../components/LoanTransactionItem";
 import { loanToHoldingTransactionState } from "../recoil/atom";
@@ -11,6 +11,7 @@ import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import ConfirmationModal from "../components/common/ConfirmationModal";
 
 type LoanTransactionScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -130,37 +131,14 @@ const LoanTransactionScreen: React.FC<LoanTransactionScreenProps> = ({
       )}
 
       {/* Delete Transaction Modal */}
-      <Portal>
-        <Modal
-          visible={isDeleteModalVisible}
-          onDismiss={() => setIsDeleteModalVisible(false)}
-          contentContainerStyle={commonStyles.modalContainer}
-          testID="delete-modal"
-        >
-          <Text testID="delete-modal-text">
-            Are you sure you want to delete this loan transaction?
-          </Text>
-          <View style={commonStyles.modalButtonGap} />
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            icon="cancel"
-            mode="outlined"
-            onPress={() => setIsDeleteModalVisible(false)}
-            testID="cancel-delete-button"
-          >
-            Cancel
-          </Button>
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            icon="delete"
-            mode="contained"
-            onPress={confirmDeleteTransaction}
-            testID="confirm-delete-button"
-          >
-            Delete
-          </Button>
-        </Modal>
-      </Portal>
+      <ConfirmationModal
+        warningMessage={
+          "Are you sure you want to delete this loan transaction?"
+        }
+        isModalVisible={isDeleteModalVisible}
+        setIsModalVisible={setIsDeleteModalVisible}
+        onConfirm={confirmDeleteTransaction}
+      />
 
       <FAB
         style={commonScreenStyles.fab}

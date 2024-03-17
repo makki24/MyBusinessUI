@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
-import { FAB, Text, Button, Modal, Portal, Snackbar } from "react-native-paper";
+import { FAB, Snackbar } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import { expenseTypesState } from "../recoil/atom";
 import ExpenseTypesService from "../services/ExpenseTypesService";
@@ -9,6 +9,7 @@ import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import ConfirmationModal from "../components/common/ConfirmationModal";
 
 type ExpenseTypesScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -118,31 +119,12 @@ const ExpenseTypesScreen: React.FC<ExpenseTypesScreenProps> = ({
       />
 
       {/* Delete ExpenseType Modal */}
-      <Portal>
-        <Modal
-          visible={isDeleteModalVisible}
-          onDismiss={() => setIsDeleteModalVisible(false)}
-          contentContainerStyle={commonStyles.modalContainer}
-        >
-          <Text>Are you sure you want to delete this expense type?</Text>
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            icon="cancel"
-            mode="outlined"
-            onPress={() => setIsDeleteModalVisible(false)}
-          >
-            Cancel
-          </Button>
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            icon="delete"
-            mode="contained"
-            onPress={confirmDeleteExpenseType}
-          >
-            Delete
-          </Button>
-        </Modal>
-      </Portal>
+      <ConfirmationModal
+        warningMessage={"Are you sure you want to delete this expense type?"}
+        isModalVisible={isDeleteModalVisible}
+        setIsModalVisible={setIsDeleteModalVisible}
+        onConfirm={confirmDeleteExpenseType}
+      />
 
       <Snackbar
         visible={snackbarVisible}

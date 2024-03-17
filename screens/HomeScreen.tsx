@@ -44,7 +44,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         >
           <Card.Cover source={require("../assets/work.jpeg")} />
           <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Work</Title>
+            <Title style={homeScreenStyles.cardTitle}>Work / Loan</Title>
           </View>
         </Card>
 
@@ -56,7 +56,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         >
           <Card.Cover source={require("../assets/sale.jpeg")} />
           <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Sale</Title>
+            <Title style={homeScreenStyles.cardTitle}>Sale / Lending</Title>
           </View>
         </Card>
 
@@ -68,7 +68,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         >
           <Card.Cover source={require("../assets/expense.jpeg")} />
           <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Manage Expenses</Title>
+            <Title style={homeScreenStyles.cardTitle}>Expense (اخراجات)</Title>
           </View>
         </Card>
         <View style={homeScreenStyles.gap} />

@@ -1,7 +1,7 @@
 // src/screens/ExpenseScreen.tsx
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
-import { FAB, Text, Button, Modal, Portal } from "react-native-paper";
+import { FAB } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import ExpenseService from "../services/ExpenseService";
 import ExpenseItem from "../components/ExpenseItem";
@@ -13,6 +13,7 @@ import LoadingError from "../components/common/LoadingError";
 import SearchAndFilter from "../components/common/SearchAndFilter";
 import expenseService from "../services/ExpenseService";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import ConfirmationModal from "../components/common/ConfirmationModal";
 
 type ExpenseScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -141,6 +142,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
         sender={senders}
         receiver={receivers}
         onApply={onApply}
+        searchBar={false}
       />
       {!error && (
         <FlatList
@@ -165,32 +167,23 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
       <FAB
         style={commonScreenStyles.fab}
         icon="plus"
-        onPress={() => navigation.navigate("AddExpense")}
+        testID={"addExpense"}
+        onPress={() => {
+          navigation.navigate("ExpenseStack", {
+            screen: "AddExpense",
+            params: { title: "Add Expense" },
+          });
+          navigation.navigate("AddExpense");
+        }}
       />
 
       {/* Delete Expense Modal */}
-      <Portal>
-        <Modal
-          visible={isDeleteModalVisible}
-          onDismiss={() => setIsDeleteModalVisible(false)}
-          contentContainerStyle={commonStyles.modalContainer}
-        >
-          <Text>Are you sure you want to delete this expense?</Text>
-          <View style={commonStyles.modalButtonGap} />
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            icon="cancel"
-            mode="outlined"
-            onPress={() => setIsDeleteModalVisible(false)}
-          >
-            Cancel
-          </Button>
-          <View style={commonStyles.modalButtonGap} />
-          <Button icon="delete" mode="contained" onPress={confirmDeleteExpense}>
-            Delete
-          </Button>
-        </Modal>
-      </Portal>
+      <ConfirmationModal
+        warningMessage={"Are you sure you want to delete this expense?"}
+        isModalVisible={isDeleteModalVisible}
+        setIsModalVisible={setIsDeleteModalVisible}
+        onConfirm={confirmDeleteExpense}
+      />
     </View>
   );
 };

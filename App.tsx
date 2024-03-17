@@ -501,6 +501,7 @@ const CustomHeader = () => {
         ...commonStyles.row,
         alignItems: "center",
         padding: UI_ELEMENTS_GAP,
+        paddingBottom: 0,
       }}
     >
       <View style={commonStyles.simpleRow}>

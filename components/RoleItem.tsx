@@ -18,7 +18,7 @@ const RoleItem: React.FC<RoleItemProps> = ({ role, onPress, onDelete }) => (
       <Card.Content style={commonItemStyles.cardContent}>
         <Title>{role.name}</Title>
       </Card.Content>
-      <Card.Actions style={commonItemStyles.cardActions}>
+      <Card.Actions style={commonItemStyles.cardActionsWithTags}>
         <IconButton icon="delete" onPress={onDelete} testID="delete-button" />
       </Card.Actions>
     </Card>

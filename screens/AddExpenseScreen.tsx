@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { useRecoilState } from "recoil";
 import DropDownPicker from "react-native-dropdown-picker";
-import { TextInput, Modal as PaperModal, Portal } from "react-native-paper";
+import { TextInput } from "react-native-paper";
 import { DatePickerInput, TimePickerModal } from "react-native-paper-dates";
 
 import {
@@ -21,6 +21,7 @@ import LoadingError from "../components/common/LoadingError";
 import Button from "../components/common/Button";
 import NumberInput from "../components/common/NumberInput";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import Modal from "../components/common/Modal";
 
 interface AddExpenseScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -248,8 +249,8 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   const navigateToManageAmounts = () => {
     setModalVisible(false);
     navigation.navigate("ProfileStack", {
-      screen: "ManageAmounts",
-      params: { title: "Manage Amounts" },
+      screen: "AddContribution",
+      params: { title: "Add Contribution" },
     });
   };
 
@@ -388,43 +389,41 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
         icon={route.params?.isEditMode ? "update" : "credit-card-plus"}
         mode="contained"
         onPress={handleAddExpense}
-        title={route.params?.isEditMode ? "Update Expense" : " Add Expense"}
+        title={route.params?.isEditMode ? "Update Expense" : "Add Expense"}
       />
 
-      <Portal>
-        <PaperModal
-          visible={modalVisible}
-          onDismiss={handleModalClose}
-          contentContainerStyle={commonStyles.modalContainer}
-        >
-          <Text>{modalMessage}</Text>
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            icon="check"
-            mode="contained"
-            onPress={submitExpense}
-            title={"Continue"}
-          />
-          {isAmountHoldingLess && (
-            <>
-              <View style={commonStyles.modalButtonGap} />
-              <Button
-                icon="account-cog"
-                mode="contained"
-                onPress={navigateToManageAmounts}
-                title={"Manage Accounts"}
-              />
-            </>
-          )}
-          <View style={commonStyles.modalButtonGap} />
-          <Button
-            icon="cancel"
-            mode="outlined"
-            onPress={handleModalClose}
-            title={"Cancel"}
-          />
-        </PaperModal>
-      </Portal>
+      <Modal
+        isModalVisible={modalVisible}
+        setIsModalVisible={handleModalClose}
+        contentContainerStyle={commonStyles.modalContainer}
+      >
+        <Text>{modalMessage}</Text>
+        <View style={commonStyles.modalButtonGap} />
+        <Button
+          icon="check"
+          mode="contained"
+          onPress={submitExpense}
+          title={"Continue"}
+        />
+        {isAmountHoldingLess && (
+          <>
+            <View style={commonStyles.modalButtonGap} />
+            <Button
+              icon="account-cog"
+              mode="contained"
+              onPress={navigateToManageAmounts}
+              title={"Declare contribution"}
+            />
+          </>
+        )}
+        <View style={commonStyles.modalButtonGap} />
+        <Button
+          icon="cancel"
+          mode="outlined"
+          onPress={handleModalClose}
+          title={"Cancel"}
+        />
+      </Modal>
     </ScrollView>
   );
 };

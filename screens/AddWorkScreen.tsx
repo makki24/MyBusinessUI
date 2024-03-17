@@ -114,7 +114,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
       if (!showAmount) {
         // Calculate amount based on Price per unit and Quantity
         if (pricePerUnit) {
-          calculatedAmount = parseFloat(pricePerUnit) * parseInt(quantity);
+          calculatedAmount = parseFloat(pricePerUnit) * parseFloat(quantity);
         }
       } else {
         setPricePerUnit(null);
@@ -123,7 +123,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
       let newWork: Work = {
         date: workDate,
         type: workType,
-        quantity: showAmount ? 1 : parseInt(quantity),
+        quantity: showAmount ? 1 : parseFloat(quantity),
         pricePerUnit: showAmount ? calculatedAmount : parseFloat(pricePerUnit),
         amount: calculatedAmount,
         description,

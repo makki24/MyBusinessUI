@@ -5,15 +5,13 @@ import {
   Button,
   TextInput,
   HelperText,
-  Modal,
-  Portal,
   List,
   Searchbar,
 } from "react-native-paper";
 import * as Contacts from "expo-contacts";
-import { CONTAINER_PADDING } from "../../src/styles/constants";
 import { StyleProp } from "react-native/Libraries/StyleSheet/StyleSheet";
 import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
+import Modal from "./Modal";
 
 interface PhoneNumbers {
   number: string;
@@ -160,35 +158,33 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
           {phoneNumberError}
         </HelperText>
       )}
-      <Portal>
-        <Modal
-          visible={modalVisible}
-          onDismiss={() => setModalVisible(false)}
-          contentContainerStyle={styles.modalContainer}
-        >
-          <Searchbar
-            placeholder="Search"
-            onChangeText={setSearchQuery}
-            value={searchQuery}
+      <Modal
+        isModalVisible={modalVisible}
+        setIsModalVisible={setModalVisible}
+        contentContainerStyle={{ maxHeight: "80%" }}
+      >
+        <Searchbar
+          placeholder="Search"
+          onChangeText={setSearchQuery}
+          value={searchQuery}
+        />
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
+          <FlatList
+            data={filteredContacts}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            getItemLayout={(data, index) => ({
+              length: 50,
+              offset: 50 * index,
+              index,
+            })}
+            initialNumToRender={10}
           />
-          {loading ? (
-            <ActivityIndicator />
-          ) : (
-            <FlatList
-              data={filteredContacts}
-              keyExtractor={(item) => item.id}
-              renderItem={renderItem}
-              getItemLayout={(data, index) => ({
-                length: 50,
-                offset: 50 * index,
-                index,
-              })}
-              initialNumToRender={10}
-            />
-          )}
-          <Button onPress={() => setModalVisible(false)}>Close</Button>
-        </Modal>
-      </Portal>
+        )}
+        <Button onPress={() => setModalVisible(false)}>Close</Button>
+      </Modal>
     </View>
   );
 };
@@ -200,12 +196,6 @@ const styles = StyleSheet.create({
   },
   flex: {
     flex: 1,
-  },
-  modalContainer: {
-    backgroundColor: "white",
-    padding: CONTAINER_PADDING,
-    margin: CONTAINER_PADDING,
-    maxHeight: "80%", // Limit the height to 80% of the screen height
   },
 });
 

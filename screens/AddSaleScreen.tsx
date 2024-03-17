@@ -4,7 +4,7 @@ import { Button, TextInput } from "react-native-paper";
 
 import { salesState, tagsState, usersState, userState } from "../recoil/atom";
 import saleService from "../services/SaleService";
-import { Sale, SaleType, Tag as Tags, User } from "../types";
+import { Sale, Tag as Tags, User } from "../types";
 import CustomDropDown from "../components/common/CustomDropdown";
 import { useRecoilState } from "recoil";
 import DateTimePicker from "../components/common/DateTimePicker";
@@ -30,8 +30,6 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [tagOpen, setTagOpen] = useState(false);
-  const [typeOpen, setTypeOpen] = useState(false);
-  const [saleType, setSaleType] = useState<SaleType>(SaleType.type2);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [quantity, setQuantity] = useState("");
   const [pricePerUnit, setPricePerUnit] = useState("");
@@ -69,7 +67,10 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
       setSelectedUser(extractedSale.user.id);
       setTime({ hours: paramDate.getHours(), minutes: paramDate.getMinutes() });
 
-      if (!extractedSale.pricePerUnit) setShowAmount(true);
+      if (!extractedSale.pricePerUnit) {
+        setShowAmount(true);
+      }
+      setAmount(`${extractedSale.amount}`);
       // Logic to set state based on provided sale data
       // ...
     }
@@ -92,12 +93,12 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
         setQuantity("1");
       } else {
         calculatedAmount = parseFloat(quantity) * parseFloat(pricePerUnit);
+        calculatedAmount = Math.round(calculatedAmount * 100.0) / 100.0;
       }
 
       let newSale: Sale = {
         user: { id: selectedUser } as User,
         date: saleDate,
-        type: saleType,
         amount: calculatedAmount,
         quantity: parseFloat(quantity),
         pricePerUnit: parseFloat(pricePerUnit),
@@ -172,26 +173,7 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
       </View>
 
       <CustomDropDown
-        schema={{
-          label: "label",
-          value: "value",
-        }}
-        items={[
-          { label: "Sales", value: SaleType.sales },
-          { label: "Type 2", value: SaleType.type2 },
-        ]}
-        zIndex={3000}
-        zIndexInverse={3000}
-        open={typeOpen}
-        setOpen={setTypeOpen}
-        containerStyle={{ height: 40, marginBottom: 16 }}
-        value={saleType}
-        setValue={setSaleType}
-        itemSeparator={true}
-        placeholder="Select Sale Type"
-      />
-
-      <CustomDropDown
+        testID="user-picker"
         schema={{
           label: "name",
           value: "id",

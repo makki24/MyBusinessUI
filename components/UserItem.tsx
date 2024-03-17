@@ -36,7 +36,7 @@ const UserItem: React.FC<UserItemProps> = ({
           <Paragraph>{`Amount Holding: ${user.amountHolding}`}</Paragraph>
           {/* Display additional user information as needed */}
         </Card.Content>
-        <Card.Actions style={commonItemStyles.cardActions}>
+        <Card.Actions style={commonItemStyles.cardActionsWithTags}>
           <IconButton icon="delete" onPress={onDelete} />
         </Card.Actions>
       </Card>

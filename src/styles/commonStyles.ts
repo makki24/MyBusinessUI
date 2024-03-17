@@ -5,6 +5,7 @@ const commonStyles = StyleSheet.create({
   container: {
     flex: 1,
     padding: CONTAINER_PADDING,
+    paddingTop: 0, // TODO: Need to check right container padding, current : 16
   },
   loadingContainer: {
     ...StyleSheet.absoluteFillObject,
@@ -26,7 +27,6 @@ const commonStyles = StyleSheet.create({
     alignItems: "center",
   },
   modalContainer: {
-    backgroundColor: "white",
     padding: CONTAINER_PADDING,
     borderRadius: BORDER_RADIUS,
     alignSelf: "center", // Center the modal on the screen
