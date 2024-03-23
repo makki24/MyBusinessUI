@@ -194,6 +194,7 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
         onChangeText={setUsername}
         style={commonAddScreenStyles.inputField}
         testID={"username"}
+        autoCapitalize={"words"}
       />
       <EmailInput
         style={commonAddScreenStyles.inputField}

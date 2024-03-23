@@ -117,7 +117,7 @@ const FilterScreen: React.FC<FilterScreenProps> = ({
   return (
     <View style={commonStyles.container}>
       <DateRangePicker range={range} setRange={handleSetRange} />
-      <View style={commonStyles.elementsGap}>
+      <View>
         <RadioButton.Group
           onValueChange={handleOptionChange}
           value={selectedOption}
