@@ -87,7 +87,7 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
               })
             }
           >
-            <Card.Cover source={require("../assets/work_type.jpeg")} />
+            <Card.Cover source={require("../assets/impersonate.jpeg")} />
             <View style={homeScreenStyles.textOverlay}>
               <Title style={homeScreenStyles.cardTitle}>Impersonate</Title>
             </View>

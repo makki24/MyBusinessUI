@@ -63,6 +63,7 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
       setInputDate(paramDate);
       setTime({ hours: paramDate.getHours(), minutes: paramDate.getMinutes() });
       setSelectedTags(extractedContribution.tags.map((tag) => tag.id));
+      if (!extractedContribution.sender?.id) setIsSelf(true);
     }
   }, [route.params?.isEditMode, route.params?.contribution]);
 

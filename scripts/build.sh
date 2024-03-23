@@ -4,6 +4,8 @@
 cp .gitignore .gitignore.bak
 cp app.config.ts app.config.ts.bak
 
+echo "env: $1"
+
 # Remove line from .gitignore
 sed -i '/assets\/google-services.json/d' .gitignore
 

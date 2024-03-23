@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, ScrollView } from "react-native";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import DropDownPicker from "react-native-dropdown-picker";
 import { TextInput } from "react-native-paper";
 import { DatePickerInput, TimePickerModal } from "react-native-paper-dates";
@@ -8,7 +8,6 @@ import { DatePickerInput, TimePickerModal } from "react-native-paper-dates";
 import {
   expenseTypesState,
   userState,
-  usersState,
   expensesState,
   tagsState,
 } from "../recoil/atom";
@@ -22,6 +21,8 @@ import Button from "../components/common/Button";
 import NumberInput from "../components/common/NumberInput";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import Modal from "../components/common/Modal";
+import { otherUsersState } from "../recoil/selectors";
+import UserDropDownItem from "../components/common/UserDropDownItem";
 
 interface AddExpenseScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -55,7 +56,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
     minutes: new Date().getMinutes(),
   });
   const [timeOpen, setTimeOpen] = useState(false);
-  const [users] = useRecoilState(usersState);
+  const users = useRecoilValue(otherUsersState);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [isReceivingUser, setIsReceivingUser] = useState<boolean>(false);
   const [_, setExpenses] = useRecoilState(expensesState);
@@ -277,6 +278,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
         value={value}
         setValue={setValue}
         itemSeparator={true}
+        placeholder="Select Type (Mazori, Medical etc...)"
         onChangeValue={handleExpenseTypeChange}
         testID="expense-type-picker"
       />
@@ -301,6 +303,14 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
           itemSeparator={true}
           placeholder="Select User"
           onChangeValue={handleUserChange}
+          renderListItem={({ item }) => (
+            <UserDropDownItem
+              item={item}
+              setSelectedUser={setSelectedUser}
+              selectedUser={selectedUser}
+              setUserOpen={setUserOpen}
+            />
+          )}
         />
       )}
 

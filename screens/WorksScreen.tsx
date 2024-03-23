@@ -42,9 +42,10 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
       setIsRefreshing(true);
 
       const worksData = await WorkService.getWorks();
-      const userSet = new Set<User>();
+      const userSet: User[] = [];
       worksData.forEach((expn) => {
-        userSet.add(expn.user);
+        if (!userSet.some((user) => user.id === expn.user.id))
+          userSet.push(expn.user);
       });
       setWorkUsers([...userSet]);
       transformAndSetWork(worksData);

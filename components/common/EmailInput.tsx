@@ -51,6 +51,7 @@ const EmailInput: React.FC<EmailInputProps> = ({
         error={!!emailError}
         style={style}
         testID={label.split(" ").join("")}
+        autoCapitalize={"none"}
       />
       {!!emailError && (
         <HelperText type="error" visible={!!emailError}>

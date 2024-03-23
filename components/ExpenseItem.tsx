@@ -1,18 +1,12 @@
 // src/components/ExpenseItem.tsx
 import React from "react";
 import { View, TouchableOpacity } from "react-native";
-import {
-  Card,
-  Title,
-  IconButton,
-  Paragraph,
-  Chip,
-  Text,
-} from "react-native-paper";
+import { Card, Title, IconButton, Paragraph, Text } from "react-native-paper";
 import { Expense } from "../types";
 import commonItemStyles from "../src/styles/commonItemStyles";
 import UserDetails from "./common/UserDetails";
 import commonStyles from "../src/styles/commonStyles";
+import Labels from "./common/Labels";
 
 interface ExpenseItemProps {
   expense: Expense;
@@ -52,16 +46,7 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({
           )}
         </View>
         {expense.tags.length > 0 && (
-          <View style={commonItemStyles.tagsContainer}>
-            <Text style={commonItemStyles.tagsLabel}>Tags: </Text>
-            <View style={commonItemStyles.tagChipsContainer}>
-              {expense.tags.map((tag) => (
-                <Chip key={tag.id} style={commonItemStyles.tagChip}>
-                  {tag.name}
-                </Chip>
-              ))}
-            </View>
-          </View>
+          <Labels label={"Tags"} items={expense.tags} />
         )}
       </Card.Content>
       <Card.Actions

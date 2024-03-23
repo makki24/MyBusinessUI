@@ -94,6 +94,8 @@ const CustomDropDown = <T,>({
         listMessageTextStyle={{ color: theme.colors.onBackground }}
         itemSeparatorStyle={{ backgroundColor: theme.colors.onBackground }}
         searchContainerStyle={{ borderBottomColor: theme.colors.onBackground }}
+        listItemContainerStyle={{ height: 50 }}
+        maxHeight={300}
       />
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {Array.isArray(value) &&

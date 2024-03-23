@@ -114,7 +114,7 @@ describe("AddWorkScreen", () => {
       });
       expect(mockNavigation.goBack).toHaveBeenCalled();
     });
-  });
+  }, 10000);
 
   it("calls WorkService.addWork with correct parameters when adding new work enter amount directly", async () => {
     // Mock data

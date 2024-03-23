@@ -6,7 +6,7 @@ import { useRecoilState } from "recoil";
 import ExpenseService from "../services/ExpenseService";
 import ExpenseItem from "../components/ExpenseItem";
 import { expensesState } from "../recoil/atom";
-import { Expense, User } from "../types";
+import { Expense, Filter, User } from "../types";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
@@ -29,6 +29,15 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [senders, setSenders] = useState<User[]>([]);
   const [receivers, setReceivers] = useState<User[]>([]);
+  const today = new Date();
+  const [defaultFilter, setDefaultFilter] = useState<Filter | null>({
+    fromDate: new Date(today.setDate(today.getDate() - 15)),
+    toDate: new Date(),
+    sender: [],
+    receiver: [],
+    tags: [],
+    user: [],
+  }); // Use a state variable
 
   const transFormAndSetExpense = (expensesData: Expense[]) => {
     expensesData = expensesData.map((expense) => ({
@@ -59,7 +68,6 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
       });
       setSenders(sendersSet);
       setReceivers([...receiverSet]);
-      transFormAndSetExpense(expensesData);
     } catch (fetchError) {
       setError(
         fetchError.response?.data ||
@@ -72,6 +80,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     fetchExpenses();
+    onApply(defaultFilter);
   }, []);
 
   const handleEditExpense = (expense: Expense) => {
@@ -115,13 +124,15 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
 
   const handleRefresh = () => {
     fetchExpenses();
+    onApply(defaultFilter);
   };
 
   const handleSearch = (query) => {
     setSearchQuery(query);
   };
 
-  const onApply = async (arg) => {
+  const onApply = async (arg: Filter) => {
+    setDefaultFilter(arg);
     setIsLoading(true);
     try {
       const filteredExpenses = await expenseService.filterExpense(arg);
@@ -143,6 +154,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
         receiver={receivers}
         onApply={onApply}
         searchBar={false}
+        defaultFilter={defaultFilter}
       />
       {!error && (
         <FlatList

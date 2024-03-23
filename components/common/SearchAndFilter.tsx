@@ -16,6 +16,7 @@ interface SearchAndFilterProps {
   receiver?: User[];
   onApply: (arg: Filter) => void;
   searchBar?: boolean;
+  defaultFilter?: Filter;
 }
 
 const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
@@ -26,11 +27,14 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   receiver,
   onApply,
   searchBar = true,
+  defaultFilter = null,
 }) => {
   const theme = useTheme();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const snapPoints = useMemo(() => ["25%", "50%", "80%"], []);
-  const [currentFilter, setCurrentFilter] = useState<Filter | null>(null); // Use a state variable
+  const [currentFilter, setCurrentFilter] = useState<Filter | null>(
+    defaultFilter,
+  ); // Use a state variable
 
   const openBottomSheet = useCallback(() => {
     bottomSheetModalRef.current?.present();
