@@ -296,7 +296,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
       />
 
       {/* Button to add the work */}
-      <Button mode="contained" onPress={handleAddWork}>
+      <Button mode="contained" onPress={handleAddWork} disabled={isLoading}>
         {isEdit ? "Save Work" : "Add Work"}
       </Button>
     </ScrollView>

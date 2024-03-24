@@ -8,3 +8,21 @@ export interface Filter {
   receiver: User[];
   tags: Tag[];
 }
+
+export type SortableProperties =
+  | "date"
+  | "user.name"
+  | "sender"
+  | "receiver"
+  | "amount"
+  | "type.name";
+
+export interface Sort {
+  property: SortableProperties;
+  direction: "asc" | "desc";
+}
+
+export interface FilterAndSort {
+  filter: Filter;
+  sort: Sort[];
+}

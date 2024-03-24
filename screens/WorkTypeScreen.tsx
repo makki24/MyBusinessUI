@@ -14,10 +14,18 @@ import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import ConfirmationModal from "../components/common/ConfirmationModal";
 
 type WorkTypeScreenProps = {
+  route: {
+    params: {
+      addingWork: boolean;
+    };
+  };
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 };
 
-const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({ navigation }) => {
+const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({
+  route,
+  navigation,
+}) => {
   const [workTypes, setWorkTypes] = useRecoilState(workTypesState);
   const [filteredWorkTypes, setFilteredWorkTypes] = useState([]);
   const [error, setError] = useState(null);
@@ -131,6 +139,7 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({ navigation }) => {
               onPress={() => handleAddWork(item)}
               onEdit={(workType) => handleEditWorkType(workType)}
               onDelete={() => handleDeleteWorkType(item)}
+              readOnly={route?.params?.addingWork}
             />
           )}
           keyExtractor={(item) => item.id.toString()} // Ensure key is a string

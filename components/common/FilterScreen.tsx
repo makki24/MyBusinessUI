@@ -1,5 +1,5 @@
 import commonStyles from "../../src/styles/commonStyles";
-import { RadioButton, Text } from "react-native-paper";
+import { Divider, RadioButton, Text } from "react-native-paper";
 import { View } from "react-native";
 import React, { useState } from "react";
 import DateRangePicker from "./DateRangePicker";
@@ -11,6 +11,8 @@ import Labels from "./Labels";
 import Button from "./Button";
 import SecondaryButton from "./SecondaryButton";
 import TertiaryButton from "./TertiaryButton";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { UI_ELEMENTS_GAP } from "../../src/styles/constants";
 
 interface FilterScreenProps {
   user: User[];
@@ -116,58 +118,61 @@ const FilterScreen: React.FC<FilterScreenProps> = ({
 
   return (
     <View style={commonStyles.container}>
-      <DateRangePicker range={range} setRange={handleSetRange} />
-      <View>
-        <RadioButton.Group
-          onValueChange={handleOptionChange}
-          value={selectedOption}
-        >
-          <View style={commonStyles.row}>
-            <View style={{ ...commonStyles.simpleRow }}>
-              <RadioButton value="thisMonth" />
-              <Text>This month</Text>
+      <BottomSheetScrollView>
+        <DateRangePicker range={range} setRange={handleSetRange} />
+        <View>
+          <RadioButton.Group
+            onValueChange={handleOptionChange}
+            value={selectedOption}
+          >
+            <View style={commonStyles.row}>
+              <View style={{ ...commonStyles.simpleRow }}>
+                <RadioButton value="thisMonth" />
+                <Text>This month</Text>
+              </View>
+              <View style={{ ...commonStyles.simpleRow }}>
+                <RadioButton value="thisYear" />
+                <Text>This year</Text>
+              </View>
+              <View style={{ ...commonStyles.simpleRow }}>
+                <RadioButton value="custom" />
+                <Text>Custom Range</Text>
+              </View>
             </View>
-            <View style={{ ...commonStyles.simpleRow }}>
-              <RadioButton value="thisYear" />
-              <Text>This year</Text>
-            </View>
-            <View style={{ ...commonStyles.simpleRow }}>
-              <RadioButton value="custom" />
-              <Text>Custom Range</Text>
-            </View>
-          </View>
-        </RadioButton.Group>
-      </View>
-      <Labels
-        items={tags}
-        label={"Tags"}
-        setSelectedChips={setSelectedTags}
-        selectedChips={selectedTags}
-      />
-      {user && (
+          </RadioButton.Group>
+        </View>
         <Labels
-          items={user}
-          label={"Users"}
-          setSelectedChips={setSelectedUsers}
-          selectedChips={selectedUsers}
+          items={tags}
+          label={"Tags"}
+          setSelectedChips={setSelectedTags}
+          selectedChips={selectedTags}
         />
-      )}
-      {sender && sender.length > 0 && (
-        <Labels
-          items={sender}
-          label={"Senders"}
-          setSelectedChips={setSelectedSenders}
-          selectedChips={selectedSenders}
-        />
-      )}
-      {receiver && receiver.length > 0 && (
-        <Labels
-          items={receiver}
-          label={"Receivers"}
-          setSelectedChips={setSelectedReceivers}
-          selectedChips={selectedReceivers}
-        />
-      )}
+        {user && (
+          <Labels
+            items={user}
+            label={"Users"}
+            setSelectedChips={setSelectedUsers}
+            selectedChips={selectedUsers}
+          />
+        )}
+        {sender && sender.length > 0 && (
+          <Labels
+            items={sender}
+            label={"Senders"}
+            setSelectedChips={setSelectedSenders}
+            selectedChips={selectedSenders}
+          />
+        )}
+        <Divider style={{ marginTop: UI_ELEMENTS_GAP }} bold={true} />
+        {receiver && receiver.length > 0 && (
+          <Labels
+            items={receiver}
+            label={"Receivers"}
+            setSelectedChips={setSelectedReceivers}
+            selectedChips={selectedReceivers}
+          />
+        )}
+      </BottomSheetScrollView>
       <View style={{ ...commonStyles.row, ...commonStyles.elementsGap }}>
         <Button
           icon={"filter-check"}

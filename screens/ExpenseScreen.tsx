@@ -6,7 +6,7 @@ import { useRecoilState } from "recoil";
 import ExpenseService from "../services/ExpenseService";
 import ExpenseItem from "../components/ExpenseItem";
 import { expensesState } from "../recoil/atom";
-import { Expense, Filter, User } from "../types";
+import { Expense, Filter, Sort, User } from "../types";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
@@ -30,14 +30,21 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   const [senders, setSenders] = useState<User[]>([]);
   const [receivers, setReceivers] = useState<User[]>([]);
   const today = new Date();
+  const tomorrow = new Date();
   const [defaultFilter, setDefaultFilter] = useState<Filter | null>({
-    fromDate: new Date(today.setDate(today.getDate() - 15)),
-    toDate: new Date(),
+    fromDate: new Date(today.setDate(today.getDate() - 7)),
+    toDate: new Date(tomorrow.setDate(tomorrow.getDate() + 1)),
     sender: [],
     receiver: [],
     tags: [],
     user: [],
   }); // Use a state variable
+  const [defaultSort, setDefaultSort] = useState<Sort[]>([
+    {
+      property: "date",
+      direction: "desc",
+    },
+  ]); // Use a state variable
 
   const transFormAndSetExpense = (expensesData: Expense[]) => {
     expensesData = expensesData.map((expense) => ({
@@ -80,8 +87,11 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     fetchExpenses();
-    onApply(defaultFilter);
   }, []);
+
+  useEffect(() => {
+    onApply(defaultFilter);
+  }, [defaultSort]);
 
   const handleEditExpense = (expense: Expense) => {
     const serializedDate = expense.date.toISOString();
@@ -135,7 +145,10 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
     setDefaultFilter(arg);
     setIsLoading(true);
     try {
-      const filteredExpenses = await expenseService.filterExpense(arg);
+      const filteredExpenses = await expenseService.filterExpense({
+        filter: arg,
+        sort: defaultSort,
+      });
       transFormAndSetExpense(filteredExpenses);
     } catch (e) {
       setError(e.message || "Error setting filters.");
@@ -148,13 +161,16 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
       <SearchAndFilter
+        searchBar={false}
+        sort={true}
         searchQuery={searchQuery}
         handleSearch={handleSearch}
         sender={senders}
         receiver={receivers}
         onApply={onApply}
-        searchBar={false}
         defaultFilter={defaultFilter}
+        appliedSort={defaultSort}
+        setSort={setDefaultSort}
       />
       {!error && (
         <FlatList

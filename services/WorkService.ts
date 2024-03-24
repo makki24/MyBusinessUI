@@ -1,5 +1,5 @@
 import axios from "./NetworkInterceptor";
-import { Filter, Work, WorkType } from "../types";
+import { FilterAndSort, Work, WorkType } from "../types";
 
 const WorkService = {
   getWorkTypes: async (): Promise<WorkType[]> => {
@@ -44,7 +44,7 @@ const WorkService = {
     return response.data;
   },
 
-  filterWork: async (filter: Filter): Promise<Work[]> => {
+  filterWork: async (filter: FilterAndSort): Promise<Work[]> => {
     const response = await axios.post(`/api/works/filter`, filter);
     if (!response.data) {
       throw new Error(`No data in response.data`);

@@ -11,6 +11,7 @@ import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import ConfirmationModal from "../components/common/ConfirmationModal";
+import SearchAndFilter from "../components/common/SearchAndFilter";
 
 type UsersScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -25,6 +26,7 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [members, setMembers] = useState<User[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchUsers = async () => {
     try {
@@ -91,9 +93,24 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
     setSnackbarVisible(false);
   };
 
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filtered = users.filter((user) =>
+      user.name.toLowerCase().includes(query.toLowerCase()),
+    );
+    setMembers(filtered);
+  };
+
   return (
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
+      <SearchAndFilter
+        searchQuery={searchQuery}
+        handleSearch={handleSearch}
+        user={users}
+        onApply={() => {}}
+        filter={false}
+      />
 
       {!error && (
         <FlatList
