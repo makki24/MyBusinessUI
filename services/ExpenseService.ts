@@ -1,5 +1,5 @@
 import axios from "./NetworkInterceptor";
-import { Expense, Filter } from "../types";
+import { Expense, FilterAndSort } from "../types";
 
 const ExpenseService = {
   getExpenses: async () => {
@@ -28,7 +28,7 @@ const ExpenseService = {
     return null;
   },
 
-  filterExpense: async (filter: Filter): Promise<Expense[]> => {
+  filterExpense: async (filter: FilterAndSort): Promise<Expense[]> => {
     const response = await axios.post(`/api/expenses/filter`, filter);
 
     if (!response.data) {

@@ -35,6 +35,7 @@ const commonItemStyles = StyleSheet.create({
     alignItems: "center",
     flexWrap: "wrap",
     paddingRight: UI_ELEMENTS_GAP,
+    width: "80%",
   },
   tagChip: {
     marginHorizontal: UI_ELEMENTS_GAP / 2,

@@ -6,7 +6,7 @@ import { useRecoilState } from "recoil";
 import WorkService from "../services/WorkService";
 import WorkItem from "../components/WorkItem";
 import { worksState } from "../recoil/atom";
-import { User, Work } from "../types";
+import { Filter, Sort, User, Work } from "../types";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
@@ -28,6 +28,23 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [workUsers, setWorkUsers] = useState<User[]>();
+  const [defaultSort, setDefaultSort] = useState<Sort[]>([
+    {
+      property: "date",
+      direction: "desc",
+    },
+  ]); // Use a
+  const today = new Date();
+  const tomorrow = new Date();
+  let defaultFilter: Filter = {
+    fromDate: new Date(today.setDate(today.getDate() - 15)),
+    toDate: new Date(tomorrow.setDate(tomorrow.getDate() + 1)),
+    sender: [],
+    receiver: [],
+    tags: [],
+    user: [],
+  };
+  const [filteredWorks, setFilteredWorks] = useState([]);
 
   const transformAndSetWork = (worksData) => {
     worksData = worksData.map((work) => ({
@@ -48,7 +65,6 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
           userSet.push(expn.user);
       });
       setWorkUsers([...userSet]);
-      transformAndSetWork(worksData);
     } catch (fetchError) {
       setError(fetchError.message || "Error fetching works. Please try again.");
     } finally {
@@ -100,17 +116,34 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
 
   const handleRefresh = () => {
     fetchWorks();
+    onApply(defaultFilter);
   };
 
   const handleSearch = (query) => {
     setSearchQuery(query);
+    const filtered = works.filter((work) =>
+      work.user.name.toLowerCase().includes(query.toLowerCase()),
+    );
+    setFilteredWorks(filtered);
   };
 
-  const onApply = async (arg) => {
+  useEffect(() => {
+    setFilteredWorks(works);
+  }, [works]);
+
+  useEffect(() => {
+    onApply(defaultFilter);
+  }, [defaultSort]);
+
+  const onApply = async (arg: Filter) => {
     setIsLoading(true);
+    defaultFilter = arg;
     try {
-      const filteredWorks = await workService.filterWork(arg);
-      transformAndSetWork(filteredWorks);
+      const fetchedFilteredWorks = await workService.filterWork({
+        filter: arg,
+        sort: defaultSort,
+      });
+      transformAndSetWork(fetchedFilteredWorks);
     } catch (e) {
       setError(e.message || "Error setting filters.");
     } finally {
@@ -126,11 +159,15 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
         handleSearch={handleSearch}
         user={workUsers}
         onApply={onApply}
+        sort={true}
+        defaultFilter={defaultFilter}
+        appliedSort={defaultSort}
+        setSort={setDefaultSort}
       />
 
       {!error && (
         <FlatList
-          data={works}
+          data={filteredWorks}
           renderItem={({ item }) => (
             <WorkItem
               work={item}
@@ -154,7 +191,7 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
         onPress={() =>
           navigation.navigate("WorkStack", {
             screen: "WorkType",
-            params: { title: "Select Work type" },
+            params: { title: "Select Work type", addingWork: true },
           })
         }
       />

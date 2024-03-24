@@ -169,10 +169,10 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
       newExpense.date = new Date(newExpense.date);
 
       setExpenses((prevExpenses) => [
+        newExpense,
         ...prevExpenses.filter(
           (expenseItem) => expenseItem.id !== newExpense.id,
         ),
-        newExpense,
       ]);
 
       setAmount("");
@@ -399,6 +399,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
         icon={route.params?.isEditMode ? "update" : "credit-card-plus"}
         mode="contained"
         onPress={handleAddExpense}
+        disabled={isLoading}
         title={route.params?.isEditMode ? "Update Expense" : "Add Expense"}
       />
 
