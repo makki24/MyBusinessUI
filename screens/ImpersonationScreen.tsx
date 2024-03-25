@@ -1,5 +1,5 @@
 // AddContributionScreen.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
 import { useRecoilState } from "recoil";
 import { usersState, userState } from "../recoil/atom";
@@ -11,6 +11,7 @@ import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import Button from "../components/common/Button";
 import { CONTAINER_PADDING, UI_ELEMENTS_GAP } from "../src/styles/constants";
 import adminService from "../services/AdminService";
+import { DriveFile } from "../types/upload";
 
 interface ImpersonationScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -31,6 +32,25 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
   const [allUsers] = useRecoilState(usersState);
   const [userOpen, setUserOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [files, setFiles] = useState<DriveFile[]>([]);
+  const [fileOpen, setFileOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [filesLoading, setFilesLoading] = useState(true);
+
+  const fetchFiles = async () => {
+    try {
+      const res = await adminService.listFiles();
+      setFiles(res);
+    } catch (uploadError) {
+      setError(uploadError.message);
+    } finally {
+      setFilesLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFiles();
+  }, []);
 
   const submitContribution = async () => {
     try {
@@ -61,9 +81,14 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
   };
 
   const restore = async () => {
+    setError("");
     try {
       setIsLoading(true);
-      await adminService.restore();
+      if (!selectedFile) throw new Error("Please select file");
+      await adminService.restore({
+        name: files.filter((file) => file.id === selectedFile)[0].name,
+        id: selectedFile,
+      });
     } catch (uploadError) {
       setError(uploadError.message);
     } finally {
@@ -112,21 +137,41 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
         onPress={submitContribution}
         title="Impersonate User"
       />
+
       <Button
-        style={{ marginTop: UI_ELEMENTS_GAP }}
+        style={{ marginVertical: UI_ELEMENTS_GAP }}
         icon={"upload"}
         mode="contained"
         onPress={backupDb}
         title="Backup Database"
       />
 
+      <CustomDropDown
+        items={files}
+        schema={{
+          label: "name",
+          value: "id",
+        }}
+        zIndex={3000}
+        zIndexInverse={3000}
+        searchable={true}
+        open={fileOpen}
+        setOpen={setFileOpen}
+        containerStyle={{ height: 40, marginBottom: 16 }}
+        value={selectedFile}
+        setValue={setSelectedFile}
+        itemSeparator={true}
+        placeholder="Select file"
+        loading={filesLoading}
+        testID="file-picker"
+      />
+
       <Button
-        style={{ marginTop: UI_ELEMENTS_GAP }}
         icon={"reply"}
         mode="contained"
         onPress={restore}
         title="Restore"
-        disabled={true}
+        disabled={false}
       />
     </ScrollView>
   );
