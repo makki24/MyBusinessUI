@@ -116,8 +116,8 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
           label: "name",
           value: "id",
         }}
-        zIndex={2000}
-        zIndexInverse={2000}
+        zIndex={4000}
+        zIndexInverse={4000}
         items={allUsers.filter(
           (user) =>
             (user.phoneNumber || user.email) &&
