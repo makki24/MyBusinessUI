@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
-import { FAB, Snackbar } from "react-native-paper";
+import { FAB, Snackbar, useTheme } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import UserService from "../services/UserService";
 import UserItem from "../components/UserItem";
@@ -27,10 +27,14 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [members, setMembers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [_totalAmount, setTotalAmount] = useState<number>();
+  const [_toRecieve, setToReceive] = useState<boolean>(true);
+  const _theme = useTheme();
 
   const fetchUsers = async () => {
     try {
       setIsRefreshing(true);
+      setError("");
       const usersData = await UserService.getUsers();
       setUsers(usersData);
     } catch (fetchError) {
@@ -42,7 +46,18 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     setMembers(users);
+    let amount = 0;
+    users.forEach((user) => {
+      amount += user.amountHolding - user.amountToReceive;
+    });
+    if (amount < 0) setToReceive(false);
+    else setToReceive(true);
+    setTotalAmount(Math.abs(amount));
   }, [users]);
+
+  useEffect(() => {
+    if (error) setMembers([]);
+  }, [error]);
 
   const handleEditUser = (user: User) => {
     if (user.roles.findIndex((role) => role.name === "MEMBER") === -1) {
@@ -103,7 +118,6 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
 
   return (
     <View style={commonStyles.container}>
-      <LoadingError error={error} isLoading={isLoading} />
       <SearchAndFilter
         searchQuery={searchQuery}
         handleSearch={handleSearch}
@@ -112,9 +126,23 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
         filter={false}
       />
 
-      {!error && (
+      {
         <FlatList
           data={members}
+          ListHeaderComponent={() => (
+            <View>
+              <LoadingError error={error} isLoading={isLoading} />
+              {/*<Text
+                variant={"titleLarge"}
+                style={{
+                  color: toRecieve ? theme.colors.primary : theme.colors.error,
+                  alignSelf: 'flex-end'
+                }}
+              >
+                {totalAmount}
+              </Text>*/}
+            </View>
+          )}
           renderItem={({ item }) => (
             <UserItem
               user={item}
@@ -131,7 +159,7 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
             />
           }
         />
-      )}
+      }
 
       <FAB
         style={commonScreenStyles.fab}
