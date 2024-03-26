@@ -37,12 +37,20 @@ const ReportScreen = () => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false); // Added downloadLoading state
 
+  const [excludingTagOpen, setExcludingTagOpen] = useState(false);
+  const [selectedExcludingTags, setSelectedExcludingTags] =
+    useState<number>(null);
+  const [excludingTags] = useRecoilState(tagsState);
+
   const generateReport = async () => {
     setError("");
     setIsLoading(true);
 
     try {
-      const reportsRes = await ReportService.getReport(selectedTags);
+      const reportsRes = await ReportService.getReport(
+        selectedTags,
+        selectedExcludingTags,
+      );
       setProfitOrLoss(
         reportsRes.totalSaleAmount +
           reportsRes.totalContributionAmount -
@@ -69,7 +77,7 @@ const ReportScreen = () => {
     setError("");
     setDownloadLoading(true); // Set loading to true when starting the download
     try {
-      await ReportService.downloadReport(selectedTags);
+      await ReportService.downloadReport(selectedTags, selectedExcludingTags);
       setSnackbarVisible(true);
     } catch (e) {
       setError(e.message ?? "Some error");
@@ -85,8 +93,8 @@ const ReportScreen = () => {
 
         <CustomDropDown
           items={tags}
-          zIndex={1000}
-          zIndexInverse={1000}
+          zIndex={2000}
+          zIndexInverse={2000}
           schema={{
             label: "name",
             value: "id",
@@ -101,6 +109,27 @@ const ReportScreen = () => {
           setValue={setSelectedTags}
           itemSeparator={true}
           placeholder="Select Tags"
+          loading={isDataLoading}
+        />
+
+        <CustomDropDown
+          items={excludingTags}
+          zIndex={1000}
+          zIndexInverse={1000}
+          schema={{
+            label: "name",
+            value: "id",
+          }}
+          open={excludingTagOpen}
+          setOpen={setExcludingTagOpen}
+          containerStyle={{
+            height: DROPDOWN_HEIGHT,
+            marginBottom: CONTAINER_PADDING,
+          }}
+          value={selectedExcludingTags}
+          setValue={setSelectedExcludingTags}
+          itemSeparator={true}
+          placeholder="Exclude Tags"
           loading={isDataLoading}
         />
 
