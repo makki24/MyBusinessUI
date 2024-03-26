@@ -2,9 +2,12 @@ import axios from "./NetworkInterceptor";
 import { ExpenseReport, UserReport } from "../types";
 
 const ReportService = {
-  getReport: async (tagId: number): Promise<ExpenseReport> => {
+  getReport: async (
+    tagId: number,
+    excludeTagId: number,
+  ): Promise<ExpenseReport> => {
     const response = await axios.get(`api/report/aggregateAmount`, {
-      params: { tagId }, // Pass tagId as a query parameter
+      params: { tagId, excludeTagId }, // Pass tagId as a query parameter
     });
 
     if (!response.data) {
@@ -28,9 +31,12 @@ const ReportService = {
     return response.data;
   },
 
-  downloadReport: async (tagId: number): Promise<ExpenseReport> => {
+  downloadReport: async (
+    tagId: number,
+    excludeTagId: number,
+  ): Promise<ExpenseReport> => {
     const response = await axios.get(`api/report/downloadReport`, {
-      params: { tagId }, // Pass tagId as a query parameter
+      params: { tagId, excludeTagId }, // Pass tagId as a query parameter
     });
 
     if (!response.data) {

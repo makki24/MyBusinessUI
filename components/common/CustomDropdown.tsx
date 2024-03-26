@@ -96,6 +96,7 @@ const CustomDropDown = <T,>({
         searchContainerStyle={{ borderBottomColor: theme.colors.onBackground }}
         listItemContainerStyle={{ height: 50 }}
         maxHeight={300}
+        searchPlaceholder="Search..."
       />
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {Array.isArray(value) &&

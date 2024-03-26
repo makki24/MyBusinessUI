@@ -337,7 +337,11 @@ const AppContent = () => {
             component={UsersStack}
           />
           <Drawer.Screen
-            options={{ headerShown: false, drawerLabel: "Report by Tags" }}
+            options={{
+              headerShown: false,
+              drawerLabel: "Report by Tags",
+              unmountOnBlur: true,
+            }}
             name="ReportStack"
             component={ReportStack}
           />
