@@ -12,6 +12,8 @@ import Button from "../components/common/Button";
 import { CONTAINER_PADDING, UI_ELEMENTS_GAP } from "../src/styles/constants";
 import adminService from "../services/AdminService";
 import { DriveFile } from "../types/upload";
+import Modal from "../components/common/Modal";
+import { Text } from "react-native-paper";
 
 interface ImpersonationScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -36,6 +38,8 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
   const [fileOpen, setFileOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [filesLoading, setFilesLoading] = useState(true);
+  const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
+    useState(false);
 
   const fetchFiles = async () => {
     try {
@@ -80,8 +84,13 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
     }
   };
 
+  const showModal = () => {
+    setIsConfirmationModalVisible(true);
+  };
+
   const restore = async () => {
     setError("");
+    setIsConfirmationModalVisible(false);
     try {
       setIsLoading(true);
       if (!selectedFile) throw new Error("Please select file");
@@ -169,10 +178,30 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
       <Button
         icon={"reply"}
         mode="contained"
-        onPress={restore}
+        onPress={showModal}
         title="Restore"
         disabled={false}
       />
+
+      <Modal
+        isModalVisible={isConfirmationModalVisible}
+        setIsModalVisible={setIsConfirmationModalVisible}
+      >
+        <Text>Are you sure want to restore the database ?</Text>
+        <Button
+          style={{ marginTop: UI_ELEMENTS_GAP }}
+          title={"Restore"}
+          onPress={restore}
+          icon={"backup-restore"}
+        />
+        <Button
+          style={{ marginTop: UI_ELEMENTS_GAP }}
+          icon="cancel"
+          mode="outlined"
+          onPress={() => setIsConfirmationModalVisible(false)}
+          title={"Cancel"}
+        />
+      </Modal>
     </ScrollView>
   );
 };
