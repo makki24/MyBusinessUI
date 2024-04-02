@@ -23,6 +23,7 @@ import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import Modal from "../components/common/Modal";
 import { otherUsersState } from "../recoil/selectors";
 import UserDropDownItem from "../components/common/UserDropDownItem";
+import SwitchInput from "../components/common/SwitchInput";
 
 interface AddExpenseScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -65,8 +66,11 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   const [isAmountHoldingLess, setIsAmountHoldingLess] = useState(false);
   const [tags] = useRecoilState(tagsState);
   const [isEdit, setIsEdit] = useState(false);
-
+  const [senderOpen, setSenderOpen] = useState(false); // New selector for tags
+  const [sender, setSender] = useState<string | null>(null);
+  const [differentSender, setDifferentSender] = useState<boolean>(false);
   const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
+  const [receivers, setReceivers] = useState<User[]>([]);
 
   const onConfirmTime = useCallback(
     ({ hours, minutes }: DateTime) => {
@@ -75,6 +79,10 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
     },
     [setTimeOpen, setTime],
   );
+
+  useEffect(() => {
+    setReceivers(users);
+  }, [users]);
 
   useEffect(() => {
     const isReceivingUserlocal = expenseTypes.some(
@@ -121,6 +129,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
       setValue(extractedExpense.type.id);
       setIsReceivingUser(!!extractedExpense.receiver);
       setTime({ hours: paramDate.getHours(), minutes: paramDate.getMinutes() });
+      setSender(extractedExpense.sender.id);
     }
   }, [route.params?.isEditMode, route.params?.expense]);
 
@@ -158,7 +167,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
         type: { id: value } as ExpenseType,
         amount: parseFloat(amount),
         description: additionalInfo,
-        sender: loggedInUser,
+        sender: differentSender ? ({ id: sender } as User) : loggedInUser,
         receiver: selectedUser ? ({ id: selectedUser } as User) : null,
         tags: selectedTags.map((tag) => ({ id: tag })) as Tags[],
       };
@@ -255,12 +264,52 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
     });
   };
 
+  const onSenderChange = (user) => {
+    setReceivers(users.filter((receiver) => receiver.id !== user));
+  };
+
   // Component rendering
   return (
     <ScrollView
       contentContainerStyle={commonAddScreenStyles.scrollViewContainer}
     >
       <LoadingError error={error} isLoading={isLoading} />
+
+      <SwitchInput
+        label="Different User ?"
+        value={differentSender}
+        onValueChange={setDifferentSender}
+      />
+
+      {differentSender && (
+        <CustomDropDown
+          testID="sender-picker"
+          schema={{
+            label: "name",
+            value: "id",
+          }}
+          zIndex={4000}
+          zIndexInverse={4000}
+          items={users}
+          searchable={true}
+          open={senderOpen}
+          setOpen={setSenderOpen}
+          containerStyle={{ height: 40, marginBottom: 16 }}
+          value={sender}
+          setValue={setSender}
+          itemSeparator={true}
+          placeholder="Select Sender"
+          onChangeValue={onSenderChange}
+          renderListItem={({ item }) => (
+            <UserDropDownItem
+              item={item}
+              setSelectedUser={setSender}
+              selectedUser={sender}
+              setUserOpen={setSenderOpen}
+            />
+          )}
+        />
+      )}
 
       {/* Expense type selector */}
       <CustomDropDown
@@ -293,7 +342,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
           }}
           zIndex={2000}
           zIndexInverse={2000}
-          items={users}
+          items={receivers}
           searchable={true}
           open={userOpen}
           setOpen={setUserOpen}

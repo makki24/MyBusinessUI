@@ -54,6 +54,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     defaultFilter,
   ); // Use a state variable
   const [visible, setVisible] = React.useState(false);
+  const [cleared, setIsCleared] = React.useState(false);
 
   const openBottomSheet = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -71,8 +72,22 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     return () => backHandler.remove();
   }, []);
 
+  const compareDeep = (f) => {
+    return (
+      f.sender.length === 0 &&
+      f.receiver.length === 0 &&
+      f.user.length === 0 &&
+      f.tags.length === 0 &&
+      !f.fromDate &&
+      !f.toDate
+    );
+  };
+
   const onApplyFilter = (arg: Filter) => {
     setCurrentFilter(arg); // Update the state variable
+
+    setIsCleared(compareDeep(arg));
+
     bottomSheetModalRef.current.close();
     onApply(arg);
   };
@@ -124,7 +139,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
       <View style={commonStyles.simpleRow}>
         {filter && (
           <IconButton
-            icon="filter"
+            icon={cleared ? "filter" : "filter-check"}
             mode={"contained"}
             onPress={openBottomSheet}
           />
