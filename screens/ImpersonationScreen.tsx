@@ -14,6 +14,11 @@ import adminService from "../services/AdminService";
 import { DriveFile } from "../types/upload";
 import Modal from "../components/common/Modal";
 import { Text } from "react-native-paper";
+import {
+  registerForPushNotificationsAsync,
+  schedulePushNotification,
+  sendPushNotification,
+} from "../src/util/Notification";
 
 interface ImpersonationScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -40,6 +45,7 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
   const [filesLoading, setFilesLoading] = useState(true);
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] =
     useState(false);
+  const [expoPushToken, setExpoPushToken] = useState<string>('');
 
   const fetchFiles = async () => {
     try {
@@ -54,6 +60,8 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
 
   useEffect(() => {
     fetchFiles();
+    registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
+
   }, []);
 
   const submitContribution = async () => {
@@ -182,6 +190,26 @@ const ImpersonationScreen: React.FC<ImpersonationScreenProps> = ({
         title="Restore"
         disabled={false}
       />
+
+      <Button
+        icon={"reply"}
+        mode="contained"
+        onPress={schedulePushNotification}
+        title="Press to Schedule Notification"
+        disabled={false}
+      />
+
+      <Button
+        icon={"reply"}
+        mode="contained"
+        onPress={async () => {
+          await sendPushNotification(expoPushToken);
+        }}
+        title="Press to Push Notification"
+        disabled={false}
+        style={{marginVertical: UI_ELEMENTS_GAP}}
+      />
+
 
       <Modal
         isModalVisible={isConfirmationModalVisible}

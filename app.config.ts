@@ -15,6 +15,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     icon: ICON_PATH,
     name: "MyBusinessUI",
     slug: "MyBusinessUI",
+    notification: {
+      icon: ICON_PATH
+    },
     android: {
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
       adaptiveIcon: {
