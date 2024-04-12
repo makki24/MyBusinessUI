@@ -24,6 +24,7 @@ import Modal from "../components/common/Modal";
 import { otherUsersState } from "../recoil/selectors";
 import UserDropDownItem from "../components/common/UserDropDownItem";
 import SwitchInput from "../components/common/SwitchInput";
+import { ADD_EXPENSE_DIFFERENT_SENDER_LABEL } from "../src/constants/labels";
 
 interface AddExpenseScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -276,7 +277,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
       <LoadingError error={error} isLoading={isLoading} />
 
       <SwitchInput
-        label="Different User ?"
+        label={ADD_EXPENSE_DIFFERENT_SENDER_LABEL}
         value={differentSender}
         onValueChange={setDifferentSender}
       />
