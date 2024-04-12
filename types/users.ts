@@ -9,6 +9,6 @@ export interface User {
   amountHolding: number;
   id?: string;
   roles: Role[]; // Assuming you have a Role interface defined
-
+  notificationToken?: string;
   // Add other methods or properties if needed
 }

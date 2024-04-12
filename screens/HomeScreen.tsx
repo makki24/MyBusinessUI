@@ -1,37 +1,58 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, ScrollView } from "react-native";
 import { Card, Title } from "react-native-paper";
 import homeScreenStyles from "../src/styles/homeScreenStyles";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import Notification from "../src/notifications/Notification";
+import * as Notifications from "expo-notifications";
+import { useLinkTo } from "@react-navigation/native";
+import * as Linking from "expo-linking";
+import crashlytics from "@react-native-firebase/crashlytics";
+import { useLastNotificationResponse } from "expo-notifications";
+import { PushNotificationTrigger } from "expo-notifications/src/Notifications.types";
 
 type HomeScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 };
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-  const images = [
-    { uri: "https://via.placeholder.com/300", interval: 5000 },
-    { uri: "https://via.placeholder.com/300/FF5733/FFFFFF", interval: 3000 },
-    { uri: "https://via.placeholder.com/300/33FF57/FFFFFF", interval: 7000 },
-    { uri: "https://via.placeholder.com/300/5733FF/FFFFFF", interval: 4000 },
-    { uri: "https://via.placeholder.com/300/FF33FF/FFFFFF", interval: 6000 }, // New Expense Card Image
-    // Add more image URLs with different intervals as needed
-  ];
+  const linkTo = useLinkTo();
 
-  const [_, setCurrentImageIndex] = useState(Array(images.length).fill(0));
+  const lastNotificationResponse = useLastNotificationResponse();
 
   useEffect(() => {
-    const intervals = images.map((image, i) =>
-      setInterval(() => {
-        setCurrentImageIndex((prevIndex) =>
-          prevIndex.map((index, j) =>
-            i === j ? (index === images.length - 1 ? 0 : index + 1) : index,
-          ),
-        );
-      }, image.interval),
-    );
+    if (lastNotificationResponse) {
+      const data =
+        lastNotificationResponse?.notification?.request?.content?.data;
 
-    return () => intervals.forEach((interval) => clearInterval(interval));
+      if (data) {
+        //code
+      }
+    }
+  }, [lastNotificationResponse]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    Notifications.getLastNotificationResponseAsync()
+      .then((response) => {
+        if (!isMounted || !response?.notification) {
+          return;
+        }
+        if (!response) return;
+        const scheme = Linking.createURL("");
+        const url = (
+          response?.notification.request.trigger as PushNotificationTrigger
+        ).remoteMessage.data.url.split(scheme)[1];
+        linkTo(`/${url}`);
+      })
+      .catch((error) => {
+        crashlytics().recordError(error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []); // Empty dependency array
 
   return (
@@ -100,6 +121,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         </Card>
 
         <View style={homeScreenStyles.gap} />
+
+        <Notification />
       </View>
     </ScrollView>
   );

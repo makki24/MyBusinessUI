@@ -38,6 +38,12 @@
             "useLegacyPackaging": true
           }
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/app_production.png"
+        }
       ]
     ],
     "web": {
