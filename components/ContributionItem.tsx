@@ -1,10 +1,11 @@
 // src/components/ContributionItem.tsx
 import React, { FC } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Card, Title, IconButton, Paragraph, Chip } from "react-native-paper";
+import { View, TouchableOpacity } from "react-native";
+import { Card, Text, IconButton, Paragraph, Chip } from "react-native-paper";
 import { Contribution } from "../types";
 import UserDetails from "./common/UserDetails";
 import commonItemStyles from "../src/styles/commonItemStyles";
+import commonStyles from "../src/styles/commonStyles";
 
 interface ContributionItemProps {
   contribution: Contribution;
@@ -20,13 +21,11 @@ const ContributionItem: FC<ContributionItemProps> = ({
   return (
     <TouchableOpacity onPress={onPress}>
       <Card style={commonItemStyles.card}>
-        <Card.Content style={commonItemStyles.cardContent}>
+        <Card.Content
+          style={contribution.tags.length ? commonItemStyles.cardContent : {}}
+        >
           <View style={commonItemStyles.titleContainer}>
-            <Title>{`${contribution.amount}`}</Title>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              {contribution.sender && (
-                <Text style={{ fontWeight: "800" }}> From: </Text>
-              )}
               <Text>
                 {contribution.sender && (
                   <UserDetails user={contribution.sender} />
@@ -35,8 +34,12 @@ const ContributionItem: FC<ContributionItemProps> = ({
                 {!contribution.sender && <Text>Self contribution</Text>}
               </Text>
             </View>
+            <UserDetails user={contribution.receiver} />
           </View>
-          <Paragraph>{`Date: ${contribution.date.toDateString()}`}</Paragraph>
+          <View style={commonStyles.row}>
+            <Paragraph>{`Date: ${contribution.date.toDateString()}`}</Paragraph>
+            <Text variant="titleMedium">{`${contribution.amount}`}</Text>
+          </View>
           {contribution.tags.length > 0 && (
             <View style={commonItemStyles.tagsContainer}>
               <Text style={commonItemStyles.tagsLabel}>Tags: </Text>
@@ -50,7 +53,13 @@ const ContributionItem: FC<ContributionItemProps> = ({
             </View>
           )}
         </Card.Content>
-        <Card.Actions style={commonItemStyles.cardActionsWithTags}>
+        <Card.Actions
+          style={
+            contribution.tags.length
+              ? commonItemStyles.cardActionsWithTags
+              : commonItemStyles.cardActions
+          }
+        >
           <IconButton icon="delete" onPress={onDelete} />
         </Card.Actions>
       </Card>

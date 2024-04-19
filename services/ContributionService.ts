@@ -15,7 +15,7 @@ const ContributionService = {
   },
 
   getContributions: async (): Promise<Contribution[]> => {
-    const response = await axios.get(`/api/contributions`);
+    const response = await axios.get(`/api/contributions/getAll`);
 
     if (!response.data) {
       throw new Error(`no response.data`);
