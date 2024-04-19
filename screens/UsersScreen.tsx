@@ -1,146 +1,195 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
-import { FAB, Text, Button, Modal, Portal, Snackbar } from 'react-native-paper';
-import { useRecoilState } from 'recoil';
-import UserService from '../services/UserService';
-import UserItem from '../components/UserItem';
-import { usersState } from '../recoil/atom';
-import { User } from '../types';
+import React, { useEffect, useState } from "react";
+import { View, FlatList, RefreshControl } from "react-native";
+import { FAB, Snackbar, useTheme } from "react-native-paper";
+import { useRecoilState } from "recoil";
+import UserService from "../services/UserService";
+import UserItem from "../components/UserItem";
+import { usersState } from "../recoil/atom";
+import { User } from "../types";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import ConfirmationModal from "../components/common/ConfirmationModal";
+import SearchAndFilter from "../components/common/SearchAndFilter";
 
-const UsersScreen = ({ navigation }) => {
-    const [users, setUsers] = useRecoilState(usersState);
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isRefreshing, setIsRefreshing] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-    const [snackbarVisible, setSnackbarVisible] = useState(false);
-    const [members, setMembers] = useState<User[]>([]);
+type UsersScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
 
-    const fetchUsers = async () => {
-        try {
-            setIsRefreshing(true);
-            let usersData = await UserService.getUsers();
-            setUsers(usersData);
-        } catch (error) {
-            console.error('Error fetching users:', error.message || 'Unknown error');
-            setError(error.message || 'Error fetching users. Please try again.');
-        } finally {
-            setIsRefreshing(false);
-        }
-    };
+const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
+  const [users, setUsers] = useRecoilState(usersState);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [members, setMembers] = useState<User[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [_totalAmount, setTotalAmount] = useState<number>();
+  const [_toRecieve, setToReceive] = useState<boolean>(true);
+  const _theme = useTheme();
 
-    useEffect(() => {
-        setMembers(users);
-    }, [users]);
-
-    const handleEditUser = (user: User) => {
-        console.log("edit", JSON.stringify(user));
-        if (user.roles.findIndex(role => role.name === 'MEMBER') === -1) {
-            return ;
-        }
-        navigation.navigate('UsersStack', {
-            screen: 'AddUser',
-            params: { title: `Edit User: ${user.name}`, user, isEditMode: true },
-        });
-    };
-
-    const handleDeleteUser = async (user) => {
-        setSelectedUser(user);
-        setIsLoading(true);
-
-        try {
-            setIsDeleteModalVisible(true);
-        } catch (error) {
-            console.error('Error checking user details:', error.response?.data || 'Unknown error');
-            setError(error.response?.data || 'Error checking user details. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const navigateToTransactions = (clickedUser: User) => {
-        navigation.navigate('UsersStack', {
-            screen: 'UserReport',
-            params: { title: `User Report`, userId: clickedUser.id,},
-        });
+  const fetchUsers = async () => {
+    try {
+      setIsRefreshing(true);
+      setError("");
+      const usersData = await UserService.getUsers();
+      setUsers(usersData);
+    } catch (fetchError) {
+      setError(fetchError.message || "Error fetching users. Please try again.");
+    } finally {
+      setIsRefreshing(false);
     }
+  };
 
-    const confirmDeleteUser = async () => {
-        setIsLoading(true);
+  useEffect(() => {
+    setMembers(users);
+    let amount = 0;
+    users.forEach((user) => {
+      amount += user.amountHolding - user.amountToReceive;
+    });
+    if (amount < 0) setToReceive(false);
+    else setToReceive(true);
+    setTotalAmount(Math.abs(amount));
+  }, [users]);
 
-        try {
-            await UserService.deleteUser(selectedUser.id);
-            setUsers((prevUsers) => prevUsers.filter((user) => user.id !== selectedUser.id));
-            setSnackbarVisible(true); // Show Snackbar on successful deletion
-        } catch (error) {
-            console.error('Error deleting user:', error.response?.data || 'Unknown error');
-            setError(error.message || 'Error deleting user. Please try again.');
-        } finally {
-            setIsLoading(false);
-            setSelectedUser(null);
-            setIsDeleteModalVisible(false);
-        }
-    };
+  useEffect(() => {
+    if (error) setMembers([]);
+  }, [error]);
 
-    const handleRefresh = () => {
-        fetchUsers();
-    };
+  const handleEditUser = (user: User) => {
+    if (user.roles.findIndex((role) => role.name === "MEMBER") === -1) {
+      return;
+    }
+    navigation.navigate("UsersStack", {
+      screen: "AddUser",
+      params: { title: `Edit User: ${user.name}`, user, isEditMode: true },
+    });
+  };
 
-    const onSnackbarDismiss = () => {
-        setSnackbarVisible(false);
-    };
+  const handleDeleteUser = async (user) => {
+    setSelectedUser(user);
 
-    return (
-        <View style={commonStyles.container}>
-            <LoadingError error={error} isLoading={isLoading} />
+    setIsDeleteModalVisible(true);
+  };
 
-            {!error && (
-                <FlatList
-                    data={members}
-                    renderItem={({ item }) => (
-                        <UserItem user={item} onPress={() => navigateToTransactions(item)} onEdit={() => handleEditUser(item)} onDelete={() => handleDeleteUser(item)} />
-                    )}
-                    keyExtractor={(item) => item.id.toString()} // Ensure key is a string
-                    refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
-                />
-            )}
+  const navigateToTransactions = (clickedUser: User) => {
+    navigation.navigate("UsersStack", {
+      screen: "UserReport",
+      params: { title: `User Report`, userId: clickedUser.id },
+    });
+  };
 
-            <FAB
-                style={commonScreenStyles.fab}
-                icon="plus"
-                onPress={() => navigation.navigate('UsersStack', { screen: 'AddUser', params: { title: 'Add User' } })}
-            />
+  const confirmDeleteUser = async () => {
+    setIsLoading(true);
 
-            {/* Delete User Modal */}
-            <Portal>
-                <Modal visible={isDeleteModalVisible} onDismiss={() => setIsDeleteModalVisible(false)} contentContainerStyle={commonStyles.modalContainer}>
-                    <Text>Are you sure you want to delete this user?</Text>
-                    <View style={commonStyles.modalButtonGap} />
-                    <View style={commonStyles.modalButtonGap} />
-                    <Button icon="cancel" mode="outlined" onPress={() => setIsDeleteModalVisible(false)}>
-                        Cancel
-                    </Button>
-                    <View style={commonStyles.modalButtonGap} />
-                    <Button icon="delete" mode="contained" onPress={confirmDeleteUser}>
-                        Delete
-                    </Button>
-                </Modal>
-            </Portal>
+    try {
+      await UserService.deleteUser(selectedUser.id);
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => user.id !== selectedUser.id),
+      );
+      setSnackbarVisible(true); // Show Snackbar on successful deletion
+    } catch (deleteError) {
+      setError(deleteError.message || "Error deleting user. Please try again.");
+    } finally {
+      setIsLoading(false);
+      setSelectedUser(null);
+      setIsDeleteModalVisible(false);
+    }
+  };
 
-            {/* Snackbar for successful deletion */}
-            <Snackbar
-                visible={snackbarVisible}
-                onDismiss={onSnackbarDismiss}
-                duration={3000}
-            >
-                {`User deleted successfully`}
-            </Snackbar>
-        </View>
+  const handleRefresh = () => {
+    fetchUsers();
+  };
+
+  const onSnackbarDismiss = () => {
+    setSnackbarVisible(false);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filtered = users.filter((user) =>
+      user.name.toLowerCase().includes(query.toLowerCase()),
     );
+    setMembers(filtered);
+  };
+
+  return (
+    <View style={commonStyles.container}>
+      <SearchAndFilter
+        searchQuery={searchQuery}
+        handleSearch={handleSearch}
+        user={users}
+        onApply={() => {}}
+        filter={false}
+      />
+
+      {
+        <FlatList
+          data={members}
+          ListHeaderComponent={() => (
+            <View>
+              <LoadingError error={error} isLoading={isLoading} />
+              {/*<Text
+                variant={"titleLarge"}
+                style={{
+                  color: toRecieve ? theme.colors.primary : theme.colors.error,
+                  alignSelf: 'flex-end'
+                }}
+              >
+                {totalAmount}
+              </Text>*/}
+            </View>
+          )}
+          renderItem={({ item }) => (
+            <UserItem
+              user={item}
+              onPress={() => navigateToTransactions(item)}
+              onEdit={() => handleEditUser(item)}
+              onDelete={() => handleDeleteUser(item)}
+            />
+          )}
+          keyExtractor={(item) => item.id.toString()} // Ensure key is a string
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+            />
+          }
+        />
+      }
+
+      <FAB
+        style={commonScreenStyles.fab}
+        icon="plus"
+        onPress={() =>
+          navigation.navigate("UsersStack", {
+            screen: "AddUser",
+            params: { title: "Add User" },
+          })
+        }
+      />
+
+      {/* Delete User Modal */}
+      <ConfirmationModal
+        warningMessage={"Are you sure you want to delete this user?"}
+        isModalVisible={isDeleteModalVisible}
+        setIsModalVisible={setIsDeleteModalVisible}
+        onConfirm={confirmDeleteUser}
+      />
+
+      {/* Snackbar for successful deletion */}
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={onSnackbarDismiss}
+        duration={3000}
+      >
+        {`User deleted successfully`}
+      </Snackbar>
+    </View>
+  );
 };
 
 export default UsersScreen;

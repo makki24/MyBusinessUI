@@ -1,84 +1,131 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { Card, Title } from 'react-native-paper';
+import React, { useEffect } from "react";
+import { View, ScrollView } from "react-native";
+import { Card, Title } from "react-native-paper";
 import homeScreenStyles from "../src/styles/homeScreenStyles";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import Notification from "../src/notifications/Notification";
+import * as Notifications from "expo-notifications";
+import { useLinkTo } from "@react-navigation/native";
+import * as Linking from "expo-linking";
+import crashlytics from "@react-native-firebase/crashlytics";
+import { useLastNotificationResponse } from "expo-notifications";
+import { PushNotificationTrigger } from "expo-notifications/src/Notifications.types";
 
-const HomeScreen = ({ navigation }) => {
-    const images = [
-        { uri: 'https://via.placeholder.com/300', interval: 5000 },
-        { uri: 'https://via.placeholder.com/300/FF5733/FFFFFF', interval: 3000 },
-        { uri: 'https://via.placeholder.com/300/33FF57/FFFFFF', interval: 7000 },
-        { uri: 'https://via.placeholder.com/300/5733FF/FFFFFF', interval: 4000 },
-        { uri: 'https://via.placeholder.com/300/FF33FF/FFFFFF', interval: 6000 }, // New Expense Card Image
-        // Add more image URLs with different intervals as needed
-    ];
+type HomeScreenProps = {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+};
 
-    const [currentImageIndex, setCurrentImageIndex] = useState(
-        Array(images.length).fill(0)
-    );
+const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+  const linkTo = useLinkTo();
 
-    useEffect(() => {
-        const intervals = images.map((image, i) =>
-            setInterval(() => {
-                setCurrentImageIndex((prevIndex) =>
-                    prevIndex.map((index, j) =>
-                        i === j ? (index === images.length - 1 ? 0 : index + 1) : index
-                    )
-                );
-            }, image.interval)
-        );
+  const lastNotificationResponse = useLastNotificationResponse();
 
-        return () => intervals.forEach((interval) => clearInterval(interval));
-    }, []); // Empty dependency array
+  useEffect(() => {
+    if (lastNotificationResponse) {
+      const data =
+        lastNotificationResponse?.notification?.request?.content?.data;
 
-    return (
-        <ScrollView contentContainerStyle={homeScreenStyles.container}>
-            {/* Two Cards in One Row */}
-            <View style={homeScreenStyles.cardsContainer}>
-                <Card style={homeScreenStyles.card} onPress={() => navigation.navigate('WorkStack', { screen: 'Work' })}>
-                    <Card.Cover source={require('../assets/work.jpeg')} />
-                    <View style={homeScreenStyles.textOverlay}>
-                        <Title style={homeScreenStyles.cardTitle}>Work</Title>
-                    </View>
-                </Card>
+      if (data) {
+        //code
+      }
+    }
+  }, [lastNotificationResponse]);
 
-                <View style={homeScreenStyles.gap} />
+  useEffect(() => {
+    let isMounted = true;
 
-                <Card style={homeScreenStyles.card} onPress={() => navigation.navigate('SaleStack', { screen: 'Sale' })}>
-                    <Card.Cover source={require('../assets/sale.jpeg')}/>
-                    <View style={homeScreenStyles.textOverlay}>
-                        <Title style={homeScreenStyles.cardTitle}>Sale</Title>
-                    </View>
-                </Card>
+    Notifications.getLastNotificationResponseAsync()
+      .then((response) => {
+        if (!isMounted || !response?.notification) {
+          return;
+        }
+        if (!response) return;
+        const scheme = Linking.createURL("");
+        const url = (
+          response?.notification.request.trigger as PushNotificationTrigger
+        ).remoteMessage.data.url.split(scheme)[1];
+        linkTo(`/${url}`);
+      })
+      .catch((error) => {
+        crashlytics().recordError(error);
+      });
 
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Empty dependency array
 
-                <Card style={homeScreenStyles.card} onPress={() => navigation.navigate('ExpenseStack', { screen: 'Expenses' })}>
-                    <Card.Cover source={require('../assets/expense.jpeg')} />
-                    <View style={homeScreenStyles.textOverlay}>
-                        <Title style={homeScreenStyles.cardTitle}>Manage Expenses</Title>
-                    </View>
-                </Card>
-                <View style={homeScreenStyles.gap} />
+  return (
+    <ScrollView contentContainerStyle={homeScreenStyles.container}>
+      {/* Two Cards in One Row */}
+      <View style={homeScreenStyles.cardsContainer}>
+        <Card
+          style={homeScreenStyles.card}
+          onPress={() => navigation.navigate("WorkStack", { screen: "Work" })}
+        >
+          <Card.Cover source={require("../assets/work.jpeg")} />
+          <View style={homeScreenStyles.textOverlay}>
+            <Title style={homeScreenStyles.cardTitle}>Work / Loan</Title>
+          </View>
+        </Card>
 
-                <Card style={homeScreenStyles.card} onPress={() => navigation.navigate('UsersStack', { screen: 'Users' })}>
-                    <Card.Cover source={require('../assets/user.jpeg')} />
-                    <View style={homeScreenStyles.textOverlay}>
-                        <Title style={homeScreenStyles.cardTitle}>Manage User</Title>
-                    </View>
-                </Card>
+        <View style={homeScreenStyles.gap} />
 
-                {/* Admin Card */}
-                <Card style={homeScreenStyles.card} onPress={() => navigation.navigate('HomeStack', { screen: 'AdminScreen', params: {title: 'Admin' }})}>
-                    <Card.Cover source={require('../assets/admin.jpeg')} />
-                    <View style={homeScreenStyles.textOverlay}>
-                        <Title style={homeScreenStyles.cardTitle}>Admin</Title>
-                    </View>
-                </Card>
+        <Card
+          style={homeScreenStyles.card}
+          onPress={() => navigation.navigate("SaleStack", { screen: "Sale" })}
+        >
+          <Card.Cover source={require("../assets/sale.jpeg")} />
+          <View style={homeScreenStyles.textOverlay}>
+            <Title style={homeScreenStyles.cardTitle}>Sale / Lending</Title>
+          </View>
+        </Card>
 
-                <View style={homeScreenStyles.gap} />
-            </View>
-        </ScrollView>
-    );
+        <Card
+          style={homeScreenStyles.card}
+          onPress={() =>
+            navigation.navigate("ExpenseStack", { screen: "Expenses" })
+          }
+        >
+          <Card.Cover source={require("../assets/expense.jpeg")} />
+          <View style={homeScreenStyles.textOverlay}>
+            <Title style={homeScreenStyles.cardTitle}>Expense (اخراجات)</Title>
+          </View>
+        </Card>
+        <View style={homeScreenStyles.gap} />
+
+        <Card
+          style={homeScreenStyles.card}
+          onPress={() => navigation.navigate("UsersStack", { screen: "Users" })}
+        >
+          <Card.Cover source={require("../assets/user.jpeg")} />
+          <View style={homeScreenStyles.textOverlay}>
+            <Title style={homeScreenStyles.cardTitle}>Manage User</Title>
+          </View>
+        </Card>
+
+        {/* Admin Card */}
+        <Card
+          style={homeScreenStyles.card}
+          onPress={() =>
+            navigation.navigate("HomeStack", {
+              screen: "AdminScreen",
+              params: { title: "Admin" },
+            })
+          }
+        >
+          <Card.Cover source={require("../assets/admin.jpeg")} />
+          <View style={homeScreenStyles.textOverlay}>
+            <Title style={homeScreenStyles.cardTitle}>Admin</Title>
+          </View>
+        </Card>
+
+        <View style={homeScreenStyles.gap} />
+
+        <Notification />
+      </View>
+    </ScrollView>
+  );
 };
 
 export default HomeScreen;

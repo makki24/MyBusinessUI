@@ -1,66 +1,45 @@
-// RolesService.ts
-import { apiUrl } from '../app-env.config';
-import axios from './NetworkInterceptor';
-import {Role} from "../types";
-// Adjust the path accordingly
-
-
+import { apiUrl } from "../app-env.config";
+import axios from "./NetworkInterceptor";
+import { Role } from "../types";
 
 const RolesService = {
-    getRoles: async () => {
-        try {
-            const response = await axios.get(`${apiUrl}/api/roles`);
+  getRoles: async () => {
+    const response = await axios.get(`${apiUrl}/api/roles`);
 
-            if (!response.data) {
-                throw new Error(`Error fetching roles: ${response.statusText}`);
-            }
+    if (!response.data) {
+      throw new Error(`Error fetching roles: ${response.statusText}`);
+    }
 
-            return response.data;
-        } catch (error) {
-            throw error; // You can handle the error further or let the caller handle it
-        }
-    },
+    return response.data;
+  },
 
-    addRole: async (roleData: Role) => {
-        try {
-            const response = await axios.post(`${apiUrl}/api/roles`, roleData);
+  addRole: async (roleData: Role) => {
+    const response = await axios.post(`${apiUrl}/api/roles`, roleData);
 
-            if (!response.data) {
-                throw new Error(`Error adding roles: ${response.statusText}`);
-            }
+    if (!response.data) {
+      throw new Error(`Error adding roles: ${response.statusText}`);
+    }
 
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
-    },
+    return response.data;
+  },
 
-    getUsersAssigned: async (id: any) => {
-        try {
-            const response = await axios.get(`${apiUrl}/api/users/byRole/${id}`);
+  getUsersAssigned: async (id: string) => {
+    const response = await axios.get(`${apiUrl}/api/users/byRole/${id}`);
 
-            if (!response.data) {
-                throw new Error(`Error getting users: ${response.statusText}`);
-            }
+    if (!response.data) {
+      throw new Error(`Error getting users: ${response.statusText}`);
+    }
 
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
-    },
+    return response.data;
+  },
 
-    deleteRole: async (id: any) => {
-        try {
-            const response = await axios.delete(`${apiUrl}/api/roles/${id}`);
+  deleteRole: async (id: string) => {
+    await axios.delete(`${apiUrl}/api/roles/${id}`);
+    // No response data for DELETE requests
+    return null;
+  },
 
-            // No response data for DELETE requests
-            return null;
-        } catch (error) {
-            throw error;
-        }
-    },
-
-    // Add other role-related API functions here
+  // Add other role-related API functions here
 };
 
 export default RolesService;
