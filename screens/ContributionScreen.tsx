@@ -30,6 +30,7 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
   const [_, setLoggedInUser] = useRecoilState(userState);
 
   const fetchContributions = async () => {
+    setError("");
     try {
       setIsRefreshing(true);
 
@@ -47,6 +48,10 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
       setIsRefreshing(false);
     }
   };
+
+  useEffect(() => {
+    if (error) setContributions([]);
+  }, [error]);
 
   useEffect(() => {
     fetchContributions();
@@ -102,11 +107,14 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
 
   return (
     <View style={commonStyles.container}>
-      <LoadingError error={error} isLoading={isLoading} />
-
-      {!error && (
+      {
         <FlatList
           data={contributions}
+          ListHeaderComponent={() => (
+            <View>
+              <LoadingError error={error} isLoading={isLoading} />
+            </View>
+          )}
           renderItem={({ item }) => (
             <ContributionItem
               contribution={item}
@@ -122,7 +130,7 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
             />
           }
         />
-      )}
+      }
 
       <FAB
         style={commonScreenStyles.fab}
