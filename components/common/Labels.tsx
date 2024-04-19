@@ -40,7 +40,7 @@ const Labels: React.FC<LabelListProps<Item>> = ({
 
   return (
     <View style={commonItemStyles.tagsContainer}>
-      <Text variant="titleSmall">{label}: </Text>
+      {label && <Text variant="titleSmall">{label}: </Text>}
       <View style={commonItemStyles.tagChipsContainer}>
         {items.map((item) => (
           <Chip

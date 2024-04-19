@@ -23,6 +23,7 @@ interface AddWorkScreenProps {
       isEditMode: boolean;
       workType: WorkType;
       work: Work;
+      tags: Tags[];
     };
   };
 }
@@ -55,6 +56,10 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [isDataLoading] = useState<boolean>(false);
   const [_, setAllWorks] = useRecoilState(worksState);
+
+  useEffect(() => {
+    setSelectedTags(route.params?.tags?.map((tag) => tag.id));
+  }, [route.params?.tags]);
 
   useEffect(() => {
     // Check if the screen is in edit mode and workType data is provided
@@ -202,6 +207,27 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
         />
       </View>
 
+      {/* New selector for tags */}
+      <CustomDropDown
+        multiple={true}
+        items={tags}
+        zIndex={2000}
+        zIndexInverse={2000}
+        schema={{
+          label: "name",
+          value: "id",
+        }}
+        open={tagOpen}
+        setOpen={setTagOpen}
+        containerStyle={{ height: 40, marginBottom: 16 }}
+        value={selectedTags}
+        setValue={setSelectedTags}
+        itemSeparator={true}
+        placeholder="Select Tags"
+        onChangeValue={handleTagChange}
+        loading={isDataLoading}
+      />
+
       {/* Additional selector for users if required */}
       {workType && (
         <CustomDropDown
@@ -209,8 +235,8 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
             label: "name",
             value: "id",
           }}
-          zIndex={2000}
-          zIndexInverse={2000}
+          zIndex={1000}
+          zIndexInverse={1000}
           items={users.filter(
             (user) =>
               (user.phoneNumber || user.email) &&
@@ -236,27 +262,6 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
           )}
         />
       )}
-
-      {/* New selector for tags */}
-      <CustomDropDown
-        multiple={true}
-        items={tags}
-        zIndex={1000}
-        zIndexInverse={1000}
-        schema={{
-          label: "name",
-          value: "id",
-        }}
-        open={tagOpen}
-        setOpen={setTagOpen}
-        containerStyle={{ height: 40, marginBottom: 16 }}
-        value={selectedTags}
-        setValue={setSelectedTags}
-        itemSeparator={true}
-        placeholder="Select Tags"
-        onChangeValue={handleTagChange}
-        loading={isDataLoading}
-      />
 
       {/* Input fields for quantity, price per unit, amount, and description */}
       {showPricePerUnit && (
