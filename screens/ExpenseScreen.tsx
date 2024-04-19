@@ -88,6 +88,10 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   };
 
   useEffect(() => {
+    if (error) setExpenses([]);
+  }, [error]);
+
+  useEffect(() => {
     let isMounted = true;
 
     fetchExpenses();
@@ -179,6 +183,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   };
 
   const onApply = async (arg: Filter) => {
+    setError("");
     setDefaultFilter(arg);
     setIsLoading(true);
     try {
@@ -196,7 +201,6 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
 
   return (
     <View style={commonStyles.container}>
-      <LoadingError error={error} isLoading={isLoading} />
       <SearchAndFilter
         searchBar={false}
         sort={true}
@@ -209,9 +213,14 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
         appliedSort={defaultSort}
         setSort={setDefaultSort}
       />
-      {!error && (
+      {
         <FlatList
           data={expenses}
+          ListHeaderComponent={() => (
+            <View>
+              <LoadingError error={error} isLoading={isLoading} />
+            </View>
+          )}
           renderItem={({ item }) => (
             <ExpenseItem
               expense={item}
@@ -227,7 +236,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
             />
           }
         />
-      )}
+      }
 
       <FAB
         style={commonScreenStyles.fab}

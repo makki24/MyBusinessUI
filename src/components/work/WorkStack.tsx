@@ -5,6 +5,8 @@ import WorkTypeScreen from "../../../screens/WorkTypeScreen";
 import AddWorkTypeScreen from "../../../screens/AddWorkTypeScreen";
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+import AttendanceScreen from "./AttendanceScreen";
+import AttendanceConfirmation from "./AttendanceConfirmation";
 
 const Stack = createStackNavigator();
 
@@ -15,6 +17,11 @@ const WorkStack = () => {
       <Stack.Screen name="AddWork" component={AddWorkScreen} />
       <Stack.Screen name="WorkType" component={WorkTypeScreen} />
       <Stack.Screen name="AddWorkType" component={AddWorkTypeScreen} />
+      <Stack.Screen name={"AttendanceScreen"} component={AttendanceScreen} />
+      <Stack.Screen
+        name={"AttendanceConfirmation"}
+        component={AttendanceConfirmation}
+      />
     </Stack.Navigator>
   );
 };

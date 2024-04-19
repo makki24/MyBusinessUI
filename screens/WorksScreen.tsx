@@ -56,8 +56,6 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
 
   const fetchWorks = async () => {
     try {
-      setIsRefreshing(true);
-
       const worksData = await WorkService.getWorks();
       const userSet: User[] = [];
       worksData.forEach((expn) => {
@@ -67,8 +65,6 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
       setWorkUsers([...userSet]);
     } catch (fetchError) {
       setError(fetchError.message || "Error fetching works. Please try again.");
-    } finally {
-      setIsRefreshing(false);
     }
   };
 
@@ -132,11 +128,16 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
   }, [works]);
 
   useEffect(() => {
+    if (error) setFilteredWorks([]);
+  }, [error]);
+
+  useEffect(() => {
     onApply(defaultFilter);
   }, [defaultSort]);
 
   const onApply = async (arg: Filter) => {
-    setIsLoading(true);
+    setError("");
+    setIsRefreshing(true);
     defaultFilter = arg;
     try {
       const fetchedFilteredWorks = await workService.filterWork({
@@ -147,13 +148,28 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
     } catch (e) {
       setError(e.message || "Error setting filters.");
     } finally {
-      setIsLoading(false);
+      setIsRefreshing(false);
     }
+  };
+
+  const selectTags = () => {
+    navigation.navigate("TagsStack", {
+      screen: "TagsSelector",
+      params: {
+        title: "Select Tags",
+        nextStep: {
+          stack: "WorkStack",
+          stackParams: {
+            screen: "WorkType",
+            params: { title: "Select Work type" },
+          },
+        },
+      },
+    });
   };
 
   return (
     <View style={commonStyles.container}>
-      <LoadingError error={error} isLoading={isLoading} />
       <SearchAndFilter
         searchQuery={searchQuery}
         handleSearch={handleSearch}
@@ -165,9 +181,14 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
         setSort={setDefaultSort}
       />
 
-      {!error && (
+      {
         <FlatList
           data={filteredWorks}
+          ListHeaderComponent={() => (
+            <View>
+              <LoadingError error={error} isLoading={isLoading} />
+            </View>
+          )}
           renderItem={({ item }) => (
             <WorkItem
               work={item}
@@ -183,18 +204,9 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
             />
           }
         />
-      )}
+      }
 
-      <FAB
-        style={commonScreenStyles.fab}
-        icon="plus"
-        onPress={() =>
-          navigation.navigate("WorkStack", {
-            screen: "WorkType",
-            params: { title: "Select Work type", addingWork: true },
-          })
-        }
-      />
+      <FAB style={commonScreenStyles.fab} icon="plus" onPress={selectTags} />
 
       {/* Delete Work Modal */}
       <ConfirmationModal

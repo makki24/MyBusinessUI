@@ -73,6 +73,7 @@ describe("AddWorkScreen", () => {
         isEditMode: false,
         workType: { pricePerUnit: 5.39 } as WorkType, // Mocking the pricePerUnit for workType
         work: null,
+        tags: [],
       },
     };
 
@@ -139,6 +140,7 @@ describe("AddWorkScreen", () => {
         isEditMode: false,
         workType: { pricePerUnit: 5 } as WorkType, // Mocking the pricePerUnit for workType
         work: null,
+        tags: [],
       },
     };
 
