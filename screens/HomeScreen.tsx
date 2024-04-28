@@ -8,7 +8,6 @@ import * as Notifications from "expo-notifications";
 import { useLinkTo } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 import crashlytics from "@react-native-firebase/crashlytics";
-import { useLastNotificationResponse } from "expo-notifications";
 import { PushNotificationTrigger } from "expo-notifications/src/Notifications.types";
 
 type HomeScreenProps = {
@@ -17,19 +16,6 @@ type HomeScreenProps = {
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const linkTo = useLinkTo();
-
-  const lastNotificationResponse = useLastNotificationResponse();
-
-  useEffect(() => {
-    if (lastNotificationResponse) {
-      const data =
-        lastNotificationResponse?.notification?.request?.content?.data;
-
-      if (data) {
-        //code
-      }
-    }
-  }, [lastNotificationResponse]);
 
   useEffect(() => {
     let isMounted = true;
