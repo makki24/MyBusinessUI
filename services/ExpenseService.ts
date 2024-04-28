@@ -1,6 +1,8 @@
 import axios from "./NetworkInterceptor";
 import { Expense, FilterAndSort } from "../types";
 
+let filterExpenseRequest = null;
+
 const ExpenseService = {
   getExpenses: async () => {
     const response = await axios.get(`/api/expenses`);
@@ -29,7 +31,23 @@ const ExpenseService = {
   },
 
   filterExpense: async (filter: FilterAndSort): Promise<Expense[]> => {
-    const response = await axios.post(`/api/expenses/filter`, filter);
+    if (filterExpenseRequest) {
+      filterExpenseRequest.cancel();
+    }
+
+    // creates a new token for upcomming ajax (overwrite the previous one)
+    filterExpenseRequest = axios.CancelToken.source();
+    let response;
+
+    try {
+      response = await axios.post(`/api/expenses/filter`, filter, {
+        cancelToken: filterExpenseRequest.token,
+      });
+    } catch (err) {
+      if (axios.isCancel(err)) {
+        return [];
+      } else throw err;
+    }
 
     if (!response.data) {
       throw new Error(`No data in response.data`);

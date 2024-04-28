@@ -14,6 +14,8 @@ import SearchAndFilter from "../components/common/SearchAndFilter";
 import expenseService from "../services/ExpenseService";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import ConfirmationModal from "../components/common/ConfirmationModal";
+import * as Notifications from "expo-notifications";
+import { PushNotificationTrigger } from "expo-notifications/src/Notifications.types";
 
 type ExpenseScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -86,7 +88,42 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   };
 
   useEffect(() => {
+    let isMounted = true;
+
     fetchExpenses();
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (!isMounted || !response?.notification) {
+        return;
+      }
+
+      const filterAsString = (
+        response?.notification.request.trigger as PushNotificationTrigger
+      ).remoteMessage.data.expenseFilter;
+
+      try {
+        const filter = JSON.parse(filterAsString);
+        const filterDate = filter.lastUpdateTime;
+        const offset = new Date().getTimezoneOffset();
+        const date = new Date(
+          filterDate.year,
+          filterDate.monthValue - 1,
+          filterDate.dayOfMonth,
+          filterDate.hour,
+          filterDate.minute,
+          filterDate.second,
+        );
+
+        filter.lastUpdateTime = new Date(date.getTime() - offset * 60 * 1000);
+
+        onApply(filter);
+      } catch (err) {
+        err;
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {

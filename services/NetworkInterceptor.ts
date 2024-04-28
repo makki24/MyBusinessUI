@@ -2,13 +2,19 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiUrl } from "../app-env.config";
+import { AxiosStatic } from "axios/index";
 
 const BASE_URL = apiUrl;
 
 // Create an instance of axios to use interceptors
-const axiosInstance = axios.create({
+const axiosInstance: AxiosStatic = axios.create({
   baseURL: BASE_URL,
-});
+}) as AxiosStatic;
+
+const CancelToken = axios.CancelToken;
+
+axiosInstance.CancelToken = CancelToken;
+axiosInstance.isCancel = axios.isCancel;
 
 const extractMessage = (error): string => {
   if (typeof error.response?.data === "string") return error.response.data;

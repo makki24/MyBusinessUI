@@ -7,6 +7,7 @@ export interface Filter {
   sender: User[];
   receiver: User[];
   tags: Tag[];
+  lastUpdateTime?: Date;
 }
 
 export type SortableProperties =
