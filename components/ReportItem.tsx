@@ -54,8 +54,8 @@ const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
             <Paragraph>{`Description: ${reportData.description}`}</Paragraph>
           )}
           <View style={commonStyles.row}>
-            <Paragraph>{`Amount Holding ${reportData.amountHolding}`}</Paragraph>
-            <Paragraph>{`Amount to receive ${reportData.amountToReceive}`}</Paragraph>
+            <Paragraph>{`Amount H ${reportData.amountHolding}`}</Paragraph>
+            <Paragraph>{`Amount R ${reportData.amountToReceive}`}</Paragraph>
           </View>
         </Card.Content>
       </Card>

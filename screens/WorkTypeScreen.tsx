@@ -4,7 +4,7 @@ import { FAB } from "react-native-paper"; // Import Searchbar
 import { useRecoilState } from "recoil";
 import { workTypesState } from "../recoil/atom";
 import WorkTypeItem from "../components/WorkTypeItem";
-import { WorkType } from "../types";
+import { Tag, WorkType } from "../types";
 import WorkService from "../services/WorkService";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
@@ -17,6 +17,7 @@ type WorkTypeScreenProps = {
   route: {
     params: {
       addingWork: boolean;
+      tags: Tag[];
     };
   };
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -115,6 +116,7 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({
             ? ` (${workType.pricePerUnit} per ${workType.unit})`
             : ""),
         workType,
+        tags: route.params.tags,
       },
     });
   };
@@ -139,6 +141,16 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({
               onPress={() => handleAddWork(item)}
               onEdit={(workType) => handleEditWorkType(workType)}
               onDelete={() => handleDeleteWorkType(item)}
+              onAttendance={() => {
+                navigation.navigate("WorkStack", {
+                  screen: "AttendanceScreen",
+                  params: {
+                    title: "Select Attendance",
+                    type: item,
+                    tags: route.params.tags,
+                  },
+                });
+              }}
               readOnly={route?.params?.addingWork}
             />
           )}

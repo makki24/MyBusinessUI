@@ -12,6 +12,7 @@ interface WorkTypeItemProps {
   onEdit: (workType: WorkType) => void; // New prop for the Edit action
   onDelete: () => void;
   readOnly: boolean;
+  onAttendance: () => void;
 }
 
 const WorkTypeItem: React.FC<WorkTypeItemProps> = ({
@@ -20,6 +21,7 @@ const WorkTypeItem: React.FC<WorkTypeItemProps> = ({
   onEdit,
   onDelete,
   readOnly = false,
+  onAttendance,
 }) => (
   <TouchableOpacity onPress={() => onPress(workType)}>
     <Card style={commonItemStyles.card}>
@@ -36,9 +38,12 @@ const WorkTypeItem: React.FC<WorkTypeItemProps> = ({
       >
         <Title>{workType.name}</Title>
         <Text>
-          {workType.unit !== "null" ? `Per ${workType.unit}` : "Default value"}{" "}
-          : {workType.pricePerUnit}
+          {workType.unit !== "null" ? `Per ${workType.unit} :` : ""}{" "}
+          {workType.pricePerUnit}
         </Text>
+        <Card.Actions style={{ padding: 0 }}>
+          <IconButton size={20} icon={"calendar"} onPress={onAttendance} />
+        </Card.Actions>
       </Card.Content>
       {!readOnly && (
         <Card.Actions style={commonItemStyles.cardActionsWithTags}>

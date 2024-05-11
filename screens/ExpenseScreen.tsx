@@ -14,6 +14,8 @@ import SearchAndFilter from "../components/common/SearchAndFilter";
 import expenseService from "../services/ExpenseService";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import ConfirmationModal from "../components/common/ConfirmationModal";
+import * as Notifications from "expo-notifications";
+import { PushNotificationTrigger } from "expo-notifications/src/Notifications.types";
 
 type ExpenseScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -56,8 +58,6 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
 
   const fetchExpenses = async () => {
     try {
-      setIsRefreshing(true);
-
       const expensesData = await ExpenseService.getExpenses();
       const sendersSet: User[] = [];
       const receiverSet: User[] = [];
@@ -80,13 +80,50 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
         fetchError.response?.data ||
           "Error fetching expenses. Please try again.",
       );
-    } finally {
-      setIsRefreshing(false);
     }
   };
 
   useEffect(() => {
+    if (error) setExpenses([]);
+  }, [error]);
+
+  useEffect(() => {
+    let isMounted = true;
+
     fetchExpenses();
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (!isMounted || !response?.notification) {
+        return;
+      }
+
+      const filterAsString = (
+        response?.notification.request.trigger as PushNotificationTrigger
+      ).remoteMessage.data.expenseFilter;
+
+      try {
+        const filter = JSON.parse(filterAsString);
+        const filterDate = filter.lastUpdateTime;
+        const offset = new Date().getTimezoneOffset();
+        const date = new Date(
+          filterDate.year,
+          filterDate.monthValue - 1,
+          filterDate.dayOfMonth,
+          filterDate.hour,
+          filterDate.minute,
+          filterDate.second,
+        );
+
+        filter.lastUpdateTime = new Date(date.getTime() - offset * 60 * 1000);
+
+        onApply(filter);
+      } catch (err) {
+        err;
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -142,8 +179,9 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   };
 
   const onApply = async (arg: Filter) => {
+    setError("");
     setDefaultFilter(arg);
-    setIsLoading(true);
+    setIsRefreshing(true);
     try {
       const filteredExpenses = await expenseService.filterExpense({
         filter: arg,
@@ -153,13 +191,12 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
     } catch (e) {
       setError(e.message || "Error setting filters.");
     } finally {
-      setIsLoading(false);
+      setIsRefreshing(false);
     }
   };
 
   return (
     <View style={commonStyles.container}>
-      <LoadingError error={error} isLoading={isLoading} />
       <SearchAndFilter
         searchBar={false}
         sort={true}
@@ -172,9 +209,14 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
         appliedSort={defaultSort}
         setSort={setDefaultSort}
       />
-      {!error && (
+      {
         <FlatList
           data={expenses}
+          ListHeaderComponent={() => (
+            <View>
+              <LoadingError error={error} isLoading={isLoading} />
+            </View>
+          )}
           renderItem={({ item }) => (
             <ExpenseItem
               expense={item}
@@ -190,7 +232,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
             />
           }
         />
-      )}
+      }
 
       <FAB
         style={commonScreenStyles.fab}

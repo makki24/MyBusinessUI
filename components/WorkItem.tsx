@@ -53,7 +53,11 @@ const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
             {work.description && (
               <Paragraph>
                 Description:{" "}
-                <Text style={{ fontWeight: "bold" }}>{work.description}</Text>{" "}
+                <Text style={{ fontWeight: "bold" }}>
+                  {work.description.length > 40
+                    ? `${work.description.slice(0, 40)}...`
+                    : work.description}
+                </Text>{" "}
               </Paragraph>
             )}
           </View>
