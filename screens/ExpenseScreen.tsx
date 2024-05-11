@@ -58,8 +58,6 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
 
   const fetchExpenses = async () => {
     try {
-      setIsRefreshing(true);
-
       const expensesData = await ExpenseService.getExpenses();
       const sendersSet: User[] = [];
       const receiverSet: User[] = [];
@@ -82,8 +80,6 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
         fetchError.response?.data ||
           "Error fetching expenses. Please try again.",
       );
-    } finally {
-      setIsRefreshing(false);
     }
   };
 
@@ -185,7 +181,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   const onApply = async (arg: Filter) => {
     setError("");
     setDefaultFilter(arg);
-    setIsLoading(true);
+    setIsRefreshing(true);
     try {
       const filteredExpenses = await expenseService.filterExpense({
         filter: arg,
@@ -195,7 +191,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
     } catch (e) {
       setError(e.message || "Error setting filters.");
     } finally {
-      setIsLoading(false);
+      setIsRefreshing(false);
     }
   };
 

@@ -68,8 +68,6 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
         let calculatedAmount = work.pricePerUnit * work.quantity;
         calculatedAmount = Math.round(calculatedAmount * 100.0) / 100.0;
         work.amount = calculatedAmount;
-        work.description = `${work.description}\n ${key} changed to ${value}`;
-
         return work;
       });
     });
