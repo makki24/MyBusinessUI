@@ -27,7 +27,8 @@ const UserItem: React.FC<UserItemProps> = ({
   onDelete,
   onEdit,
 }) => {
-  const amount = Math.abs(user.amountToReceive - user.amountHolding);
+  let amount = Math.abs(user.amountToReceive - user.amountHolding);
+  amount = Math.round(amount * 100.0) / 100.0;
   const toRecieve = user.amountHolding > user.amountToReceive;
   const theme = useTheme();
   const isUserAdmin = useRecoilValue(isAdmin);
@@ -53,9 +54,6 @@ const UserItem: React.FC<UserItemProps> = ({
           </View>
           <Paragraph>{user.email}</Paragraph>
           <Paragraph>{`Phone: ${user.phoneNumber}`}</Paragraph>
-          {/*<Paragraph>{`Amount to Receive: ${user.amountToReceive}`}</Paragraph>*/}
-          {/*<Paragraph>{`Amount Holding: ${user.amountHolding}`}</Paragraph>*/}
-          {/* Display additional user information as needed */}
         </Card.Content>
         {isUserAdmin && (
           <Card.Actions style={commonItemStyles.cardActionsWithTags}>
