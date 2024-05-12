@@ -9,8 +9,11 @@ import AttendanceEditor from "./AttendanceEditor";
 import Button from "../../../components/common/Button";
 import attendanceService from "./AttendanceService";
 import LoadingError from "../../../components/common/LoadingError";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import { UI_ELEMENTS_GAP } from "../../styles/constants";
 
 interface AttendanceConfirmationProps {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
   route: {
     params: {
       users: User[];
@@ -23,6 +26,7 @@ interface AttendanceConfirmationProps {
 
 const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
   route,
+  navigation,
 }) => {
   const [_users, setUsers] = useState<User[]>([]);
   const [_type, setType] = useState<WorkType>();
@@ -31,6 +35,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [respMessage, setRespMessage] = useState("");
+  const [created, setCreated] = useState(false);
 
   useEffect(() => {
     setUsers(route.params.users);
@@ -78,6 +83,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
       const resp = await attendanceService.createWorks(works);
       setSnackbarVisible(true);
       setRespMessage(resp);
+      setCreated(true);
     } catch (err) {
       setError(err.message ?? "An error occurred while adding the works");
     } finally {
@@ -119,7 +125,20 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
         keyExtractor={(item: User, index) => `${index}`}
         ItemSeparatorComponent={() => <Divider />}
       />
-      <Button icon={"calendar"} title={"Submit"} onPress={submitWorks} />
+      {created && (
+        <Button
+          style={{ marginBottom: UI_ELEMENTS_GAP }}
+          icon={"exit-run"}
+          title={"Back to Works"}
+          onPress={() => navigation.navigate("WorkStack", { screen: "Work" })}
+        />
+      )}
+      <Button
+        disabled={created}
+        icon={"calendar"}
+        title={"Submit"}
+        onPress={submitWorks}
+      />
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
