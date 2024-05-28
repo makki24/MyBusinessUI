@@ -1,7 +1,7 @@
 // src/screens/ExpenseScreen.tsx
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
-import { FAB } from "react-native-paper";
+import { FAB, IconButton, Tooltip } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import ExpenseService from "../services/ExpenseService";
 import ExpenseItem from "../components/ExpenseItem";
@@ -28,19 +28,21 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [senders, setSenders] = useState<User[]>([]);
   const [receivers, setReceivers] = useState<User[]>([]);
   const today = new Date();
   const tomorrow = new Date();
-  const [defaultFilter, setDefaultFilter] = useState<Filter | null>({
+  const initialFilter = {
     fromDate: new Date(today.setDate(today.getDate() - 7)),
     toDate: new Date(tomorrow.setDate(tomorrow.getDate() + 1)),
     sender: [],
     receiver: [],
     tags: [],
     user: [],
-  }); // Use a state variable
+  };
+  const [defaultFilter, setDefaultFilter] = useState<Filter | null>(
+    initialFilter,
+  ); // Use a state variable
   const [defaultSort, setDefaultSort] = useState<Sort[]>([
     {
       property: "date",
@@ -174,9 +176,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
     onApply(defaultFilter);
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-  };
+  const handleSearch = () => {};
 
   const onApply = async (arg: Filter) => {
     setError("");
@@ -197,18 +197,28 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
 
   return (
     <View style={commonStyles.container}>
-      <SearchAndFilter
-        searchBar={false}
-        sort={true}
-        searchQuery={searchQuery}
-        handleSearch={handleSearch}
-        sender={senders}
-        receiver={receivers}
-        onApply={onApply}
-        defaultFilter={defaultFilter}
-        appliedSort={defaultSort}
-        setSort={setDefaultSort}
-      />
+      <View style={commonStyles.simpleRow}>
+        <SearchAndFilter
+          searchBar={false}
+          sort={true}
+          handleSearch={handleSearch}
+          sender={senders}
+          receiver={receivers}
+          onApply={onApply}
+          defaultFilter={defaultFilter}
+          appliedSort={defaultSort}
+          setSort={setDefaultSort}
+        />
+        <Tooltip title="Restore to Default">
+          <IconButton
+            icon={"lock-reset"}
+            mode={"contained"}
+            onPress={() => {
+              onApply(initialFilter);
+            }}
+          />
+        </Tooltip>
+      </View>
       {
         <FlatList
           data={expenses}

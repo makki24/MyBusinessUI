@@ -26,7 +26,6 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedWork, setSelectedWork] = useState<Work>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [workUsers, setWorkUsers] = useState<User[]>();
   const [defaultSort, setDefaultSort] = useState<Sort[]>([
     {
@@ -116,7 +115,6 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
   };
 
   const handleSearch = (query) => {
-    setSearchQuery(query);
     const filtered = works.filter((work) =>
       work.user.name.toLowerCase().includes(query.toLowerCase()),
     );
@@ -153,25 +151,15 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
   };
 
   const selectTags = () => {
-    navigation.navigate("TagsStack", {
-      screen: "TagsSelector",
-      params: {
-        title: "Select Tags",
-        nextStep: {
-          stack: "WorkStack",
-          stackParams: {
-            screen: "WorkType",
-            params: { title: "Select Work type" },
-          },
-        },
-      },
+    navigation.navigate("WorkStack", {
+      screen: "WorkType",
+      params: { title: "Select Work type", addingWork: true },
     });
   };
 
   return (
     <View style={commonStyles.container}>
       <SearchAndFilter
-        searchQuery={searchQuery}
         handleSearch={handleSearch}
         user={workUsers}
         onApply={onApply}

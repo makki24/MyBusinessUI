@@ -10,9 +10,9 @@ interface WorkTypeItemProps {
   workType: WorkType;
   onPress: (workType: WorkType) => void;
   onEdit: (workType: WorkType) => void; // New prop for the Edit action
-  onDelete: () => void;
+  onDelete: (workType: WorkType) => void;
   readOnly: boolean;
-  onAttendance: () => void;
+  onAttendance: (workType: WorkType) => void;
 }
 
 const WorkTypeItem: React.FC<WorkTypeItemProps> = ({
@@ -42,7 +42,11 @@ const WorkTypeItem: React.FC<WorkTypeItemProps> = ({
           {workType.pricePerUnit}
         </Text>
         <Card.Actions style={{ padding: 0 }}>
-          <IconButton size={20} icon={"calendar"} onPress={onAttendance} />
+          <IconButton
+            size={20}
+            icon={"calendar"}
+            onPress={() => onAttendance(workType)}
+          />
         </Card.Actions>
       </Card.Content>
       {!readOnly && (
@@ -51,7 +55,7 @@ const WorkTypeItem: React.FC<WorkTypeItemProps> = ({
           <IconButton icon="pencil" onPress={() => onEdit(workType)} />
 
           {/* Delete action button */}
-          <IconButton icon="delete" onPress={onDelete} />
+          <IconButton icon="delete" onPress={() => onDelete(workType)} />
         </Card.Actions>
       )}
     </Card>

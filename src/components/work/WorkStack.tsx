@@ -7,6 +7,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import AttendanceScreen from "./AttendanceScreen";
 import AttendanceConfirmation from "./AttendanceConfirmation";
+import TagsSelector from "../tags/TagsSelector";
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ const WorkStack = () => {
         name={"AttendanceConfirmation"}
         component={AttendanceConfirmation}
       />
+      <Stack.Screen name={"TagsSelector"} component={TagsSelector} />
     </Stack.Navigator>
   );
 };

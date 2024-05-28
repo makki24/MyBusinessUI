@@ -212,6 +212,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
 
   // Handler for adding an expense
   const handleAddExpense = async () => {
+    setError("");
     if (!value || !amount) {
       setError("Expense type and amount are required");
       return;
