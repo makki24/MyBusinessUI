@@ -3,7 +3,7 @@ import { View, ScrollView } from "react-native";
 import { useRecoilState } from "recoil";
 import { Button, TextInput } from "react-native-paper";
 
-import { userState, usersState, tagsState, worksState } from "../recoil/atom";
+import { userState, usersState, worksState } from "../recoil/atom";
 import WorkService from "../services/WorkService";
 import { WorkType, Tag as Tags, User, Work } from "../types";
 import CustomDropDown from "../components/common/CustomDropdown";
@@ -15,6 +15,8 @@ import LoadingError from "../components/common/LoadingError";
 import UserDropDownItem from "../components/common/UserDropDownItem";
 import NumberInput from "../components/common/NumberInput";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import { useTagsClosed } from "../src/components/tags/TagsSelector";
+import TagsSelectorButton from "../src/components/common/TagsSelectorButton";
 
 interface AddWorkScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -23,7 +25,6 @@ interface AddWorkScreenProps {
       isEditMode: boolean;
       workType: WorkType;
       work: Work;
-      tags: Tags[];
     };
   };
 }
@@ -31,10 +32,9 @@ interface AddWorkScreenProps {
 const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [tagOpen, setTagOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [workType, setWorkType] = useState<WorkType>(null);
-  const [selectedTags, setSelectedTags] = useState<number[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Tags[]>([]);
   const [quantity, setQuantity] = useState("");
   const [pricePerUnit, setPricePerUnit] = useState("");
   const [amount, setAmount] = useState("");
@@ -49,17 +49,11 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
   });
   const [users] = useRecoilState(usersState);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [tags] = useRecoilState(tagsState);
   const [loggedInUser] = useRecoilState(userState);
   const [showPricePerUnit, setShowPricePerUnit] = useState(false);
   const [showAmount, setShowAmount] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [isDataLoading] = useState<boolean>(false);
   const [_, setAllWorks] = useRecoilState(worksState);
-
-  useEffect(() => {
-    setSelectedTags(route.params?.tags?.map((tag) => tag.id));
-  }, [route.params?.tags]);
 
   useEffect(() => {
     // Check if the screen is in edit mode and workType data is provided
@@ -86,7 +80,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
       setAmount(`${work.amount}`);
       setDescription(work.description);
       setInputDate(paramDate);
-      setSelectedTags(work.tags.map((tag) => tag.id));
+      setSelectedTags(work.tags);
       setSelectedUser(work.user.id);
       setTime({ hours: paramDate.getHours(), minutes: paramDate.getMinutes() });
       if (work.pricePerUnit && work.pricePerUnit !== work.type.pricePerUnit)
@@ -101,12 +95,21 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
   time.hours !== undefined && timeDate.setHours(time.hours);
   time.minutes !== undefined && timeDate.setMinutes(time.minutes);
 
-  const handleTagChange = () => {
-    // Handle tag change logic if needed
-  };
-
   const handleUserChange = (user: string | null) => {
     if (user) setSelectedUser(user);
+  };
+
+  useTagsClosed(({ tags }) => {
+    setSelectedTags(tags);
+  }, []);
+
+  const openTags = () => {
+    navigation.navigate("WorkStack", {
+      screen: "TagsSelector",
+      params: {
+        selectedTags: selectedTags,
+      },
+    });
   };
 
   const submitWork = async () => {
@@ -133,7 +136,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
         amount: calculatedAmount,
         description,
         user: selectedUser ? ({ id: selectedUser } as User) : null,
-        tags: selectedTags.map((tag) => ({ id: tag })) as Tags[],
+        tags: selectedTags,
       };
 
       if (isEdit) {
@@ -208,25 +211,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
       </View>
 
       {/* New selector for tags */}
-      <CustomDropDown
-        multiple={true}
-        items={tags}
-        zIndex={2000}
-        zIndexInverse={2000}
-        schema={{
-          label: "name",
-          value: "id",
-        }}
-        open={tagOpen}
-        setOpen={setTagOpen}
-        containerStyle={{ height: 40, marginBottom: 16 }}
-        value={selectedTags}
-        setValue={setSelectedTags}
-        itemSeparator={true}
-        placeholder="Select Tags"
-        onChangeValue={handleTagChange}
-        loading={isDataLoading}
-      />
+      <TagsSelectorButton openTags={openTags} selectedTags={selectedTags} />
 
       {/* Additional selector for users if required */}
       {workType && (

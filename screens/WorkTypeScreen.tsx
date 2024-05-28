@@ -1,23 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { View, FlatList, RefreshControl } from "react-native";
+import React, { useState } from "react";
+import { View } from "react-native";
 import { FAB } from "react-native-paper"; // Import Searchbar
 import { useRecoilState } from "recoil";
 import { workTypesState } from "../recoil/atom";
-import WorkTypeItem from "../components/WorkTypeItem";
-import { Tag, WorkType } from "../types";
+import { WorkType } from "../types";
 import WorkService from "../services/WorkService";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import commonStyles from "../src/styles/commonStyles";
-import LoadingError from "../components/common/LoadingError";
-import SearchAndFilter from "../components/common/SearchAndFilter";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import ConfirmationModal from "../components/common/ConfirmationModal";
+import WorkTypeList from "../src/components/common/WorkTypeList";
+import { useAttendanceConfirmationListner } from "../src/components/work/AttendanceScreen";
 
 type WorkTypeScreenProps = {
   route: {
     params: {
       addingWork: boolean;
-      tags: Tag[];
     };
   };
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -27,38 +25,11 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({
   route,
   navigation,
 }) => {
-  const [workTypes, setWorkTypes] = useRecoilState(workTypesState);
-  const [filteredWorkTypes, setFilteredWorkTypes] = useState([]);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [_workTypes, setWorkTypes] = useRecoilState(workTypesState);
+  const [_error, setError] = useState(null);
+  const [_isLoading, setIsLoading] = useState(false);
   const [selectedWorkType, setSelectedWorkType] = useState(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const fetchWorkTypes = async () => {
-    try {
-      setIsRefreshing(true);
-
-      const workTypesData = await WorkService.getWorkTypes();
-      setWorkTypes(workTypesData);
-      setFilteredWorkTypes(workTypesData);
-    } catch (fetchError) {
-      setError(
-        fetchError.message || "Error fetching work types. Please try again.",
-      );
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchWorkTypes();
-  }, []);
-
-  useEffect(() => {
-    setFilteredWorkTypes(workTypes);
-  }, [workTypes]);
 
   const handleEditWorkType = (workType) => {
     navigation.navigate("WorkStack", {
@@ -73,9 +44,6 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({
     try {
       await WorkService.deleteWorkType(selectedWorkType.id);
       setWorkTypes((prevWorkTypes) =>
-        prevWorkTypes.filter((wt) => wt.id !== selectedWorkType.id),
-      );
-      setFilteredWorkTypes((prevWorkTypes) =>
         prevWorkTypes.filter((wt) => wt.id !== selectedWorkType.id),
       );
     } catch (deleteError) {
@@ -94,18 +62,6 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({
     setIsDeleteModalVisible(true);
   };
 
-  const handleRefresh = () => {
-    fetchWorkTypes();
-  };
-
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    const filtered = workTypes.filter((workType) =>
-      workType.name.toLowerCase().includes(query.toLowerCase()),
-    );
-    setFilteredWorkTypes(filtered);
-  };
-
   const handleAddWork = (workType: WorkType) => {
     navigation.navigate("WorkStack", {
       screen: "AddWork",
@@ -116,53 +72,40 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({
             ? ` (${workType.pricePerUnit} per ${workType.unit})`
             : ""),
         workType,
-        tags: route.params.tags,
       },
     });
   };
 
+  useAttendanceConfirmationListner(({ type, date, users }) => {
+    // setCountry(selectedCountry);
+    navigation.navigate("WorkStack", {
+      screen: "AttendanceConfirmation",
+      params: {
+        title: `AttendanceConfirmation`,
+        type: type,
+        date: date,
+        users: users,
+      },
+    });
+  }, []);
+
   return (
     <View style={commonStyles.container}>
-      {/* Searchbar */}
-      <SearchAndFilter
-        onApply={() => {}}
-        searchQuery={searchQuery}
-        handleSearch={handleSearch}
+      <WorkTypeList
+        onPress={handleAddWork}
+        onEdit={handleEditWorkType}
+        onDelete={handleDeleteWorkType}
+        onAttendance={(item) => {
+          navigation.navigate("WorkStack", {
+            screen: "AttendanceScreen",
+            params: {
+              title: "Select Attendance",
+              type: item,
+            },
+          });
+        }}
+        readOnly={route?.params?.addingWork}
       />
-
-      <LoadingError error={error} isLoading={isLoading} />
-
-      {!error && (
-        <FlatList
-          data={filteredWorkTypes}
-          renderItem={({ item }) => (
-            <WorkTypeItem
-              workType={item}
-              onPress={() => handleAddWork(item)}
-              onEdit={(workType) => handleEditWorkType(workType)}
-              onDelete={() => handleDeleteWorkType(item)}
-              onAttendance={() => {
-                navigation.navigate("WorkStack", {
-                  screen: "AttendanceScreen",
-                  params: {
-                    title: "Select Attendance",
-                    type: item,
-                    tags: route.params.tags,
-                  },
-                });
-              }}
-              readOnly={route?.params?.addingWork}
-            />
-          )}
-          keyExtractor={(item) => item.id.toString()} // Ensure key is a string
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={handleRefresh}
-            />
-          }
-        />
-      )}
 
       <FAB
         style={commonScreenStyles.fab}

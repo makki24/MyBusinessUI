@@ -108,6 +108,26 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
         <View style={homeScreenStyles.gap} />
 
+        <Card
+          style={homeScreenStyles.card}
+          onPress={() =>
+            navigation.navigate("MiddleManStack", {
+              screen: "AddSender",
+              params: { title: "Select Sender" },
+            })
+          }
+        >
+          <Card.Cover
+            style={{ height: "50%" }}
+            source={require("../assets/sale.jpeg")}
+          />
+
+          <Card.Cover source={require("../assets/work.jpeg")} />
+          <View style={homeScreenStyles.textOverlay}>
+            <Title style={homeScreenStyles.cardTitle}>Middle Man</Title>
+          </View>
+        </Card>
+
         <Notification />
       </View>
     </ScrollView>

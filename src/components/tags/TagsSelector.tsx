@@ -8,13 +8,7 @@ import Button from "../../../components/common/Button";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Tag } from "../../../types";
-
-interface ScreensParms {
-  screen: string;
-  params: {
-    title: string;
-  };
-}
+import { makeEventNotifier } from "../common/useEventListner";
 
 type RootStackParamList = {
   [key: string]: {
@@ -31,30 +25,33 @@ type RootStackParamList = {
 interface TagsSelectorProps {
   route: {
     params: {
-      nextStep: {
-        stack: string;
-        stackParams: ScreensParms;
-      };
+      selectedTags: Tag[];
     };
   };
 }
 
 type NavigationProp = StackNavigationProp<RootStackParamList, "TagsStack">;
 
+const notifer = makeEventNotifier<{ tags: Tag[] }>("OnTagsSelectedAndClosed");
+
+// Youy can add a snippet to generate this
+export function useTagsClosed<T>(
+  listener: typeof notifer.notify,
+  deps: ReadonlyArray<T>,
+) {
+  notifer.useEventListener(listener, deps);
+}
+
 const TagsSelector: React.FC<TagsSelectorProps> = ({ route }) => {
   const tags = useRecoilValue(tagsState);
-  const [selectedTags, SetSelectedTags] = useState<Tag[]>([]);
+  const [selectedTags, SetSelectedTags] = useState<Tag[]>(
+    route.params.selectedTags ?? [],
+  );
   const navigation = useNavigation<NavigationProp>();
 
   const navigate = () => {
-    navigation.navigate(route.params.nextStep.stack, {
-      screen: route.params.nextStep.stackParams.screen,
-      params: {
-        title: route.params.nextStep.stackParams.params.title,
-        addingWork: true,
-        tags: selectedTags,
-      },
-    });
+    notifer.notify({ tags: selectedTags });
+    navigation.goBack();
   };
 
   return (
