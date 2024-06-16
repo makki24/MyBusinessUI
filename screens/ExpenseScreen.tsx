@@ -116,7 +116,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
         );
 
         filter.lastUpdateTime = new Date(date.getTime() - offset * 60 * 1000);
-
+        setIsLoading(true);
         onApply(filter);
       } catch (err) {
         err;
@@ -192,6 +192,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
       setError(e.message || "Error setting filters.");
     } finally {
       setIsRefreshing(false);
+      setIsLoading(false);
     }
   };
 
