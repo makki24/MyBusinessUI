@@ -60,6 +60,10 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     handleSearch(query);
   };
 
+  useEffect(() => {
+    setCurrentFilter(defaultFilter);
+  }, [defaultFilter]);
+
   const openBottomSheet = useCallback(() => {
     bottomSheetModalRef.current?.present();
 
