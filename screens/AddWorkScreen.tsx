@@ -183,6 +183,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
   // Component rendering
   return (
     <ScrollView
+      keyboardShouldPersistTaps="handled"
       contentContainerStyle={commonAddScreenStyles.scrollViewContainer}
     >
       <LoadingError error={error} isLoading={isLoading} />
