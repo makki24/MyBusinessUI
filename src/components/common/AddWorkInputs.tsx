@@ -43,24 +43,33 @@ const AddWorkInputs: React.FC<AddWorkInputProps> = ({
     setPricePerUnit(`${workAndSaleState.type?.pricePerUnit}`);
     if (workAndSaleState.type?.enterAmountDirectly) {
       setShowAmount(true);
+      setAmount(`${workAndSaleState.type.pricePerUnit}`);
     }
 
     if (workAndSaleState.quantity) setQuantity(`${workAndSaleState.quantity}`);
     if (workAndSaleState.description)
       setDescription(workAndSaleState.description);
-  }, [workAndSaleState]);
+  }, []);
 
   const addWork = () => {
+    setButtonDisabled(true);
+    let calculatedAmount = parseFloat(pricePerUnit) * parseFloat(quantity);
+    calculatedAmount = Math.round(calculatedAmount * 100.0) / 100.0;
     if (showAmount)
-      setWorkAndSaleState((prev) => ({ ...prev, amount: parseFloat(amount) }));
+      setWorkAndSaleState((prev) => ({
+        ...prev,
+        pricePerUnit: parseFloat(amount),
+        amount: parseFloat(amount),
+      }));
     else
       setWorkAndSaleState((prev) => ({
         ...prev,
+        amount: calculatedAmount,
+        pricePerUnit: parseFloat(pricePerUnit),
         quantity: parseFloat(quantity),
       }));
     setWorkAndSaleState((prev) => ({
       ...prev,
-      pricePerUnit: parseFloat(pricePerUnit),
       description: description,
     }));
     const workDate = new Date(inputDate);
