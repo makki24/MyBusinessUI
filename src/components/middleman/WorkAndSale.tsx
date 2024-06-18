@@ -38,6 +38,7 @@ const WorkAndSale: React.FC<WorkAndSaleProps> = ({ navigation }) => {
       setDisabled(true);
     } catch (err) {
       setError(err.message ?? "An error occurred while adding the works");
+      setDisabled(false);
     } finally {
       setIsLoading(false);
     }
@@ -58,6 +59,7 @@ const WorkAndSale: React.FC<WorkAndSaleProps> = ({ navigation }) => {
 
   return (
     <ScrollView
+      keyboardShouldPersistTaps="handled"
       contentContainerStyle={commonAddScreenStyles.scrollViewContainer}
     >
       <LoadingError error={error} isLoading={isLoading} />
