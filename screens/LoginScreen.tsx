@@ -6,12 +6,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { androidClientId, expoClientId } from "../app-env.config";
 import { useRecoilState } from "recoil";
 import { userState } from "../recoil/atom";
-import { Text } from "react-native-paper";
+import { IconButton, Text } from "react-native-paper";
 import Button from "../components/common/Button";
 import LoadingError from "../components/common/LoadingError";
 import { MAIN_PROFILE_PIC, UI_ELEMENTS_GAP } from "../src/styles/constants";
 import PropTypes from "prop-types";
 import loginService from "../services/LoginService";
+import commonStyles from "../src/styles/commonStyles";
 
 const LoginScreen = ({ navigation }) => {
   const [userInfo, setUserInfo] = useRecoilState(userState);
@@ -28,13 +29,14 @@ const LoginScreen = ({ navigation }) => {
     }
   }, [response]);
 
+  const checkUser = async () => {
+    const token = await AsyncStorage.getItem("@token");
+    if (token) {
+      login(token);
+    }
+  };
+
   useEffect(() => {
-    const checkUser = async () => {
-      const token = await AsyncStorage.getItem("@token");
-      if (token) {
-        login(token);
-      }
-    };
     checkUser();
   }, []);
 
@@ -79,14 +81,24 @@ const LoginScreen = ({ navigation }) => {
       {!userInfo ? (
         <View>
           <LoadingError error={error} isLoading={loading} />
-          <Button
-            title="Sign in with Google"
-            icon={"google"}
-            disabled={!request || loading} // Disable the button when loading
-            onPress={() => {
-              promptAsync();
-            }}
-          />
+          <View style={commonStyles.simpleRow}>
+            <Button
+              title="Sign in with Google"
+              icon={"google"}
+              disabled={!request || loading} // Disable the button when loading
+              onPress={() => {
+                promptAsync();
+              }}
+            />
+            <IconButton
+              icon={"refresh"}
+              mode={"contained"}
+              disabled={!request || loading} // Disable the button when loading
+              onPress={() => {
+                checkUser();
+              }}
+            />
+          </View>
         </View>
       ) : (
         <View style={styles.loggedInContainer}>
