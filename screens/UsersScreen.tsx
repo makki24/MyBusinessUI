@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
-import { FAB, Snackbar, useTheme } from "react-native-paper";
+import { FAB, Snackbar } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import UserService from "../services/UserService";
 import UserItem from "../components/UserItem";
@@ -26,10 +26,8 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [members, setMembers] = useState<User[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [_totalAmount, setTotalAmount] = useState<number>();
   const [_toRecieve, setToReceive] = useState<boolean>(true);
-  const _theme = useTheme();
 
   const fetchUsers = async () => {
     try {
@@ -109,7 +107,6 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
   };
 
   const handleSearch = (query) => {
-    setSearchQuery(query);
     const filtered = users.filter((user) =>
       user.name.toLowerCase().includes(query.toLowerCase()),
     );
@@ -119,7 +116,6 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
   return (
     <View style={commonStyles.container}>
       <SearchAndFilter
-        searchQuery={searchQuery}
         handleSearch={handleSearch}
         user={users}
         onApply={() => {}}

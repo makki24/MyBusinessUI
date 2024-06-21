@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
-import { Tag, User, Work, WorkType } from "../../../types";
-import Labels from "../../../components/common/Labels";
+import { User, Work, WorkType } from "../../../types";
 import commonStyles from "../../styles/commonStyles";
-import { Divider, Snackbar, Text } from "react-native-paper";
-import NumberInput from "../../../components/common/NumberInput";
-import AttendanceEditor from "./AttendanceEditor";
+import { Divider, Snackbar } from "react-native-paper";
 import Button from "../../../components/common/Button";
 import attendanceService from "./AttendanceService";
 import LoadingError from "../../../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { UI_ELEMENTS_GAP } from "../../styles/constants";
+import TagsSelectorButton from "../common/TagsSelectorButton";
+import { useTagsClosed } from "../tags/TagsSelector";
+import AttendanceConfirmationUser from "./AttendanceConfirmationUser";
 
 interface AttendanceConfirmationProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -19,7 +19,6 @@ interface AttendanceConfirmationProps {
       users: User[];
       date: Date[];
       type: WorkType;
-      tags: Tag[];
     };
   };
 }
@@ -36,6 +35,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [respMessage, setRespMessage] = useState("");
   const [created, setCreated] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   useEffect(() => {
     setUsers(route.params.users);
@@ -55,28 +55,13 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
         date: new Date(),
         type: route.params.type,
         amount: route.params.type.pricePerUnit * route.params.date.length,
-        tags: route.params.tags,
+        tags: [],
       };
       createdWorks.push(createdWork);
     });
 
     setWorks(createdWorks);
   }, [route.params]);
-
-  const editWork = (user: User, key: string, value) => {
-    value = parseFloat(value);
-    setWorks((prevState) => {
-      return prevState.map((work) => {
-        if (work?.user?.id != user.id) return work;
-        work[key] = value;
-
-        let calculatedAmount = work.pricePerUnit * work.quantity;
-        calculatedAmount = Math.round(calculatedAmount * 100.0) / 100.0;
-        work.amount = calculatedAmount;
-        return work;
-      });
-    });
-  };
 
   const submitWorks = async () => {
     try {
@@ -92,33 +77,31 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
   };
 
   const renderUserItem = ({ item: work }) => (
-    <View style={commonStyles.row}>
-      <Text>{work?.user?.name}</Text>
-      <View style={{ width: "50%" }}>
-        {route.params.date.map((item) => (
-          <AttendanceEditor
-            key={`${work?.user.id}${new Date(item).toDateString()}`}
-            user={work?.user}
-            date={item}
-            editWork={editWork}
-            work={work}
-          />
-        ))}
-      </View>
-      <View>
-        <NumberInput
-          label={`Per ${work?.type.unit}`}
-          value={`${work?.pricePerUnit}`}
-          onChangeText={(value) => editWork(work?.user, "pricePerUnit", value)}
-        />
-      </View>
-    </View>
+    <AttendanceConfirmationUser
+      date={route.params.date}
+      setWorks={setWorks}
+      work={work}
+    />
   );
+
+  useTagsClosed(({ tags }) => {
+    setSelectedTags(tags);
+  }, []);
+
+  const openTags = () => {
+    navigation.navigate("WorkStack", {
+      screen: "TagsSelector",
+      params: {
+        selectedTags: selectedTags,
+      },
+    });
+  };
 
   return (
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
-      <Labels items={route.params.tags} label={""} />
+      <TagsSelectorButton openTags={openTags} selectedTags={selectedTags} />
+
       <FlatList
         data={works}
         renderItem={renderUserItem}

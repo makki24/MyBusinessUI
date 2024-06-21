@@ -39,6 +39,7 @@ import * as Linking from "expo-linking";
 import { Text } from "react-native-paper";
 import { LinkingConfig } from "./config/linking.config";
 import { getInitialURL, subscribe } from "../util/Navigation";
+import MiddleManStack from "./middleman/MiddleManStack";
 
 const prefix = Linking.createURL("/");
 
@@ -199,6 +200,14 @@ const AppContent = () => {
             }}
             name="ReportStack"
             component={ReportStack}
+          />
+          <Drawer.Screen
+            options={{
+              headerShown: false,
+              drawerLabel: "Middle Man",
+            }}
+            name="MiddleManStack"
+            component={MiddleManStack}
           />
           {/* Other screens */}
         </Drawer.Navigator>

@@ -16,7 +16,6 @@ import { DROPDOWN_HEIGHT, UI_ELEMENTS_GAP } from "../../src/styles/constants";
 
 interface SearchAndFilterProps {
   handleSearch: (query: string) => void;
-  searchQuery: string;
   user?: User[];
   sender?: User[];
   receiver?: User[];
@@ -35,7 +34,6 @@ type Icons = {
 
 const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   handleSearch,
-  searchQuery,
   user,
   sender,
   receiver,
@@ -55,6 +53,16 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   ); // Use a state variable
   const [visible, setVisible] = React.useState(false);
   const [cleared, setIsCleared] = React.useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const onHandleSearch = (query) => {
+    setSearchQuery(query);
+    handleSearch(query);
+  };
+
+  useEffect(() => {
+    setCurrentFilter(defaultFilter);
+  }, [defaultFilter]);
 
   const openBottomSheet = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -130,7 +138,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
       {searchBar && (
         <Searchbar
           placeholder="Search"
-          onChangeText={handleSearch}
+          onChangeText={onHandleSearch}
           value={searchQuery}
           style={styles.searchBar}
           inputStyle={{ minHeight: DROPDOWN_HEIGHT }}
