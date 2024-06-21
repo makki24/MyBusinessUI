@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { IconButton, useTheme } from "react-native-paper";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { IconButton, useTheme, Text } from "react-native-paper";
 import ProfilePicture from "../common/ProfilePicture";
 import { User } from "../../../types";
 import {
