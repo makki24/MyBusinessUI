@@ -32,7 +32,7 @@ export const subscribe = (listener) => {
     (response) => {
       const url = (
         response?.notification.request.trigger as PushNotificationTrigger
-      )?.remoteMessage.data.url;
+      )?.remoteMessage?.data?.url;
 
       // Any custom logic to see whether the URL needs to be handled
       //...
