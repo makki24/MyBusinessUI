@@ -1,22 +1,34 @@
 // src/components/ReportItem.tsx
-import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Card, Title, Paragraph, Icon, useTheme } from "react-native-paper";
 import { UserReport } from "../types";
 import commonItemStyles from "../src/styles/commonItemStyles";
 import commonStyles from "../src/styles/commonStyles";
-import { REPORT_ICON_SIZE } from "../src/styles/constants";
+import {
+  ATTENDANCE_USER_RADIUS,
+  REPORT_ICON_SIZE,
+  UI_ELEMENTS_GAP,
+} from "../src/styles/constants";
+import ProfilePicture from "../src/components/common/ProfilePicture";
+import { StyleProp } from "react-native/Libraries/StyleSheet/StyleSheet";
+import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 
 interface ReportItemProps {
   reportData: UserReport;
 }
 
-const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
+interface CardItemProps {
+  reportData: UserReport;
+  style: StyleProp<ViewStyle>;
+}
+
+const CardItem: React.FC<CardItemProps> = ({ reportData, style }) => {
   const theme = useTheme();
 
   return (
     <TouchableOpacity>
-      <Card style={commonItemStyles.card}>
+      <Card style={style}>
         <Card.Content style={commonItemStyles.cardContent}>
           <View style={commonItemStyles.titleContainer}>
             <Title>{reportData.type}</Title>
@@ -62,5 +74,68 @@ const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
     </TouchableOpacity>
   );
 };
+
+const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
+  const theme = useTheme();
+  const [received, setIsReceived] = useState(false);
+
+  useEffect(() => {
+    if (
+      (reportData.type === "Expense" || reportData.type === "Contribution") &&
+      reportData.sent
+    )
+      setIsReceived(true);
+    if (reportData.type === "Work") setIsReceived(true);
+  }, []);
+
+  return (
+    <View style={received ? styles.cardLeft : styles.cardRight}>
+      <ProfilePicture
+        size={40}
+        style={received ? styles.userImageLeft : styles.userImageRight}
+        picture={reportData.sender?.picture}
+      />
+      <CardItem
+        reportData={reportData}
+        style={
+          received
+            ? styles.cardItemLeft
+            : {
+                ...styles.cardItemRight,
+                backgroundColor: theme.colors.primaryContainer,
+              }
+        }
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  userImageLeft: {
+    borderRadius: ATTENDANCE_USER_RADIUS,
+    marginRight: UI_ELEMENTS_GAP / 2,
+  },
+  userImageRight: {
+    borderRadius: ATTENDANCE_USER_RADIUS,
+    marginLeft: UI_ELEMENTS_GAP / 2,
+  },
+  cardItemLeft: {
+    marginBottom: UI_ELEMENTS_GAP,
+    borderTopLeftRadius: 0,
+    backgroundColor: "white",
+  },
+  cardItemRight: {
+    marginBottom: UI_ELEMENTS_GAP,
+    borderTopRightRadius: 0,
+  },
+  cardLeft: {
+    marginBottom: UI_ELEMENTS_GAP,
+    flexDirection: "row",
+  },
+  cardRight: {
+    marginBottom: UI_ELEMENTS_GAP,
+    flexDirection: "row-reverse",
+  },
+});
 
 export default ReportItem;

@@ -1,7 +1,8 @@
-import { View, ActivityIndicator, useColorScheme } from "react-native";
+import { View, useColorScheme } from "react-native";
 import commonStyles from "../../src/styles/commonStyles";
 import React from "react";
 import { MD3DarkTheme, MD3LightTheme, Text } from "react-native-paper";
+import Loading from "../../src/components/common/Loading";
 
 type LoadingErrorProps = {
   isLoading: boolean;
@@ -26,11 +27,7 @@ const LoadingError: React.FC<LoadingErrorProps> = ({ isLoading, error }) => {
       )}
       {isLoading && (
         <View style={commonStyles.loadingContainer}>
-          <ActivityIndicator
-            size="large"
-            color={theme.colors.primary}
-            animating={true}
-          />
+          <Loading />
         </View>
       )}
     </>
