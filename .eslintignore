@@ -10,4 +10,3 @@ android
 metro.config.js
 jest.setup.ts
 babel.config.js
-app-env.config.js

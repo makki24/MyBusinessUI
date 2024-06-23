@@ -27,5 +27,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           ? "com.syedsons.mybusiness.qa"
           : "com.syedsons.mybusiness",
     },
+    updates: {
+      url: process.env.EAS_UPDATE_URL,
+    },
+    runtimeVersion: {
+      policy: "sdkVersion",
+    },
   };
 };

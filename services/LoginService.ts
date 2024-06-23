@@ -1,4 +1,4 @@
-import { apiUrl } from "../app-env.config";
+import { apiUrl } from "../src/app-env.config";
 import { User } from "../types";
 import saveToken from "../src/util/SaveToken";
 

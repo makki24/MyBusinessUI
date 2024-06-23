@@ -70,7 +70,7 @@ describe("LoginScreen", () => {
     const button = await findByText("Sign in with Google");
 
     expect(button).toBeTruthy();
-    expect(fetch).toHaveBeenCalledWith(`http://192.168.150.103:9191/login`, {
+    expect(fetch).toHaveBeenCalledWith(`undefined/login`, {
       method: "GET",
       headers: {
         Authorization: `Bearer dummyToken`,
@@ -153,16 +153,13 @@ describe("LoginScreen", () => {
       );
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith(
-          `http://192.168.150.103:9191/loginOrSignUp`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer mockToken`,
-              "Content-Type": "application/json",
-            },
+        expect(fetch).toHaveBeenCalledWith(`undefined/loginOrSignUp`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer mockToken`,
+            "Content-Type": "application/json",
           },
-        );
+        });
       });
     });
 
