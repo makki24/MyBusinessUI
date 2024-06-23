@@ -76,7 +76,11 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
   const navigateToTransactions = (clickedUser: User) => {
     navigation.navigate("UsersStack", {
       screen: "UserReport",
-      params: { title: `User Report`, userId: clickedUser.id },
+      params: {
+        title: `User Report`,
+        userId: clickedUser.id,
+        user: clickedUser,
+      },
     });
   };
 
