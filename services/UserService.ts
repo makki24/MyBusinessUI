@@ -1,5 +1,5 @@
 import axios from "./NetworkInterceptor";
-import { apiUrl } from "../app-env.config";
+import { apiUrl } from "../src/app-env.config";
 import { User } from "../types";
 
 const UserService = {
