@@ -1,0 +1,59 @@
+name: update
+
+on:
+  push:
+    branches:
+      - main
+      - qa
+      - production
+
+jobs:
+  update:
+    name: EAS Update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: yarn
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+
+      - name: Download google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo "${GOOGLE_SERVICES_JSON}" > ./assets/google-services.json
+
+      - name: Run EAS Update
+        env:
+          EAS_UPDATE_URL: ${{ secrets.EAS_UPDATE_URL }}
+          GOOGLE_SERVICES_JSON: "./assets/google-services.json"
+        run: |
+          if [[ ${{ github.ref_name }} == 'main' ]]; then
+            NODE_ENV=development APP_VARIANT=development eas update --branch dev
+          elif [[ ${{ github.ref_name }} == 'qa' ]]; then
+            NODE_ENV=test APP_VARIANT=qa eas update --auto
+          elif [[ ${{ github.ref_name }} == 'production' ]]; then
+            NODE_ENV=production APP_VARIANT=production eas update --auto
+          else
+            echo "Branch not configured for EAS update."
