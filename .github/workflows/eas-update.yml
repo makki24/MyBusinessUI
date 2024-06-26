@@ -36,6 +36,7 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
       - name: Run tests
         run: npm test
 
@@ -49,11 +50,12 @@ jobs:
           EAS_UPDATE_URL: ${{ secrets.EAS_UPDATE_URL }}
           GOOGLE_SERVICES_JSON: "./assets/google-services.json"
         run: |
-          if [[ ${{ github.ref_name }} == 'main' ]]; then
+          if [[ "${GITHUB_REF_NAME}" == 'main' ]]; then
             NODE_ENV=development APP_VARIANT=development eas update --branch dev
-          elif [[ ${{ github.ref_name }} == 'qa' ]]; then
+          elif [[ "${GITHUB_REF_NAME}" == 'qa' ]]; then
             NODE_ENV=test APP_VARIANT=qa eas update --auto
-          elif [[ ${{ github.ref_name }} == 'production' ]]; then
+          elif [[ "${GITHUB_REF_NAME}" == 'production' ]]; then
             NODE_ENV=production APP_VARIANT=production eas update --auto
           else
             echo "Branch not configured for EAS update."
+          fi
