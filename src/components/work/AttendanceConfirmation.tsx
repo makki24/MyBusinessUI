@@ -65,6 +65,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
 
   const submitWorks = async () => {
     try {
+      setIsLoading(true);
       const resp = await attendanceService.createWorks(works);
       setSnackbarVisible(true);
       setRespMessage(resp);
@@ -117,7 +118,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
         />
       )}
       <Button
-        disabled={created}
+        disabled={created || isLoading}
         icon={"calendar"}
         title={"Submit"}
         onPress={submitWorks}

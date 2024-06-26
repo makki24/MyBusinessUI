@@ -1,7 +1,7 @@
 // NetworkInterceptor.ts
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { apiUrl } from "../app-env.config";
+import { apiUrl } from "../src/app-env.config";
 import { AxiosStatic } from "axios/index";
 
 const BASE_URL = apiUrl;

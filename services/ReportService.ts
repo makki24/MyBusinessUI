@@ -1,6 +1,8 @@
 import axios from "./NetworkInterceptor";
 import { ExpenseReport, UserReport } from "../types";
 
+let getReportByUserRequest = null;
+
 const ReportService = {
   getReport: async (
     tagId: number,
@@ -18,10 +20,28 @@ const ReportService = {
     return response.data;
   },
 
-  getReportByUser: async (userId: number): Promise<UserReport[]> => {
-    const response = await axios.get(`api/report/getReportByUser`, {
-      params: { userId },
-    });
+  getReportByUser: async (
+    userId: number,
+    offset,
+    limit,
+  ): Promise<UserReport[]> => {
+    if (getReportByUserRequest) {
+      getReportByUserRequest.cancel();
+    }
+
+    getReportByUserRequest = axios.CancelToken.source();
+    let response;
+
+    try {
+      response = await axios.get(`api/report/getReportByUser`, {
+        params: { userId, offset, limit },
+        cancelToken: getReportByUserRequest.token,
+      });
+    } catch (err) {
+      if (axios.isCancel(err)) {
+        return [];
+      } else throw err;
+    }
 
     if (!response.data) {
       throw new Error(`No data in response.data`);

@@ -1,34 +1,35 @@
-import {
-  ParamListBase,
-  RouteProp,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
+import React, { useEffect, useState } from "react";
+import { User } from "../../../types";
 import { View } from "react-native";
 import commonStyles from "../../styles/commonStyles";
 import { HEADING_SIZE, UI_ELEMENTS_GAP } from "../../styles/constants";
 import { IconButton, Text } from "react-native-paper";
-import React, { useEffect, useState } from "react";
+import ProfilePicture from "../common/ProfilePicture";
 import DrawerToggler from "../header/DrawerToggler";
 
-interface RouteParams {
-  title?: string;
+interface ReportHeaderProps {
+  route: {
+    params: {
+      user: User;
+    };
+  };
 }
 
-const CustomHeader = () => {
+const ReportHeader: React.FC<ReportHeaderProps> = ({ route }) => {
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
-  const route = useRoute<RouteProp<Record<string, RouteParams>, string>>();
-  const title = route.params?.title || route.name;
+  const [user] = useState<User>(route.params.user);
   const [canGoBack, setCanGoBack] = useState<boolean>();
-  const goBack = () => {
-    if (navigation.canGoBack()) navigation.goBack();
-    else setCanGoBack(false);
-  };
 
   useEffect(() => {
     setCanGoBack(navigation.canGoBack());
   }, []);
+
+  const goBack = () => {
+    if (navigation.canGoBack()) navigation.goBack();
+    else setCanGoBack(false);
+  };
 
   return (
     <View
@@ -47,11 +48,19 @@ const CustomHeader = () => {
             onPress={() => goBack()}
           />
         ) : null}
-        <Text style={{ fontSize: HEADING_SIZE }}>{title ?? route.name}</Text>
+        <ProfilePicture
+          style={{ marginRight: UI_ELEMENTS_GAP }}
+          size={40}
+          picture={user.picture}
+        />
+        <View>
+          <Text>{user.name}</Text>
+          <Text>{user.phoneNumber}</Text>
+        </View>
       </View>
       <DrawerToggler />
     </View>
   );
 };
 
-export default CustomHeader;
+export default ReportHeader;

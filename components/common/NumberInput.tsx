@@ -6,12 +6,14 @@ interface NumberInputProps {
   label: string;
   value: string;
   onChangeText: React.Dispatch<React.SetStateAction<string>>;
+  disabled?: boolean;
 }
 
 const NumberInput: React.FC<NumberInputProps> = ({
   label,
   value,
   onChangeText,
+  disabled,
 }) => {
   return (
     <TextInput
@@ -21,6 +23,7 @@ const NumberInput: React.FC<NumberInputProps> = ({
       onChangeText={onChangeText}
       testID={label.split(" ").join("")}
       style={commonAddScreenStyles.inputField}
+      disabled={disabled}
     />
   );
 };

@@ -1,3 +1,5 @@
+import { User } from "./users";
+
 export interface ExpenseReport {
   totalWorkAmount: number;
   totalExpenseAmount: number;
@@ -13,4 +15,5 @@ export interface UserReport {
   sent: boolean;
   amountHolding: number;
   amountToReceive: number;
+  sender: User;
 }
