@@ -45,13 +45,20 @@ jobs:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo "${GOOGLE_SERVICES_JSON}" > ./assets/google-services.json
 
+      - name: Get Latest Commit Message
+        id: get_commit_message
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_ENV
+
       - name: Run EAS Update
         env:
           EAS_UPDATE_URL: ${{ secrets.EAS_UPDATE_URL }}
           GOOGLE_SERVICES_JSON: "./assets/google-services.json"
+          COMMIT_MESSAGE: ${{ env.commit_message }}
         run: |
           if [[ "${GITHUB_REF_NAME}" == 'main' ]]; then
-            NODE_ENV=development APP_VARIANT=development eas update --branch dev
+            NODE_ENV=development APP_VARIANT=development eas update --branch dev --message "${COMMIT_MESSAGE}"
           elif [[ "${GITHUB_REF_NAME}" == 'qa' ]]; then
             NODE_ENV=test APP_VARIANT=qa eas update --auto
           elif [[ "${GITHUB_REF_NAME}" == 'production' ]]; then
