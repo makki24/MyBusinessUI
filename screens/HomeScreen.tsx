@@ -51,9 +51,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         >
           <Card.Cover source={require("../assets/work.jpeg")} />
           <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>
-              Work / Loan (update)
-            </Title>
+            <Title style={homeScreenStyles.cardTitle}>Work / Loan</Title>
           </View>
         </Card>
 
