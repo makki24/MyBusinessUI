@@ -86,6 +86,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
   );
 
   useTagsClosed(({ tags }) => {
+    setWorks((prevWorks) => prevWorks.map((work) => ({ ...work, tags: tags })));
     setSelectedTags(tags);
   }, []);
 
