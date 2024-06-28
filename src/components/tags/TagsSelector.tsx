@@ -32,7 +32,9 @@ interface TagsSelectorProps {
 
 type NavigationProp = StackNavigationProp<RootStackParamList, "TagsStack">;
 
-const notifer = makeEventNotifier<{ tags: Tag[] }>("OnTagsSelectedAndClosed");
+const notifer = makeEventNotifier<{ tags: Tag[] }, unknown>(
+  "OnTagsSelectedAndClosed",
+);
 
 // Youy can add a snippet to generate this
 export function useTagsClosed<T>(

@@ -19,11 +19,14 @@ interface AttendanceScreenProps {
   navigation: NavigationProp<ParamListBase>;
 }
 
-const notifer = makeEventNotifier<{
-  type: WorkType;
-  date: string[];
-  users: User[];
-}>("OnAttendanceConfirmed");
+const notifer = makeEventNotifier<
+  {
+    type: WorkType;
+    date: string[];
+    users: User[];
+  },
+  unknown
+>("OnAttendanceConfirmed");
 
 // Youy can add a snippet to generate this
 export function useAttendanceConfirmationListner<T>(

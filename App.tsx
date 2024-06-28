@@ -6,6 +6,8 @@ import { RecoilRoot } from "recoil";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AppContent from "./src/components/AppContent";
+import { enGB, registerTranslation } from "react-native-paper-dates";
+registerTranslation("en-GB", enGB);
 
 const App = () => {
   return (
