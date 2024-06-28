@@ -90,16 +90,21 @@ const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
 
   return (
     <View style={received ? styles.cardLeft : styles.cardRight}>
-      <ProfilePicture
-        size={40}
-        style={received ? styles.userImageLeft : styles.userImageRight}
-        picture={reportData.sender?.picture}
-      />
+      {!received && (
+        <ProfilePicture
+          size={40}
+          style={received ? styles.userImageLeft : styles.userImageRight}
+          picture={reportData.sender?.picture}
+        />
+      )}
       <CardItem
         reportData={reportData}
         style={
           received
-            ? styles.cardItemLeft
+            ? {
+                ...styles.cardItemLeft,
+                backgroundColor: theme.colors.background,
+              }
             : {
                 ...styles.cardItemRight,
                 backgroundColor: theme.colors.primaryContainer,
@@ -122,7 +127,6 @@ const styles = StyleSheet.create({
   cardItemLeft: {
     marginBottom: UI_ELEMENTS_GAP,
     borderTopLeftRadius: 0,
-    backgroundColor: "white",
   },
   cardItemRight: {
     marginBottom: UI_ELEMENTS_GAP,
