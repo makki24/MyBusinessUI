@@ -1,13 +1,12 @@
 // src/components/ReportItem.tsx
 import React, { useEffect, useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { Card, Title, Paragraph, Icon, useTheme } from "react-native-paper";
+import { Card, Title, Paragraph, useTheme, Text } from "react-native-paper";
 import { UserReport } from "../types";
 import commonItemStyles from "../src/styles/commonItemStyles";
 import commonStyles from "../src/styles/commonStyles";
 import {
   ATTENDANCE_USER_RADIUS,
-  REPORT_ICON_SIZE,
   UI_ELEMENTS_GAP,
 } from "../src/styles/constants";
 import ProfilePicture from "../src/components/common/ProfilePicture";
@@ -21,53 +20,41 @@ interface ReportItemProps {
 interface CardItemProps {
   reportData: UserReport;
   style: StyleProp<ViewStyle>;
+  amount: string;
+  received: boolean;
 }
 
-const CardItem: React.FC<CardItemProps> = ({ reportData, style }) => {
-  const theme = useTheme();
-
+const CardItem: React.FC<CardItemProps> = ({
+  reportData,
+  style,
+  amount,
+  received,
+}) => {
   return (
     <TouchableOpacity>
-      <Card style={style}>
+      <Card style={{ ...style, ...styles.card }}>
         <Card.Content style={commonItemStyles.cardContent}>
           <View style={commonItemStyles.titleContainer}>
-            <Title>{reportData.type}</Title>
-            {(reportData.type === "Expense" ||
-              reportData.type === "Contribution") && (
-              <View>
-                {reportData.sent ? (
-                  <Icon
-                    source="account-minus-outline"
-                    color={theme.colors.secondary}
-                    size={REPORT_ICON_SIZE}
-                  />
-                ) : (
-                  <Icon
-                    source="account-plus-outline"
-                    color={theme.colors.primary}
-                    size={REPORT_ICON_SIZE}
-                  />
-                )}
-              </View>
-            )}
-            {reportData.type === "LoanClear" && (
-              <View>
-                <Icon
-                  size={REPORT_ICON_SIZE}
-                  source={"recycle-variant"}
-                  color={theme.colors.primary}
-                />
-              </View>
-            )}
+            <Title>{amount}</Title>
+            {received && <Text>from {reportData.sender?.name}</Text>}
           </View>
-          <Paragraph>{`Date: ${reportData.date.toDateString()}`}</Paragraph>
-          <Paragraph>{`Amount: ${reportData.amount}`}</Paragraph>
+          <View
+            style={reportData.receiver?.name ? {} : { ...commonStyles.row }}
+          >
+            <Paragraph>
+              {reportData.type}{" "}
+              {reportData.receiver?.name
+                ? `to ${reportData.receiver.name}`
+                : ""}
+            </Paragraph>
+            <Paragraph>{`${reportData.date.toDateString()}`}</Paragraph>
+          </View>
           {reportData.description && (
-            <Paragraph>{`Description: ${reportData.description}`}</Paragraph>
+            <Paragraph>{`${reportData.description}`}</Paragraph>
           )}
           <View style={commonStyles.row}>
-            <Paragraph>{`Amount H ${reportData.amountHolding}`}</Paragraph>
-            <Paragraph>{`Amount R ${reportData.amountToReceive}`}</Paragraph>
+            <Paragraph>{`T S ${reportData.totalSent}`}</Paragraph>
+            <Paragraph>{`T R ${reportData.totalReceived}`}</Paragraph>
           </View>
         </Card.Content>
       </Card>
@@ -80,12 +67,7 @@ const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
   const [received, setIsReceived] = useState(false);
 
   useEffect(() => {
-    if (
-      (reportData.type === "Expense" || reportData.type === "Contribution") &&
-      reportData.sent
-    )
-      setIsReceived(true);
-    if (reportData.type === "Work") setIsReceived(true);
+    setIsReceived(!reportData.received);
   }, []);
 
   return (
@@ -99,6 +81,7 @@ const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
       )}
       <CardItem
         reportData={reportData}
+        amount={received ? reportData.sent : reportData.received}
         style={
           received
             ? {
@@ -110,6 +93,7 @@ const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
                 backgroundColor: theme.colors.primaryContainer,
               }
         }
+        received={!received}
       />
     </View>
   );
@@ -124,12 +108,13 @@ const styles = StyleSheet.create({
     borderRadius: ATTENDANCE_USER_RADIUS,
     marginLeft: UI_ELEMENTS_GAP / 2,
   },
+  card: {
+    minWidth: "70%",
+  },
   cardItemLeft: {
-    marginBottom: UI_ELEMENTS_GAP,
     borderTopLeftRadius: 0,
   },
   cardItemRight: {
-    marginBottom: UI_ELEMENTS_GAP,
     borderTopRightRadius: 0,
   },
   cardLeft: {

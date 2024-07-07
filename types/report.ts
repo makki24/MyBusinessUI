@@ -7,13 +7,21 @@ export interface ExpenseReport {
   totalContributionAmount: number;
 }
 
+export interface BaseTransactionType {
+  id: number;
+  name: string;
+}
+
 export interface UserReport {
   date: Date;
-  amount: number;
+  id: number;
+  sent: string;
+  received: string;
   type: string;
   description: string;
-  sent: boolean;
-  amountHolding: number;
-  amountToReceive: number;
+  transactionType: BaseTransactionType;
+  totalSent: number;
+  totalReceived: number;
   sender: User;
+  receiver: User;
 }
