@@ -209,20 +209,6 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
         setPhoneNumber={setPhoneNumber}
         style={commonAddScreenStyles.inputField}
       />
-      <TextInput
-        label="Amount to Receive"
-        value={amountToReceive}
-        onChangeText={setAmountToReceive}
-        keyboardType="numeric"
-        style={commonAddScreenStyles.inputField}
-      />
-      <TextInput
-        label="Amount Holding"
-        value={amountHolding}
-        onChangeText={setAmountHolding}
-        keyboardType="numeric"
-        style={commonAddScreenStyles.inputField}
-      />
       <Button mode="contained" onPress={handleAddUser}>
         {route.params?.isEditMode ? "Update User" : "Add User"}
       </Button>

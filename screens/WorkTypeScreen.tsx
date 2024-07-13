@@ -107,16 +107,18 @@ const WorkTypeScreen: React.FC<WorkTypeScreenProps> = ({
         readOnly={route?.params?.addingWork}
       />
 
-      <FAB
-        style={commonScreenStyles.fab}
-        icon="plus"
-        onPress={() =>
-          navigation.navigate("WorkStack", {
-            screen: "AddWorkType",
-            params: { title: "Add Work type" },
-          })
-        }
-      />
+      {!route?.params?.addingWork && (
+        <FAB
+          style={commonScreenStyles.fab}
+          icon="plus"
+          onPress={() =>
+            navigation.navigate("WorkStack", {
+              screen: "AddWorkType",
+              params: { title: "Add Work type" },
+            })
+          }
+        />
+      )}
 
       {/* Delete Work Type Modal */}
       <ConfirmationModal
