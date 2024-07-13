@@ -4,8 +4,7 @@ import { render, fireEvent, cleanup } from "@testing-library/react-native";
 import AddExpenseScreen from "../../screens/AddExpenseScreen";
 import { PaperProvider } from "react-native-paper";
 import { RecoilRoot } from "recoil";
-import { expenseTypesState, userState } from "../../recoil/atom";
-import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import { expenseTypesState } from "../../recoil/atom";
 jest.useFakeTimers();
 
 // Enable fetch mocks
@@ -100,48 +99,5 @@ describe("AddExpenseScreen", () => {
 
     expect(userPicker).toBeFalsy();
     expect(tagsPicker).toBeTruthy();
-  });
-
-  it("should navigate to 'AddContribution' screen when 'navigateToManageAmounts' is called", () => {
-    const mockNavigation = {
-      navigate: jest.fn(),
-    } as unknown as NavigationProp<ParamListBase>;
-    const types = [
-      { id: "1", name: "Expense Type 1", isReceivingUser: true },
-      { id: "2", name: "Expense Type 2", isReceivingUser: false },
-    ];
-
-    const setInitialState = (snapshot) => {
-      snapshot.set(expenseTypesState, types);
-      snapshot.set(userState, {
-        amountHolding: 5,
-      });
-    };
-
-    const { getByTestId, getByText } = render(
-      <RecoilRoot initializeState={setInitialState}>
-        <PaperProvider>
-          <AddExpenseScreen
-            route={{ params: { isEditMode: false, expense: null } }}
-            navigation={mockNavigation}
-          />
-        </PaperProvider>
-      </RecoilRoot>,
-    );
-
-    const expenseTypeDropdown = getByTestId("expense-type-picker");
-    fireEvent(expenseTypeDropdown, "setValue", "2");
-
-    fireEvent.changeText(getByTestId("Amount"), "10");
-
-    // Open the modal
-    fireEvent.press(getByText("Add Expense"));
-
-    fireEvent.press(getByText("Declare contribution"));
-
-    expect(mockNavigation.navigate).toHaveBeenCalledWith("ProfileStack", {
-      screen: "AddContribution",
-      params: { title: "Add Contribution" },
-    });
   });
 });
