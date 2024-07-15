@@ -45,11 +45,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
     route.params.users.forEach((user) => {
       const createdWork: Work = {
         pricePerUnit: route.params.type.pricePerUnit,
-        description:
-          `Added by Attendance ` +
-          route.params.date
-            .map((date) => new Date(date).toDateString())
-            .join("\n"),
+        description: `Added by Attendance `,
         quantity: route.params.date.length,
         user: user,
         date: new Date(),
@@ -86,6 +82,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
   );
 
   useTagsClosed(({ tags }) => {
+    setWorks((prevWorks) => prevWorks.map((work) => ({ ...work, tags: tags })));
     setSelectedTags(tags);
   }, []);
 

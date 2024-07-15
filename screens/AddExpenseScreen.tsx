@@ -31,8 +31,6 @@ import UserDropDownItem from "../components/common/UserDropDownItem";
 import SwitchInput from "../components/common/SwitchInput";
 import {
   ADD_EXPENSE_DIFFERENT_SENDER_LABEL,
-  AMOUNT_HOLDING_LESS_LABEL_1,
-  AMOUNT_HOLDING_LESS_LABEL_2,
   AMOUNT_TO_RECEIVE_LESS_1,
   AMOUNT_TO_RECEIVE_LESS_2,
   AMOUNT_TO_RECEIVE_LESS_3,
@@ -143,6 +141,8 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
       setIsReceivingUser(!!extractedExpense.receiver);
       setTime({ hours: paramDate.getHours(), minutes: paramDate.getMinutes() });
       setSender(extractedExpense.sender.id);
+      if (loggedInUser.id !== extractedExpense.sender.id)
+        setDifferentSender(true);
     }
   }, [route.params?.isEditMode, route.params?.expense]);
 
@@ -249,22 +249,14 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
 
     if (isReceivingUser) {
       const receivingUser = users.filter((user) => user.id === selectedUser)[0];
-      if (parseFloat(amount) > receivingUser.amountToReceive) {
+      const loan = receivingUser.amountToReceive - receivingUser.amountHolding;
+      if (parseFloat(amount) > loan) {
         setModalMessage(
-          ` ${AMOUNT_TO_RECEIVE_LESS_1} ${receivingUser.name}  (${amount}) ${AMOUNT_TO_RECEIVE_LESS_2} (${receivingUser.amountToReceive}). ${AMOUNT_TO_RECEIVE_LESS_3}`,
+          ` ${AMOUNT_TO_RECEIVE_LESS_1} ${receivingUser.name}  (${amount}) ${AMOUNT_TO_RECEIVE_LESS_2} (${loan}). ${AMOUNT_TO_RECEIVE_LESS_3}`,
         );
         setModalVisible(true);
         return;
       }
-    }
-
-    if (parseFloat(amount) > loggedInUser.amountHolding) {
-      setModalMessage(
-        `${AMOUNT_HOLDING_LESS_LABEL_2} ${loggedInUser.amountToReceive} ${AMOUNT_HOLDING_LESS_LABEL_1}`,
-      );
-      setIsAmountHoldingLess(true);
-      setModalVisible(true);
-      return;
     }
 
     submitExpense();

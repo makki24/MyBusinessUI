@@ -5,6 +5,7 @@ import UserReportScreen from "../../../screens/UserReportScreen";
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import ReportHeader from "./ReportHeader";
+import UserSummary from "./UserSummary";
 
 const Stack = createStackNavigator();
 
@@ -18,6 +19,7 @@ const UsersStack = () => {
         options={{ header: (props) => <ReportHeader {...props} /> }}
         component={UserReportScreen}
       />
+      <Stack.Screen name={"UserSummary"} component={UserSummary} />
     </Stack.Navigator>
   );
 };
