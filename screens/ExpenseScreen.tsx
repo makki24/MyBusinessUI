@@ -1,54 +1,39 @@
 // src/screens/ExpenseScreen.tsx
 import React, { useEffect, useState } from "react";
-import { View, FlatList, RefreshControl } from "react-native";
-import { FAB, IconButton, Tooltip } from "react-native-paper";
+import { View } from "react-native";
 import { useRecoilState } from "recoil";
 import ExpenseService from "../services/ExpenseService";
 import ExpenseItem from "../components/ExpenseItem";
 import { expensesState } from "../recoil/atom";
-import { Expense, Filter, Sort, User } from "../types";
-import commonScreenStyles from "../src/styles/commonScreenStyles";
+import { Expense, Filter } from "../types";
 import commonStyles from "../src/styles/commonStyles";
-import LoadingError from "../components/common/LoadingError";
-import SearchAndFilter from "../components/common/SearchAndFilter";
 import expenseService from "../services/ExpenseService";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import ConfirmationModal from "../components/common/ConfirmationModal";
 import * as Notifications from "expo-notifications";
 import { PushNotificationTrigger } from "expo-notifications/src/Notifications.types";
+import filterService from "../src/service/FilterService";
+import ItemsList from "../src/components/common/ItemsList";
+import LoadingError from "../components/common/LoadingError";
+import { DEFAULT_SORT } from "../src/constants/filter";
 
 type ExpenseScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 };
 
 const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
-  const [expenses, setExpenses] = useRecoilState(expensesState);
+  const [_expenses, setExpenses] = useRecoilState(expensesState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [senders, setSenders] = useState<User[]>([]);
-  const [receivers, setReceivers] = useState<User[]>([]);
-  const today = new Date();
-  const tomorrow = new Date();
-  const initialFilter = {
-    fromDate: new Date(today.setDate(today.getDate() - 7)),
-    toDate: new Date(tomorrow.setDate(tomorrow.getDate() + 1)),
+  const [uniqueFilters, setUniqueFilters] = useState<Filter>({
     sender: [],
     receiver: [],
     tags: [],
     user: [],
-  };
-  const [defaultFilter, setDefaultFilter] = useState<Filter | null>(
-    initialFilter,
-  ); // Use a state variable
-  const [defaultSort, setDefaultSort] = useState<Sort[]>([
-    {
-      property: "date",
-      direction: "desc",
-    },
-  ]); // Use a state variable
+  });
+  const defaultSort = DEFAULT_SORT; // Use a state variable
 
   const transFormAndSetExpense = (expensesData: Expense[]) => {
     expensesData = expensesData.map((expense) => ({
@@ -58,41 +43,18 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
     setExpenses(expensesData);
   };
 
-  const fetchExpenses = async () => {
-    try {
-      const expensesData = await ExpenseService.getExpenses();
-      const sendersSet: User[] = [];
-      const receiverSet: User[] = [];
-      expensesData.forEach((expn) => {
-        if (
-          expn.sender &&
-          !sendersSet.find((user) => user.id === expn.sender.id)
-        )
-          sendersSet.push(expn.sender);
-        if (
-          expn.receiver &&
-          !receiverSet.find((user) => user.id === expn.receiver.id)
-        )
-          receiverSet.push(expn.receiver);
-      });
-      setSenders(sendersSet);
-      setReceivers([...receiverSet]);
-    } catch (fetchError) {
-      setError(
-        fetchError.response?.data ||
-          "Error fetching expenses. Please try again.",
-      );
-    }
-  };
-
   useEffect(() => {
     if (error) setExpenses([]);
   }, [error]);
 
+  const getUnique = async () => {
+    const uniQueFilter = await filterService.getExpenseFilters();
+    setUniqueFilters(uniQueFilter);
+  };
+
   useEffect(() => {
     let isMounted = true;
-
-    fetchExpenses();
+    getUnique();
     Notifications.getLastNotificationResponseAsync().then((response) => {
       if (!isMounted || !response?.notification) {
         return;
@@ -127,10 +89,6 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
       isMounted = false;
     };
   }, []);
-
-  useEffect(() => {
-    onApply(defaultFilter);
-  }, [defaultSort]);
 
   const handleEditExpense = (expense: Expense) => {
     const serializedDate = expense.date.toISOString();
@@ -171,17 +129,11 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
     }
   };
 
-  const handleRefresh = () => {
-    fetchExpenses();
-    onApply(defaultFilter);
-  };
-
   const handleSearch = () => {};
 
   const onApply = async (arg: Filter) => {
     setError("");
-    setDefaultFilter(arg);
-    setIsRefreshing(true);
+    setIsLoading(true);
     try {
       const filteredExpenses = await expenseService.filterExpense({
         filter: arg,
@@ -191,74 +143,34 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
     } catch (e) {
       setError(e.message || "Error setting filters.");
     } finally {
-      setIsRefreshing(false);
       setIsLoading(false);
     }
   };
 
   return (
     <View style={commonStyles.container}>
-      <View style={commonStyles.simpleRow}>
-        <SearchAndFilter
-          searchBar={false}
-          sort={true}
-          handleSearch={handleSearch}
-          sender={senders}
-          receiver={receivers}
-          onApply={onApply}
-          defaultFilter={defaultFilter}
-          appliedSort={defaultSort}
-          setSort={setDefaultSort}
-        />
-        <Tooltip title="Restore to Default">
-          <IconButton
-            icon={"lock-reset"}
-            mode={"contained"}
-            onPress={() => {
-              onApply(initialFilter);
-            }}
+      <LoadingError error={error} isLoading={isLoading} />
+      <ItemsList
+        uniQueFilterValues={uniqueFilters}
+        searchBar={false}
+        sort={true}
+        handleSearch={handleSearch}
+        fetchData={expenseService.filterExpense}
+        recoilState={expensesState}
+        renderItem={({ item }) => (
+          <ExpenseItem
+            expense={item}
+            onPress={() => handleEditExpense(item)}
+            onDelete={() => handleDeleteExpense(item)}
           />
-        </Tooltip>
-      </View>
-      {
-        <FlatList
-          data={expenses}
-          ListHeaderComponent={() => (
-            <View>
-              <LoadingError error={error} isLoading={isLoading} />
-            </View>
-          )}
-          renderItem={({ item }) => (
-            <ExpenseItem
-              expense={item}
-              onPress={() => handleEditExpense(item)}
-              onDelete={() => handleDeleteExpense(item)}
-            />
-          )}
-          keyExtractor={(item) => item.id.toString()} // Ensure key is a string
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={handleRefresh}
-            />
-          }
-        />
-      }
-
-      <FAB
-        style={commonScreenStyles.fab}
-        icon="plus"
-        testID={"addExpense"}
-        onPress={() => {
+        )}
+        onAdd={() => {
           navigation.navigate("ExpenseStack", {
             screen: "AddExpense",
             params: { title: "Add Expense" },
           });
-          navigation.navigate("AddExpense");
         }}
       />
-
-      {/* Delete Expense Modal */}
       <ConfirmationModal
         warningMessage={"Are you sure you want to delete this expense?"}
         isModalVisible={isDeleteModalVisible}
