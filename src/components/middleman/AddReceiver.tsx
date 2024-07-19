@@ -5,9 +5,9 @@ import Button from "../../../components/common/Button";
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { usersState } from "../../../recoil/atom";
-import { User } from "../../../types";
+import { User, WorkAndSale } from "../../../types";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import workAndSaleState from "./atom";
+import { middleManState } from "./atom";
 
 interface AddReceiverProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -18,19 +18,26 @@ const AddReceiver: React.FC<AddReceiverProps> = ({ navigation }) => {
   const selectedUserState = useState<User[]>([]);
   const [selectedUser] = selectedUserState;
   const [filteredUsers, setFilteredUsers] = useState(allUsers);
-  const [workAndSale, setWorkAndSale] = useRecoilState(workAndSaleState);
+  const [workAndSale, setWorkAndSale] = useRecoilState(middleManState);
 
   useEffect(() => {
     setFilteredUsers(
-      allUsers.filter((user) => user.id !== workAndSale?.sender?.id),
+      allUsers.filter((user) => user.id !== workAndSale?.sale.user?.id),
     );
   }, [workAndSale]);
 
   const onAddUser = () => {
-    setWorkAndSale((prevState) => ({
-      ...prevState,
-      receiver: [selectedUser[0]],
-    }));
+    setWorkAndSale((prevState): WorkAndSale => {
+      const works = [...prevState.works];
+      works[works.length - 1] = {
+        ...works[works.length - 1],
+        user: selectedUser[0],
+      };
+      return {
+        ...prevState,
+        works,
+      };
+    });
 
     navigation.navigate("MiddleManStack", {
       screen: "WorkAndSale",

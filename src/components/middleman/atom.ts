@@ -1,9 +1,12 @@
 import { atom } from "recoil";
 import { WorkAndSale } from "../../../types";
 
-const workAndSaleState = atom({
-  key: "workAndSale",
+export const middleManState = atom({
+  key: "middleMan",
   default: {} as WorkAndSale,
 });
 
-export default workAndSaleState;
+export const workAndSalesState = atom({
+  key: "workAndSale",
+  default: [] as WorkAndSale[],
+});

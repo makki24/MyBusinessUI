@@ -9,4 +9,4 @@ export * from "./contribution";
 export * from "./report";
 export * from "./filter";
 export * from "./common";
-export * from "./workAndSale";
+export * from "./middleMan";

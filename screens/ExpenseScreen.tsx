@@ -22,7 +22,7 @@ type ExpenseScreenProps = {
 };
 
 const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
-  const [_expenses, setExpenses] = useRecoilState(expensesState);
+  const [expenses, setExpenses] = useRecoilState(expensesState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
@@ -36,12 +36,14 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   const defaultSort = DEFAULT_SORT; // Use a state variable
 
   const transFormAndSetExpense = (expensesData: Expense[]) => {
-    expensesData = expensesData.map((expense) => ({
+    setExpenses(transformedData(expensesData));
+  };
+
+  const transformedData = (itemsData) =>
+    itemsData.map((expense) => ({
       ...expense,
       date: new Date(expense.date),
     }));
-    setExpenses(expensesData);
-  };
 
   useEffect(() => {
     if (error) setExpenses([]);
@@ -129,7 +131,9 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
     }
   };
 
-  const handleSearch = () => {};
+  const handleSearch = (_arg) => {
+    return expenses;
+  };
 
   const onApply = async (arg: Filter) => {
     setError("");
@@ -164,6 +168,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
             onDelete={() => handleDeleteExpense(item)}
           />
         )}
+        transFormData={transformedData}
         onAdd={() => {
           navigation.navigate("ExpenseStack", {
             screen: "AddExpense",

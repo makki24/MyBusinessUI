@@ -11,6 +11,16 @@ const FilterService = {
 
     return response.data;
   },
+
+  getWorkFilters: async (): Promise<Filter> => {
+    const response = await axios.get(`/api/works/filter/getWorkFilters`);
+
+    if (!response.data) {
+      throw new Error(`Error fetching expenses: ${response.statusText}`);
+    }
+
+    return response.data;
+  },
 };
 
 export default FilterService;

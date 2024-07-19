@@ -1,156 +1,52 @@
 // src/screens/WorksScreen.tsx
 import React, { useEffect, useState } from "react";
-import { View, FlatList, RefreshControl } from "react-native";
-import { FAB } from "react-native-paper";
+import { View } from "react-native";
 import { useRecoilState } from "recoil";
-import WorkService from "../services/WorkService";
-import WorkItem from "../components/WorkItem";
-import { worksState } from "../recoil/atom";
-import { Filter, Sort, User, Work } from "../types";
-import commonScreenStyles from "../src/styles/commonScreenStyles";
-import commonStyles from "../src/styles/commonStyles";
-import LoadingError from "../components/common/LoadingError";
-import SearchAndFilter from "../components/common/SearchAndFilter";
 import workService from "../services/WorkService";
+import { worksState } from "../recoil/atom";
+import { Filter } from "../types";
+import commonStyles from "../src/styles/commonStyles";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import ConfirmationModal from "../components/common/ConfirmationModal";
+import ItemsList from "../src/components/common/ItemsList";
+import filterService from "../src/service/FilterService";
+import WorkItemWithActions from "../src/components/common/work/WorkItemWithActions";
 
 type WorksScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 };
 
 const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
-  const [works, setWorks] = useRecoilState(worksState);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [selectedWork, setSelectedWork] = useState<Work>(null);
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [workUsers, setWorkUsers] = useState<User[]>();
-  const [defaultSort, setDefaultSort] = useState<Sort[]>([
-    {
-      property: "date",
-      direction: "desc",
-    },
-  ]); // Use a
-  const today = new Date();
-  const tomorrow = new Date();
-  let defaultFilter: Filter = {
-    fromDate: new Date(today.setDate(today.getDate() - 15)),
-    toDate: new Date(tomorrow.setDate(tomorrow.getDate() + 1)),
+  const [works] = useRecoilState(worksState);
+  const [uniqueFilters, setUniqueFilters] = useState<Filter>({
     sender: [],
     receiver: [],
     tags: [],
     user: [],
-  };
-  const [filteredWorks, setFilteredWorks] = useState([]);
+  });
 
   const transformAndSetWork = (worksData) => {
-    worksData = worksData.map((work) => ({
+    return worksData.map((work) => ({
       ...work,
       date: new Date(work.date),
     }));
-    setWorks(worksData);
   };
 
-  const fetchWorks = async () => {
-    try {
-      const worksData = await WorkService.getWorks();
-      const userSet: User[] = [];
-      worksData.forEach((expn) => {
-        if (!userSet.some((user) => user.id === expn.user.id))
-          userSet.push(expn.user);
-      });
-      setWorkUsers([...userSet]);
-    } catch (fetchError) {
-      setError(fetchError.message || "Error fetching works. Please try again.");
-    }
+  const getUnique = async () => {
+    const uniQueFilter = await filterService.getWorkFilters();
+    setUniqueFilters(uniQueFilter);
   };
 
   useEffect(() => {
-    fetchWorks();
+    getUnique();
   }, []);
 
-  const handleEditWork = (work: Work) => {
-    const serializedDate = work.date.toISOString();
-    const title = work.pricePerUnit
-      ? `(${work.pricePerUnit} per ${work.type.unit})`
-      : "";
-    navigation.navigate("WorkStack", {
-      screen: "AddWork",
-      params: {
-        title: `Edit Work ${title}`,
-        work: { ...work, date: serializedDate },
-        isEditMode: true,
-      },
-    });
-  };
-
-  const handleDeleteWork = (work) => {
-    setSelectedWork(work);
-
-    setIsDeleteModalVisible(true);
-  };
-
-  const confirmDeleteWork = async () => {
-    setIsLoading(true);
-
-    try {
-      await WorkService.deleteWork(selectedWork.id);
-      setWorks((prevWorks) =>
-        prevWorks.filter((work) => work.id !== selectedWork.id),
-      );
-    } catch (deleteError) {
-      setError(deleteError.message || "Error deleting work. Please try again.");
-    } finally {
-      setIsLoading(false);
-      setSelectedWork(null);
-      setIsDeleteModalVisible(false);
-    }
-  };
-
-  const handleRefresh = () => {
-    fetchWorks();
-    onApply(defaultFilter);
-  };
-
   const handleSearch = (query) => {
-    const filtered = works.filter((work) =>
+    return works.filter((work) =>
       work.user.name.toLowerCase().includes(query.toLowerCase()),
     );
-    setFilteredWorks(filtered);
   };
 
-  useEffect(() => {
-    setFilteredWorks(works);
-  }, [works]);
-
-  useEffect(() => {
-    if (error) setFilteredWorks([]);
-  }, [error]);
-
-  useEffect(() => {
-    onApply(defaultFilter);
-  }, [defaultSort]);
-
-  const onApply = async (arg: Filter) => {
-    setError("");
-    setIsRefreshing(true);
-    defaultFilter = arg;
-    try {
-      const fetchedFilteredWorks = await workService.filterWork({
-        filter: arg,
-        sort: defaultSort,
-      });
-      transformAndSetWork(fetchedFilteredWorks);
-    } catch (e) {
-      setError(e.message || "Error setting filters.");
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
-  const selectTags = () => {
+  const addWork = () => {
     navigation.navigate("WorkStack", {
       screen: "WorkType",
       params: { title: "Select Work type", addingWork: true },
@@ -159,49 +55,16 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
 
   return (
     <View style={commonStyles.container}>
-      <SearchAndFilter
-        handleSearch={handleSearch}
-        user={workUsers}
-        onApply={onApply}
+      <ItemsList
+        uniQueFilterValues={uniqueFilters}
+        searchBar={true}
         sort={true}
-        defaultFilter={defaultFilter}
-        appliedSort={defaultSort}
-        setSort={setDefaultSort}
-      />
-
-      {
-        <FlatList
-          data={filteredWorks}
-          ListHeaderComponent={() => (
-            <View>
-              <LoadingError error={error} isLoading={isLoading} />
-            </View>
-          )}
-          renderItem={({ item }) => (
-            <WorkItem
-              work={item}
-              onPress={() => handleEditWork(item)}
-              onDelete={() => handleDeleteWork(item)}
-            />
-          )}
-          keyExtractor={(item) => item.id.toString()} // Ensure key is a string
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={handleRefresh}
-            />
-          }
-        />
-      }
-
-      <FAB style={commonScreenStyles.fab} icon="plus" onPress={selectTags} />
-
-      {/* Delete Work Modal */}
-      <ConfirmationModal
-        warningMessage={"Are you sure you want to delete this work?"}
-        isModalVisible={isDeleteModalVisible}
-        setIsModalVisible={setIsDeleteModalVisible}
-        onConfirm={confirmDeleteWork}
+        handleSearch={handleSearch}
+        fetchData={workService.filterWork}
+        recoilState={worksState}
+        renderItem={({ item }) => <WorkItemWithActions item={item} />}
+        transFormData={transformAndSetWork}
+        onAdd={addWork}
       />
     </View>
   );
