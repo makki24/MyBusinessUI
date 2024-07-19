@@ -104,7 +104,9 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
   }, []);
 
   const openTags = () => {
-    navigation.navigate("WorkStack", {
+    const index = navigation.getParent().getState().index;
+    const stack = navigation.getParent().getState().routes[index].name;
+    navigation.navigate(stack, {
       screen: "TagsSelector",
       params: {
         selectedTags: selectedTags,

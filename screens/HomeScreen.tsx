@@ -112,8 +112,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           style={homeScreenStyles.card}
           onPress={() =>
             navigation.navigate("MiddleManStack", {
-              screen: "AddSender",
-              params: { title: "Select Sender" },
+              screen: "WorkAndSaleList",
+              params: { title: "Work And Sale" },
             })
           }
         >

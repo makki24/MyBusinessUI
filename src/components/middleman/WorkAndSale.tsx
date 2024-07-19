@@ -1,8 +1,8 @@
-import workAndSaleRecoilState from "./atom";
+import { middleManState } from "./atom";
 import UserDetails from "../../../components/common/UserDetails";
 import { useRecoilState } from "recoil";
 import commonStyles from "../../styles/commonStyles";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { Icon, Snackbar, Title, useTheme } from "react-native-paper";
 import { REPORT_ICON_SIZE } from "../../styles/constants";
@@ -13,6 +13,7 @@ import LoadingError from "../../../components/common/LoadingError";
 import { useTagsClosed } from "../tags/TagsSelector";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import TagsSelectorButton from "../common/TagsSelectorButton";
+import { WorkAndSale as WorkAndSaleType } from "../../../types";
 
 interface WorkAndSaleProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -20,16 +21,20 @@ interface WorkAndSaleProps {
 
 const WorkAndSale: React.FC<WorkAndSaleProps> = ({ navigation }) => {
   const theme = useTheme();
-  const [workAndSaleState, setWorkAndSaleState] = useRecoilState(
-    workAndSaleRecoilState,
-  );
+  const [workAndSaleState, setWorkAndSaleState] =
+    useRecoilState(middleManState);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [respMessage, setRespMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [worksLength, setWorksLength] = useState(0);
 
-  const onAddWork = async (workAndSale) => {
+  useEffect(() => {
+    setWorksLength(workAndSaleState.works.length - 1);
+  }, [workAndSaleState]);
+
+  const onAddWork = async (workAndSale: WorkAndSaleType) => {
     setError("");
     try {
       const resp = await middleManService.createWorksAndSales(workAndSale);
@@ -48,13 +53,19 @@ const WorkAndSale: React.FC<WorkAndSaleProps> = ({ navigation }) => {
     navigation.navigate("MiddleManStack", {
       screen: "TagsSelector",
       params: {
-        selectedTags: workAndSaleState.tags,
+        selectedTags: workAndSaleState.sale.tags,
       },
     });
   };
 
   useTagsClosed(({ tags }) => {
-    setWorkAndSaleState((prev) => ({ ...prev, tags: tags }));
+    setWorkAndSaleState(
+      (prev): WorkAndSaleType => ({
+        ...prev,
+        sale: { ...prev.sale, tags: tags },
+        works: [...prev.works.map((work) => ({ ...work, tags: tags }))],
+      }),
+    );
   }, []);
 
   return (
@@ -65,7 +76,7 @@ const WorkAndSale: React.FC<WorkAndSaleProps> = ({ navigation }) => {
       <LoadingError error={error} isLoading={isLoading} />
       <View style={commonStyles.row}>
         <View style={{ width: "50%" }}>
-          <UserDetails user={workAndSaleState.sender} />
+          <UserDetails user={workAndSaleState.sale.user} />
           <Icon
             source="chevron-triple-down"
             size={REPORT_ICON_SIZE * 2}
@@ -74,23 +85,23 @@ const WorkAndSale: React.FC<WorkAndSaleProps> = ({ navigation }) => {
         </View>
         <View style={{ ...commonStyles.simpleRow, width: "50%" }}>
           <Title>
-            Adding {workAndSaleState.type?.name} ({" "}
-            {workAndSaleState.type?.unit !== "null"
-              ? `Per ${workAndSaleState.type?.unit} :`
+            Adding {workAndSaleState.works[worksLength].type?.name} ({" "}
+            {workAndSaleState.works[worksLength].type?.unit !== "null"
+              ? `Per ${workAndSaleState.works[worksLength].type?.unit} :`
               : ""}{" "}
-            {workAndSaleState.type?.pricePerUnit} )
+            {workAndSaleState.works[worksLength].type?.pricePerUnit} )
           </Title>
         </View>
       </View>
       <View style={{ ...commonStyles.simpleRow, flexWrap: "wrap" }}>
-        {workAndSaleState.receiver.map((user, index) => (
-          <UserDetails key={index} user={user} />
+        {workAndSaleState.works.map((work, index) => (
+          <UserDetails key={index} user={work.user} />
         ))}
       </View>
 
       <TagsSelectorButton
         openTags={openTags}
-        selectedTags={workAndSaleState.tags}
+        selectedTags={workAndSaleState.sale.tags}
       />
 
       <AddWorkInputs disabled={disabled} onAddWork={onAddWork} />

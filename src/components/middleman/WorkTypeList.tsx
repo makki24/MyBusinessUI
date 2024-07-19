@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import CommonWorkTypeList from "../common/WorkTypeList";
 import { View } from "react-native";
 import commonStyles from "../../styles/commonStyles";
-import { WorkAndSale } from "../../../types";
+import { Work, WorkAndSale } from "../../../types";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { useRecoilState } from "recoil";
-import workAndSaleState from "./atom";
+import { middleManState } from "./atom";
 import { useAttendanceConfirmationListner } from "../work/AttendanceScreen";
 
 interface WorkTypeListProps {
@@ -17,18 +17,20 @@ interface WorkTypeListProps {
   };
 }
 
-const WorkTypeList: React.FC<WorkTypeListProps> = ({ navigation, route }) => {
-  const [_workAndSale, setWorkAndSale] = useRecoilState(workAndSaleState);
-
-  useEffect(() => {
-    setWorkAndSale(route.params.workAndSale);
-  }, [route.params.workAndSale]);
+const WorkTypeList: React.FC<WorkTypeListProps> = ({ navigation }) => {
+  const [_workAndSale, setWorkAndSale] = useRecoilState(middleManState);
 
   const onPress = (item) => {
-    setWorkAndSale((prevState) => ({
-      ...prevState,
-      type: item,
-    }));
+    setWorkAndSale(
+      (prevState): WorkAndSale => ({
+        ...prevState,
+        works: [
+          {
+            type: item,
+          },
+        ] as Work[],
+      }),
+    );
 
     navigation.navigate("MiddleManStack", {
       screen: "AddReceiver",
@@ -37,15 +39,25 @@ const WorkTypeList: React.FC<WorkTypeListProps> = ({ navigation, route }) => {
   };
 
   useAttendanceConfirmationListner(({ type, date, users }) => {
-    // setCountry(selectedCountry);
+    const description = `Added by attendance & sale \n${date.map((d: string) => new Date(d).toLocaleDateString()).join(", ")}`;
+    const works: Work[] = [];
 
-    setWorkAndSale((prevState) => ({
-      ...prevState,
-      type: type,
-      receiver: users,
-      quantity: date.length,
-      description: `Added by attendance & sale \n${date.map((d: string) => new Date(d).toLocaleDateString()).join(", ")}`,
-    }));
+    users.forEach((user) => {
+      works.push({
+        type: type,
+        user: user,
+        quantity: date.length,
+        description,
+        date: new Date(),
+      } as Work);
+    });
+
+    setWorkAndSale(
+      (prevState): WorkAndSale => ({
+        ...prevState,
+        works,
+      }),
+    );
 
     navigation.navigate("MiddleManStack", {
       screen: "WorkAndSale",

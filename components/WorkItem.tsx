@@ -30,7 +30,6 @@ const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
           </View>
           <View style={commonStyles.row}>
             <Paragraph>
-              Date:{" "}
               <Text style={{ fontWeight: "bold" }}>
                 {work.date.toDateString()}
               </Text>{" "}
@@ -46,13 +45,13 @@ const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
               <Text style={{ fontWeight: "bold" }}>{work.pricePerUnit}</Text>{" "}
             </Paragraph>
             <Paragraph>
-              Amount: <Text style={{ fontWeight: "bold" }}>{work.amount}</Text>{" "}
+              T. Amount:{" "}
+              <Text style={{ fontWeight: "bold" }}>{work.amount}</Text>{" "}
             </Paragraph>
           </View>
           <View style={commonStyles.row}>
             {work.description && (
               <Paragraph>
-                Description:{" "}
                 <Text style={{ fontWeight: "bold" }}>
                   {work.description.length > 40
                     ? `${work.description.slice(0, 40)}...`

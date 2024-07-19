@@ -1,14 +1,14 @@
-import NumberInput from "../../../components/common/NumberInput";
-import { Button, TextInput } from "react-native-paper";
-import commonAddScreenStyles from "../../styles/commonAddScreenStyles";
-import DateTimePicker from "../../../components/common/DateTimePicker";
 import React, { useEffect, useState } from "react";
-import { DateTime, WorkAndSale } from "../../../types";
-import { useRecoilState } from "recoil";
-import workAndSaleRecoilState from "../middleman/atom";
-import commonStyles from "../../styles/commonStyles";
-import SwitchInput from "../../../components/common/SwitchInput";
 import { View } from "react-native";
+import { Button, TextInput } from "react-native-paper";
+import { useRecoilState } from "recoil";
+import NumberInput from "../../../components/common/NumberInput";
+import DateTimePicker from "../../../components/common/DateTimePicker";
+import SwitchInput from "../../../components/common/SwitchInput";
+import commonStyles from "../../styles/commonStyles";
+import commonAddScreenStyles from "../../styles/commonAddScreenStyles";
+import { DateTime, WorkAndSale } from "../../../types";
+import { middleManState } from "../middleman/atom";
 
 interface AddWorkInputProps {
   onAddWork: (arg: WorkAndSale) => void;
@@ -30,81 +30,76 @@ const AddWorkInputs: React.FC<AddWorkInputProps> = ({
     hours: new Date().getHours(),
     minutes: new Date().getMinutes(),
   });
-  const [workAndSaleState, setWorkAndSaleState] = useRecoilState(
-    workAndSaleRecoilState,
-  );
+  const [workAndSaleState, setWorkAndSaleState] =
+    useRecoilState(middleManState);
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [worksLength, setWorksLength] = useState(0);
+
+  useEffect(() => {
+    setWorksLength(workAndSaleState.works.length);
+  }, [workAndSaleState]);
 
   useEffect(() => {
     setButtonDisabled(disabled);
   }, [disabled]);
 
   useEffect(() => {
-    setPricePerUnit(`${workAndSaleState.type?.pricePerUnit}`);
-    if (workAndSaleState.type?.enterAmountDirectly) {
-      setShowAmount(true);
-      setAmount(`${workAndSaleState.type.pricePerUnit}`);
+    if (worksLength > 0) {
+      const currentWork = workAndSaleState.works[worksLength - 1];
+      setPricePerUnit(currentWork.type?.pricePerUnit?.toString() || "");
+      if (currentWork.type?.enterAmountDirectly) {
+        setShowAmount(true);
+        setAmount(currentWork.type.pricePerUnit?.toString() || "");
+      }
+      setQuantity(currentWork.quantity?.toString() || "");
+      setDescription(currentWork.description || "");
     }
-
-    if (workAndSaleState.quantity) setQuantity(`${workAndSaleState.quantity}`);
-    if (workAndSaleState.description)
-      setDescription(workAndSaleState.description);
-  }, []);
+  }, [worksLength]);
 
   const addWork = () => {
-    setButtonDisabled(true);
     let calculatedAmount = parseFloat(pricePerUnit) * parseFloat(quantity);
     calculatedAmount = Math.round(calculatedAmount * 100.0) / 100.0;
-    if (showAmount)
-      setWorkAndSaleState((prev) => ({
-        ...prev,
-        pricePerUnit: parseFloat(amount),
-        amount: parseFloat(amount),
-      }));
-    else
-      setWorkAndSaleState((prev) => ({
-        ...prev,
-        amount: calculatedAmount,
-        pricePerUnit: parseFloat(pricePerUnit),
+
+    setWorkAndSaleState((prevState) => {
+      const updatedWorks = prevState.works.map((work) => ({
+        ...work,
+        amount: showAmount ? parseFloat(amount) : calculatedAmount,
+        pricePerUnit: showAmount
+          ? parseFloat(amount)
+          : parseFloat(pricePerUnit),
         quantity: parseFloat(quantity),
+        description,
+        date: new Date(inputDate.setHours(time.hours, time.minutes)),
       }));
-    setWorkAndSaleState((prev) => ({
-      ...prev,
-      description: description,
-    }));
-    const workDate = new Date(inputDate);
-    workDate.setHours(time.hours, time.minutes);
-    setWorkAndSaleState((prev) => {
-      onAddWork({ ...prev, date: workDate });
-      return { ...prev, date: workDate };
+
+      const updatedState = { ...prevState, works: updatedWorks };
+      onAddWork(updatedState);
+      return updatedState;
     });
   };
 
   return (
-    <>
+    <View>
       <View style={{ ...commonStyles.row, justifyContent: "space-between" }}>
         <SwitchInput
-          label={"Show Price per unit"}
+          label="Show Price per unit"
           value={showPricePerUnit}
           onValueChange={(value) => {
-            if (value) setShowAmount(false);
+            if (value) setShowAmount(!value);
             setShowPricePerUnit(value);
           }}
         />
         <SwitchInput
-          label={"Enter amount directly"}
+          label="Enter amount directly"
           value={showAmount}
-          onValueChange={(showAmountParam) => {
-            if (showAmountParam) {
-              setShowPricePerUnit(false);
-              setQuantity(`1`);
-            }
-            setShowAmount(showAmountParam);
+          onValueChange={(value) => {
+            setShowPricePerUnit(!value);
+            setQuantity("1");
+            setShowAmount(value);
           }}
         />
       </View>
 
-      {/* Input fields for quantity, price per unit, amount, and description */}
       {showPricePerUnit && (
         <NumberInput
           label="Price per unit"
@@ -112,7 +107,6 @@ const AddWorkInputs: React.FC<AddWorkInputProps> = ({
           onChangeText={setPricePerUnit}
         />
       )}
-
       {!showAmount && (
         <NumberInput
           label="Quantity"
@@ -120,21 +114,17 @@ const AddWorkInputs: React.FC<AddWorkInputProps> = ({
           onChangeText={setQuantity}
         />
       )}
-
       {showAmount && (
         <NumberInput label="Amount" value={amount} onChangeText={setAmount} />
       )}
-
       <TextInput
         label="Description (optional)"
         value={description}
         onChangeText={setDescription}
         style={commonAddScreenStyles.inputField}
-        multiline={true}
+        multiline
         numberOfLines={3}
       />
-
-      {/* Time picker */}
       <DateTimePicker
         label="Work date"
         dateValue={inputDate}
@@ -142,12 +132,10 @@ const AddWorkInputs: React.FC<AddWorkInputProps> = ({
         onTimeChange={setTime}
         timeValue={time}
       />
-
-      {/* Button to add the work */}
       <Button mode="contained" onPress={addWork} disabled={buttonDisabled}>
         Add Work
       </Button>
-    </>
+    </View>
   );
 };
 
