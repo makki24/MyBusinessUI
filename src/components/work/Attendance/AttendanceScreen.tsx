@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { View } from "react-native";
 import { useRecoilValue } from "recoil";
-import { otherUsersState } from "../../../recoil/selectors";
-import { User, WorkType } from "../../../types";
-import commonStyles from "../../styles/commonStyles";
-import Button from "../../../components/common/Button";
+import { otherUsersState } from "../../../../recoil/selectors";
+import { User, WorkType } from "../../../../types";
+import commonStyles from "../../../styles/commonStyles";
+import Button from "../../../../components/common/Button";
 import { DatePickerModal } from "react-native-paper-dates";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import UsersSelector from "../common/UsersSelector";
-import { makeEventNotifier } from "../common/useEventListner";
+import UsersSelector from "../../common/UsersSelector";
+import { makeEventNotifier } from "../../common/useEventListner";
 
 interface AttendanceScreenProps {
   route: {

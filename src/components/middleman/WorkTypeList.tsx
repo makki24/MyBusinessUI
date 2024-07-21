@@ -6,7 +6,7 @@ import { Work, WorkAndSale } from "../../../types";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { useRecoilState } from "recoil";
 import { middleManState } from "./atom";
-import { useAttendanceConfirmationListner } from "../work/AttendanceScreen";
+import { useAttendanceConfirmationListner } from "../work/Attendance/AttendanceScreen";
 
 interface WorkTypeListProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack

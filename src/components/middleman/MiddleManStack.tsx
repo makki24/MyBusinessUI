@@ -4,7 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import AddSender from "./AddSender";
 import TagsSelector from "../tags/TagsSelector";
 import AddReceiver from "./AddReceiver";
-import AttendanceScreen from "../work/AttendanceScreen";
+import AttendanceScreen from "../work/Attendance/AttendanceScreen";
 import WorkTypeList from "./WorkTypeList";
 import WorkAndSale from "./WorkAndSale";
 import WorkAndSaleList from "./WorkAndSaleList";

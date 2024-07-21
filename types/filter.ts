@@ -1,4 +1,4 @@
-import { Tag, User } from "./index";
+import { BaseTransactionType, Tag, User } from "./index";
 
 export interface Filter {
   fromDate?: Date;
@@ -8,6 +8,7 @@ export interface Filter {
   receiver: User[];
   tags: Tag[];
   lastUpdateTime?: Date;
+  type?: BaseTransactionType[];
 }
 
 export type SortableProperties =

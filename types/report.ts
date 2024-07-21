@@ -1,15 +1,11 @@
 import { User } from "./users";
+import { BaseTransactionType } from "./BaseTransaction";
 
 export interface ExpenseReport {
   totalWorkAmount: number;
   totalExpenseAmount: number;
   totalSaleAmount: number;
   totalContributionAmount: number;
-}
-
-export interface BaseTransactionType {
-  id: number;
-  name: string;
 }
 
 export interface UserReport {

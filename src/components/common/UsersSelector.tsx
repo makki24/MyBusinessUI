@@ -1,7 +1,7 @@
 import { FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import { User } from "../../../types";
-import AttendanceUserItem from "../work/AttendanceUserItem";
+import AttendanceUserItem from "../work/Attendance/AttendanceUserItem";
 import Labels from "../../../components/common/Labels";
 import SearchAndFilter from "../../../components/common/SearchAndFilter";
 
