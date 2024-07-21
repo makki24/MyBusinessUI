@@ -11,6 +11,12 @@ const commonScreenStyles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
+  fabEdit: {
+    position: "absolute",
+    margin: CONTAINER_PADDING,
+    left: 0,
+    bottom: 0,
+  },
 });
 
 export default commonScreenStyles;

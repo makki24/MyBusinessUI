@@ -1,8 +1,8 @@
 import { StyleSheet, View } from "react-native";
-import commonStyles from "../../styles/commonStyles";
+import commonStyles from "../../../styles/commonStyles";
 import { IconButton, Switch, Text, useTheme } from "react-native-paper";
 import React, { useState } from "react";
-import { User, Work } from "../../../types";
+import { User, Work } from "../../../../types";
 
 interface AttendanceEditorProps {
   user: User;

@@ -41,13 +41,15 @@ const WorkTypeItem: React.FC<WorkTypeItemProps> = ({
           {workType.unit !== "null" ? `Per ${workType.unit} :` : ""}{" "}
           {workType.pricePerUnit}
         </Text>
-        <Card.Actions style={{ padding: 0 }}>
-          <IconButton
-            size={20}
-            icon={"calendar"}
-            onPress={() => onAttendance(workType)}
-          />
-        </Card.Actions>
+        {onAttendance && (
+          <Card.Actions style={{ padding: 0 }}>
+            <IconButton
+              size={20}
+              icon={"calendar"}
+              onPress={() => onAttendance(workType)}
+            />
+          </Card.Actions>
+        )}
       </Card.Content>
       {!readOnly && (
         <Card.Actions style={commonItemStyles.cardActionsWithTags}>

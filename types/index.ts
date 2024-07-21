@@ -10,3 +10,4 @@ export * from "./report";
 export * from "./filter";
 export * from "./common";
 export * from "./middleMan";
+export * from "./BaseTransaction";

@@ -10,6 +10,8 @@ import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import ItemsList from "../src/components/common/ItemsList";
 import filterService from "../src/service/FilterService";
 import WorkItemWithActions from "../src/components/common/work/WorkItemWithActions";
+import { FAB } from "react-native-paper";
+import commonScreenStyles from "../src/styles/commonScreenStyles";
 
 type WorksScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -53,6 +55,13 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
     });
   };
 
+  const onBatchEdit = () => {
+    navigation.navigate("WorkStack", {
+      screen: "TypeList",
+      params: { title: "Select Type" },
+    });
+  };
+
   return (
     <View style={commonStyles.container}>
       <ItemsList
@@ -65,6 +74,12 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
         renderItem={({ item }) => <WorkItemWithActions item={item} />}
         transFormData={transformAndSetWork}
         onAdd={addWork}
+      />
+      <FAB
+        style={commonScreenStyles.fabEdit}
+        icon="playlist-edit"
+        testID="editWork"
+        onPress={onBatchEdit}
       />
     </View>
   );

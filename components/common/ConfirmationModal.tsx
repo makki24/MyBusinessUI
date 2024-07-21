@@ -10,6 +10,7 @@ type ConfirmationModalProps = {
   isModalVisible: boolean;
   setIsModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   onConfirm: () => void;
+  label?: string;
 };
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -17,6 +18,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isModalVisible,
   setIsModalVisible,
   onConfirm,
+  label,
 }) => {
   return (
     <Modal
@@ -40,7 +42,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         onPress={onConfirm}
         testID="confirm-delete-button"
       >
-        Delete
+        {label ?? "Delete"}
       </Button>
     </Modal>
   );

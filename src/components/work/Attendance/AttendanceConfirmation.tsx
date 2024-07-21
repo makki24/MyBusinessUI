@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
-import { User, Work, WorkType } from "../../../types";
-import commonStyles from "../../styles/commonStyles";
+import { User, Work, WorkType } from "../../../../types";
+import commonStyles from "../../../styles/commonStyles";
 import { Divider, Snackbar } from "react-native-paper";
-import Button from "../../../components/common/Button";
+import Button from "../../../../components/common/Button";
 import attendanceService from "./AttendanceService";
-import LoadingError from "../../../components/common/LoadingError";
+import LoadingError from "../../../../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { UI_ELEMENTS_GAP } from "../../styles/constants";
-import TagsSelectorButton from "../common/TagsSelectorButton";
-import { useTagsClosed } from "../tags/TagsSelector";
+import { UI_ELEMENTS_GAP } from "../../../styles/constants";
+import TagsSelectorButton from "../../common/TagsSelectorButton";
+import { useTagsClosed } from "../../tags/TagsSelector";
 import AttendanceConfirmationUser from "./AttendanceConfirmationUser";
 
 interface AttendanceConfirmationProps {

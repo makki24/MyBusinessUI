@@ -1,7 +1,8 @@
 import { Tag } from "./tag";
 import { User } from "./users";
+import { BaseTransactionType } from "./BaseTransaction";
 
-export interface WorkType {
+export interface WorkType extends BaseTransactionType {
   id?: number;
   name: string;
   unit: string;
