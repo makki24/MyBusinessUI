@@ -8,21 +8,26 @@ import {
   waitFor,
   cleanup,
 } from "@testing-library/react-native";
-import LoanTransactionScreen from "../../screens/LoanTransactionsScreen";
 import { RecoilRoot } from "recoil";
 import { PaperProvider } from "react-native-paper";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import ExpenseService from "../../services/ExpenseService";
 import ExpenseScreen from "../../screens/ExpenseScreen";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { expensesState, expenseTypesState } from "../../recoil/atom";
-// jest.useFakeTimers();
+import { expensesState } from "../../recoil/atom";
 
 // Mock the entire module
 jest.mock("../../services/ExpenseService.ts", () => ({
   getExpenses: jest.fn(() => []),
   // Add other methods as needed
+}));
+
+jest.mock("../../src/service/FilterService", () => ({
+  getExpenseFilters: jest.fn(() => ({
+    user: [],
+    sender: [],
+    receiver: [],
+  })),
 }));
 
 jest.mock("@react-navigation/native", () => ({
@@ -56,7 +61,7 @@ describe("ExpenseScreen", () => {
 
     await waitFor(() => {
       act(() => {
-        fireEvent.press(getByTestId("addExpense"));
+        fireEvent.press(getByTestId("addItem"));
 
         expect(mockNavigation.navigate).toHaveBeenCalledWith("ExpenseStack", {
           screen: "AddExpense",

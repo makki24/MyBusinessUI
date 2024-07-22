@@ -7,6 +7,8 @@ import AddReceiver from "./AddReceiver";
 import AttendanceScreen from "../work/AttendanceScreen";
 import WorkTypeList from "./WorkTypeList";
 import WorkAndSale from "./WorkAndSale";
+import WorkAndSaleList from "./WorkAndSaleList";
+import AddWorkScreen from "../../../screens/AddWorkScreen";
 
 const Stack = createStackNavigator();
 
@@ -19,6 +21,8 @@ const MiddleManStack = () => {
       <Stack.Screen name="WorkTypeList" component={WorkTypeList} />
       <Stack.Screen name={"AttendanceScreen"} component={AttendanceScreen} />
       <Stack.Screen name={"WorkAndSale"} component={WorkAndSale} />
+      <Stack.Screen name={"WorkAndSaleList"} component={WorkAndSaleList} />
+      <Stack.Screen name="AddWork" component={AddWorkScreen} />
     </Stack.Navigator>
   );
 };
