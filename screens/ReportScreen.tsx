@@ -8,6 +8,7 @@ import {
   Divider,
   Icon,
   Snackbar,
+  IconButton,
 } from "react-native-paper";
 
 import { tagsState } from "../recoil/atom";
@@ -24,8 +25,13 @@ import {
   ICON_SIZE,
   UI_ELEMENTS_GAP,
 } from "../src/styles/constants";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const ReportScreen = () => {
+interface ReportScreenProps {
+  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+}
+
+const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [tagOpen, setTagOpen] = useState(false);
@@ -84,6 +90,17 @@ const ReportScreen = () => {
     } finally {
       setDownloadLoading(false); // Set loading to false after the download completes or encounters an error
     }
+  };
+
+  const goToCalc = () => {
+    navigation.navigate("ReportStack", {
+      screen: "Calculator",
+      params: {
+        title: "Select Work type",
+        tagId: selectedTags,
+        excludeTagId: selectedExcludingTags,
+      },
+    });
   };
 
   return (
@@ -194,6 +211,11 @@ const ReportScreen = () => {
               >
                 {"Download"}
               </Button>
+              <IconButton
+                icon={"calculator-variant"}
+                mode={"contained"}
+                onPress={goToCalc}
+              />
             </Card.Actions>
           </Card>
         )}

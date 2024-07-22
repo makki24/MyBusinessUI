@@ -58,7 +58,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   const [open, setOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [tagOpen, setTagOpen] = useState(false);
-  const [value, setValue] = useState<string | null>(null);
+  const [value, setValue] = useState<number | null>(null);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [amount, setAmount] = useState("");
   const [additionalInfo, setAdditionalInfo] = useState("");
@@ -177,7 +177,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
 
       let newExpense: Expense = {
         date: expenseDate,
-        type: { id: value } as ExpenseType,
+        type: { id: value, type: "expense" } as ExpenseType,
         amount: parseFloat(amount),
         description: additionalInfo,
         sender: differentSender ? ({ id: sender } as User) : loggedInUser,
@@ -230,7 +230,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
       return;
     }
 
-    if (value === "others" && !additionalInfo) {
+    if (value.toString() === "others" && !additionalInfo) {
       setError("Additional info is required for others expenses");
       return;
     }

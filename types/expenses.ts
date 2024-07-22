@@ -1,8 +1,9 @@
 import { Tag } from "./tag";
 import { User } from "./users";
+import { BaseTransactionType } from "./BaseTransaction";
 
-export interface ExpenseType {
-  id?: string;
+export interface ExpenseType extends BaseTransactionType {
+  id?: number;
   name: string;
   isReceivingUser?: boolean;
 }
