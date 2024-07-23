@@ -51,6 +51,19 @@ const WorkService = {
     }
     return response.data;
   },
+
+  batchUpdateWorkRequest: async (payload): Promise<string> => {
+    const response = await axios.post(
+      `/api/works/batchUpdateWorkRequest`,
+      payload,
+    );
+    return response.data;
+  },
+
+  batchUpdateWork: async (payload): Promise<string> => {
+    const response = await axios.post(`/api/works/batchUpdate`, payload);
+    return response.data;
+  },
 };
 
 export default WorkService;

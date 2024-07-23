@@ -1,10 +1,10 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { View } from "react-native";
-import commonStyles from "../../styles/commonStyles";
+import commonStyles from "../../../styles/commonStyles";
 import { Text } from "react-native-paper";
 import AttendanceEditor from "./AttendanceEditor";
-import NumberInput from "../../../components/common/NumberInput";
-import { User, Work } from "../../../types";
+import NumberInput from "../../../../components/common/NumberInput";
+import { User, Work } from "../../../../types";
 
 interface AttendanceConfirmationUserProps {
   work: Work;

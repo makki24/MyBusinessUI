@@ -10,7 +10,7 @@ import commonStyles from "../src/styles/commonStyles";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import ConfirmationModal from "../components/common/ConfirmationModal";
 import WorkTypeList from "../src/components/common/WorkTypeList";
-import { useAttendanceConfirmationListner } from "../src/components/work/AttendanceScreen";
+import { useAttendanceConfirmationListner } from "../src/components/work/Attendance/AttendanceScreen";
 
 type WorkTypeScreenProps = {
   route: {

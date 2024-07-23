@@ -1,5 +1,5 @@
-import axios from "../../../services/NetworkInterceptor";
-import { Work } from "../../../types";
+import axios from "../../../../services/NetworkInterceptor";
+import { Work } from "../../../../types";
 
 const AttendanceService = {
   createWorks: async (works: Work[]) => {

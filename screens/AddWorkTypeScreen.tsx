@@ -66,6 +66,7 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
         pricePerUnit: parseFloat(defaultPrice),
         unit: unit,
         enterAmountDirectly: isEnterAmountDirectly,
+        type: "work",
       };
 
       if (isEdit) {

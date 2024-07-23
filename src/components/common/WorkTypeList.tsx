@@ -12,7 +12,7 @@ interface WorkTypeListProps {
   onPress: (workType: WorkType) => void;
   onEdit: (workType: WorkType) => void; // New prop for the Edit action
   onDelete: (workType: WorkType) => void;
-  onAttendance: (workType: WorkType) => void;
+  onAttendance?: (workType: WorkType) => void;
   readOnly: boolean;
 }
 

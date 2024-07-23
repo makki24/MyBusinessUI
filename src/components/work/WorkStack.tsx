@@ -5,9 +5,12 @@ import WorkTypeScreen from "../../../screens/WorkTypeScreen";
 import AddWorkTypeScreen from "../../../screens/AddWorkTypeScreen";
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import AttendanceScreen from "./AttendanceScreen";
-import AttendanceConfirmation from "./AttendanceConfirmation";
+import AttendanceScreen from "./Attendance/AttendanceScreen";
+import AttendanceConfirmation from "./Attendance/AttendanceConfirmation";
 import TagsSelector from "../tags/TagsSelector";
+import WorkersList from "./BatchEdit/WorkersList";
+import UserWorksList from "./BatchEdit/UserWorksList";
+import TypeList from "./BatchEdit/TypeList";
 
 const Stack = createStackNavigator();
 
@@ -24,6 +27,9 @@ const WorkStack = () => {
         component={AttendanceConfirmation}
       />
       <Stack.Screen name={"TagsSelector"} component={TagsSelector} />
+      <Stack.Screen name={"WorkersList"} component={WorkersList} />
+      <Stack.Screen name={"UserWorksList"} component={UserWorksList} />
+      <Stack.Screen name="TypeList" component={TypeList} />
     </Stack.Navigator>
   );
 };

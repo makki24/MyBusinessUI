@@ -15,6 +15,7 @@ import {
   userState,
   expensesState,
   tagsState,
+  usersState,
 } from "../recoil/atom";
 import ExpenseService from "../services/ExpenseService";
 import { DateTime, Expense, ExpenseType, Tag as Tags, User } from "../types";
@@ -26,7 +27,6 @@ import Button from "../components/common/Button";
 import NumberInput from "../components/common/NumberInput";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import Modal from "../components/common/Modal";
-import { otherUsersState } from "../recoil/selectors";
 import UserDropDownItem from "../components/common/UserDropDownItem";
 import SwitchInput from "../components/common/SwitchInput";
 import {
@@ -68,7 +68,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
     minutes: new Date().getMinutes(),
   });
   const [timeOpen, setTimeOpen] = useState(false);
-  const users = useRecoilValue(otherUsersState);
+  const users = useRecoilValue(usersState);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [isReceivingUser, setIsReceivingUser] = useState<boolean>(false);
   const [_, setExpenses] = useRecoilState(expensesState);
