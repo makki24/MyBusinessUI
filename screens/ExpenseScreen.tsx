@@ -64,7 +64,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
 
       const filterAsString = (
         response?.notification.request.trigger as PushNotificationTrigger
-      ).remoteMessage.data.expenseFilter;
+      ).remoteMessage?.data.expenseFilter;
 
       try {
         const filter = JSON.parse(filterAsString);

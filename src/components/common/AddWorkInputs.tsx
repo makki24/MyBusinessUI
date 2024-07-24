@@ -50,8 +50,8 @@ const AddWorkInputs: React.FC<AddWorkInputProps> = ({
       if (currentWork.type?.enterAmountDirectly) {
         setShowAmount(true);
         setAmount(currentWork.type.pricePerUnit?.toString() || "");
-      }
-      setQuantity(currentWork.quantity?.toString() || "");
+        setQuantity("1");
+      } else setQuantity(currentWork.quantity?.toString() || "");
       setDescription(currentWork.description || "");
     }
   }, [worksLength]);
