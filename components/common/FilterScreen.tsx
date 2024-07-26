@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import DateRangePicker from "./DateRangePicker";
 import { useRecoilState } from "recoil";
 import { tagsState } from "../../recoil/atom";
-import { Filter, Tag, User } from "../../types";
+import { BaseTransactionType, Filter, Tag, User } from "../../types";
 
 import Labels from "./Labels";
 import Button from "./Button";
@@ -18,6 +18,7 @@ interface FilterScreenProps {
   user: User[];
   sender: User[];
   receiver: User[];
+  type: BaseTransactionType[];
   onApply: (arg: Filter) => void;
   defaultFilter?: Filter; // Add this line to accept an optional filter prop
   onClose: () => void;
@@ -27,6 +28,7 @@ const FilterScreen: React.FC<FilterScreenProps> = ({
   user,
   sender,
   receiver,
+  type,
   onApply,
   defaultFilter,
   onClose,
@@ -50,6 +52,9 @@ const FilterScreen: React.FC<FilterScreenProps> = ({
   );
   const [selectedReceivers, setSelectedReceivers] = useState<User[]>(
     defaultFilter ? defaultFilter.receiver : [],
+  );
+  const [selectedTypes, setSelectedTypes] = useState<BaseTransactionType[]>(
+    defaultFilter ? defaultFilter.type : [],
   );
 
   const handleSetRange = (value) => {
@@ -91,6 +96,7 @@ const FilterScreen: React.FC<FilterScreenProps> = ({
       tags: selectedTags,
       fromDate: range.startDate,
       toDate: range.endDate,
+      type: selectedTypes,
     };
     onApply(filter);
   };
@@ -161,6 +167,15 @@ const FilterScreen: React.FC<FilterScreenProps> = ({
             label={"Senders"}
             setSelectedChips={setSelectedSenders}
             selectedChips={selectedSenders}
+          />
+        )}
+
+        {type && type.length > 0 && (
+          <Labels
+            items={type}
+            label={"Types"}
+            setSelectedChips={setSelectedTypes}
+            selectedChips={selectedTypes}
           />
         )}
         <Divider style={{ marginTop: UI_ELEMENTS_GAP }} bold={true} />
