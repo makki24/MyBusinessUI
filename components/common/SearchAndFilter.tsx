@@ -8,7 +8,13 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Filter, Sort, SortableProperties, User } from "../../types";
+import {
+  BaseTransactionType,
+  Filter,
+  Sort,
+  SortableProperties,
+  User,
+} from "../../types";
 import { BackHandler, StyleSheet, View } from "react-native";
 import commonStyles from "../../src/styles/commonStyles";
 import { IconButton, Menu, Searchbar, useTheme } from "react-native-paper";
@@ -19,6 +25,7 @@ interface SearchAndFilterProps {
   user?: User[];
   sender?: User[];
   receiver?: User[];
+  type?: BaseTransactionType[];
   onApply: (arg: Filter) => void;
   searchBar?: boolean;
   defaultFilter?: Filter;
@@ -37,6 +44,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   user,
   sender,
   receiver,
+  type,
   onApply,
   searchBar = true,
   defaultFilter = null,
@@ -235,6 +243,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           user={user}
           sender={sender}
           receiver={receiver}
+          type={type}
           onApply={onApplyFilter}
           defaultFilter={currentFilter}
           onClose={() => bottomSheetModalRef.current.close()}
