@@ -46,6 +46,7 @@ const ItemsList = <T extends HasDate>({
     receiver: [],
     tags: [],
     user: [],
+    type: [],
   };
 
   const [items, setItems] = useRecoilState<T[]>(recoilState);
@@ -97,6 +98,7 @@ const ItemsList = <T extends HasDate>({
           sender={uniQueFilterValues.sender}
           receiver={uniQueFilterValues.receiver}
           user={uniQueFilterValues.user}
+          type={uniQueFilterValues.type}
           onApply={onApply}
           defaultFilter={defaultFilter}
           appliedSort={defaultSort}
