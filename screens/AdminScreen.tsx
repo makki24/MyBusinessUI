@@ -77,6 +77,26 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
           </View>
         </Card>
 
+        <Card
+          style={homeScreenStyles.card}
+          onPress={() =>
+            navigation.navigate("MiddleManStack", {
+              screen: "WorkAndSaleList",
+              params: { title: "Work And Sale" },
+            })
+          }
+        >
+          <Card.Cover
+            style={{ height: "50%" }}
+            source={require("../assets/sale.jpeg")}
+          />
+
+          <Card.Cover source={require("../assets/work.jpeg")} />
+          <View style={homeScreenStyles.textOverlay}>
+            <Title style={homeScreenStyles.cardTitle}>Middle Man</Title>
+          </View>
+        </Card>
+
         {impersonate && (
           <Card
             style={homeScreenStyles.card}

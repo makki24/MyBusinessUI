@@ -40,6 +40,7 @@ import { Text } from "react-native-paper";
 import { LinkingConfig } from "./config/linking.config";
 import { getInitialURL, subscribe } from "../util/Navigation";
 import MiddleManStack from "./middleman/MiddleManStack";
+import DashboardStack from "./dashboard/DashboardStack";
 
 const prefix = Linking.createURL("/");
 
@@ -205,9 +206,19 @@ const AppContent = () => {
             options={{
               headerShown: false,
               drawerLabel: "Middle Man",
+              drawerItemStyle: { height: 0 },
             }}
             name="MiddleManStack"
             component={MiddleManStack}
+          />
+          <Drawer.Screen
+            options={{
+              headerShown: false,
+              drawerLabel: "",
+              drawerItemStyle: { height: 0 },
+            }}
+            name="DashboardStack"
+            component={DashboardStack}
           />
           {/* Other screens */}
         </Drawer.Navigator>
