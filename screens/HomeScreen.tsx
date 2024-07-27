@@ -108,23 +108,19 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
         <View style={homeScreenStyles.gap} />
 
+        {/* Admin Card */}
         <Card
           style={homeScreenStyles.card}
           onPress={() =>
-            navigation.navigate("MiddleManStack", {
-              screen: "WorkAndSaleList",
-              params: { title: "Work And Sale" },
+            navigation.navigate("DashboardStack", {
+              screen: "Dashboard",
+              params: { title: "Dashboard" },
             })
           }
         >
-          <Card.Cover
-            style={{ height: "50%" }}
-            source={require("../assets/sale.jpeg")}
-          />
-
-          <Card.Cover source={require("../assets/work.jpeg")} />
+          <Card.Cover source={require("../assets/admin.jpeg")} />
           <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Middle Man</Title>
+            <Title style={homeScreenStyles.cardTitle}>Dashboard</Title>
           </View>
         </Card>
 
