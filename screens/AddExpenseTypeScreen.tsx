@@ -36,6 +36,7 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
       // Call your API service to add a new expense type with isReceivingUser parameter
       const newExpenseType = await ExpenseTypesService.addExpenseType({
         name: expenseTypeName,
+        type: "expense",
         isReceivingUser,
       });
 
