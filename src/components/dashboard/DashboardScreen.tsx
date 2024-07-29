@@ -78,7 +78,6 @@ const DashboardScreen = () => {
           hideYAxisText
           curved={true}
           onPress={() => {}}
-          focusEnabled={true}
           rotateLabel={true}
           xAxisLabelsVerticalShift={10}
           xAxisLabelTextStyle={{ color: theme.colors.onBackground }}
