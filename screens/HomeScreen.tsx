@@ -118,7 +118,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             })
           }
         >
-          <Card.Cover source={require("../assets/admin.jpeg")} />
+          <Card.Cover source={require("../assets/charts.jpeg")} />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Dashboard</Title>
           </View>

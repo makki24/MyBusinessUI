@@ -33,6 +33,17 @@ const ReportService = {
     return response.data;
   },
 
+  getAmountNet: async () => {
+    const response = await axios.get(`api/report/getAmountNet`);
+
+    if (!response.data) {
+      throw new Error(`No data in response.data`);
+    }
+
+    // Assuming the response.data is already in the format of ExpenseReport
+    return response.data;
+  },
+
   getReportByUser: async (
     userId: number,
     offset,
