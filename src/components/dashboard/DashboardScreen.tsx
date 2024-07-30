@@ -92,7 +92,7 @@ const DashboardScreen = () => {
         />
         <DatePickerInput
           locale="en"
-          label="Expense date"
+          label="From date"
           value={inputDate}
           onChange={(d) => setInputDate(d || new Date())}
           inputMode="start"
