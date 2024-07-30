@@ -12,7 +12,6 @@ const homeScreenStyles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    marginBottom: CONTAINER_PADDING, // may be not needed
   },
   card: {
     width: "48%",
@@ -24,7 +23,7 @@ const homeScreenStyles = StyleSheet.create({
   },
   textOverlay: {
     position: "absolute",
-    bottom: 0,
+    bottom: 20,
     left: 0,
     right: 0,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
