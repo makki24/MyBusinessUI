@@ -60,6 +60,8 @@ describe("AddUserScreen", () => {
       roles: [{ id: "1" }] as Role[],
       amountHolding: 0,
       amountToReceive: 0,
+      isOwnAsset: false,
+      isOwnLiability: false,
     };
 
     // Mock route params
@@ -107,6 +109,8 @@ describe("AddUserScreen", () => {
         roles: [{ id: "1", name: "MEMBER" }],
         amountHolding: NaN,
         amountToReceive: NaN,
+        isOwnAsset: false,
+        isOwnLiability: false,
       });
     });
   });
@@ -122,6 +126,8 @@ describe("AddUserScreen", () => {
       amountHolding: 0,
       amountToReceive: 0,
       id: "5",
+      isOwnAsset: false,
+      isOwnLiability: false,
     };
 
     const mockRouteParams = {
@@ -164,6 +170,8 @@ describe("AddUserScreen", () => {
         amountHolding: 0,
         amountToReceive: 0,
         id: "5",
+        isOwnAsset: false,
+        isOwnLiability: false,
       });
     });
   });
