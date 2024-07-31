@@ -1,5 +1,6 @@
 import axios from "./NetworkInterceptor";
 import { ExpenseReport, UserReport } from "../types";
+import { Range } from "../src/components/users/report-summary.model";
 
 let getReportByUserRequest = null;
 
@@ -35,6 +36,20 @@ const ReportService = {
 
   getAmountNet: async () => {
     const response = await axios.get(`api/report/getAmountNet`);
+
+    if (!response.data) {
+      throw new Error(`No data in response.data`);
+    }
+
+    // Assuming the response.data is already in the format of ExpenseReport
+    return response.data;
+  },
+
+  getSummaryByType: async (range: Range) => {
+    const response = await axios.post(
+      `api/report/expenseSummary/getTotalAmountByType`,
+      range,
+    );
 
     if (!response.data) {
       throw new Error(`No data in response.data`);
