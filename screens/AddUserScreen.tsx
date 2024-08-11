@@ -28,6 +28,8 @@ import {
 import { ImageSourcePropType } from "react-native/Libraries/Image/Image";
 import { StyleProp } from "react-native/Libraries/StyleSheet/StyleSheet";
 import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
+import SwitchInput from "../components/common/SwitchInput";
+import commonStyles from "../src/styles/commonStyles";
 
 interface AddUserScreenProps {
   route: {
@@ -57,6 +59,8 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [emailValid, setEmailValid] = useState(true);
   const [roles] = useRecoilState(rolesState);
+  const [isOwnAsset, setIsOwnAsset] = useState(false);
+  const [isOwnLiability, setIsOwnLiability] = useState(false);
 
   const onSnackbarDismiss = () => {
     setSnackbarVisible(false);
@@ -112,6 +116,8 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
           : [memberRole],
         amountHolding: parseFloat(amountHolding),
         amountToReceive: parseFloat(amountToReceive),
+        isOwnAsset: isOwnAsset,
+        isOwnLiability: isOwnLiability,
       };
 
       if (route.params?.isEditMode && route.params?.user) {
@@ -209,6 +215,22 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
         setPhoneNumber={setPhoneNumber}
         style={commonAddScreenStyles.inputField}
       />
+      <View style={commonStyles.row}>
+        <SwitchInput
+          label="Is Own Asset ?"
+          value={isOwnAsset}
+          onValueChange={(value) => {
+            setIsOwnAsset(value);
+          }}
+        />
+        <SwitchInput
+          label="Is Own Liability ?"
+          value={isOwnLiability}
+          onValueChange={(value) => {
+            setIsOwnLiability(value);
+          }}
+        />
+      </View>
       <Button mode="contained" onPress={handleAddUser}>
         {route.params?.isEditMode ? "Update User" : "Add User"}
       </Button>
