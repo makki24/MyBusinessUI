@@ -16,10 +16,16 @@ const UsersStack = () => {
       <Stack.Screen name="AddUser" component={AddUserScreen} />
       <Stack.Screen
         name="UserReport"
-        options={{ header: (props) => <ReportHeader {...props} /> }}
+        options={{
+          header: (props) => <ReportHeader {...props} summary={true} />,
+        }}
         component={UserReportScreen}
       />
-      <Stack.Screen name={"UserSummary"} component={UserSummary} />
+      <Stack.Screen
+        name={"UserSummary"}
+        options={{ header: (props) => <ReportHeader {...props} /> }}
+        component={UserSummary}
+      />
     </Stack.Navigator>
   );
 };

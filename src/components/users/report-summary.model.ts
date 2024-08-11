@@ -1,4 +1,4 @@
-import { User } from "../../../types";
+import { BaseTransactionType, User } from "../../../types";
 
 export interface Range {
   startDate: Date;
@@ -10,8 +10,7 @@ export interface ReportSummaryModel {
   user: User;
 }
 
-export interface UserSummary {
-  toPay: string;
-  totalSent: string;
-  totalReceived: string;
+export interface UserSummaryByType {
+  type: BaseTransactionType;
+  amount: number;
 }
