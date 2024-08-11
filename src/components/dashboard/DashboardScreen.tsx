@@ -2,8 +2,7 @@ import * as React from "react";
 import { BottomNavigation, Text } from "react-native-paper";
 import LineChartScreen from "./LineChartScreen";
 import SummaryByType from "./SummaryByType";
-
-const RecentsRoute = () => <Text>Recents</Text>;
+import reportService from "../../../services/ReportService";
 
 const NotificationsRoute = () => <Text>Notifications</Text>;
 
@@ -11,25 +10,23 @@ const DashboardScreen = () => {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     {
-      key: "music",
+      key: "lineChart",
       title: "Line Chart",
       focusedIcon: "heart",
       unfocusedIcon: "heart-outline",
     },
-    { key: "albums", title: "Albums", focusedIcon: "album" },
-    { key: "recents", title: "Recents", focusedIcon: "history" },
-    {
-      key: "notifications",
-      title: "Notifications",
-      focusedIcon: "bell",
-      unfocusedIcon: "bell-outline",
-    },
+    { key: "byExpenseType", title: "Expense summary", focusedIcon: "album" },
+    { key: "byWorkType", title: "Work summary", focusedIcon: "album" },
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
-    music: LineChartScreen,
-    albums: SummaryByType,
-    recents: RecentsRoute,
+    lineChart: LineChartScreen,
+    byExpenseType: () => (
+      <SummaryByType api={reportService.getExpenseSummaryByType} />
+    ),
+    byWorkType: () => (
+      <SummaryByType api={reportService.getWorkSummaryByType} />
+    ),
     notifications: NotificationsRoute,
   });
 
