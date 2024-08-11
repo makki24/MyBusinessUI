@@ -109,6 +109,7 @@ const LineChartScreen = () => {
           height={400}
           textColor1={theme.colors.onBackground}
           textColor2={theme.colors.onSurfaceVariant}
+          dataPointsColor1={theme.colors.onBackground}
           textFontSize={15}
           hideYAxisText
           curved={true}
