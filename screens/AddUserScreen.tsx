@@ -76,6 +76,8 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
       setAmountToReceive(`${editingUser.amountToReceive}`);
       setAmountHolding(`${editingUser.amountHolding}`);
       setPhoneNumber(editingUser.phoneNumber);
+      setIsOwnLiability(editingUser.isOwnLiability);
+      setIsOwnAsset(editingUser.isOwnAsset);
     }
   }, [route.params?.isEditMode, route.params?.user]);
 

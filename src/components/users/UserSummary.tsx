@@ -25,8 +25,10 @@ interface SummaryProps {
 }
 
 const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
+  const thisMonth = new Date();
+  thisMonth.setDate(1);
   const rangeState = React.useState({
-    startDate: new Date("2022-12-20"),
+    startDate: thisMonth,
     endDate: new Date(),
   });
   const [range] = rangeState;
