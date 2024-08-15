@@ -1,17 +1,12 @@
 import axios from "./NetworkInterceptor";
-import { ExpenseReport, UserReport } from "../types";
+import { ExpenseReport, Filter, UserReport } from "../types";
 import { Range } from "../src/components/users/report-summary.model";
 
 let getReportByUserRequest = null;
 
 const ReportService = {
-  getReport: async (
-    tagId: number,
-    excludeTagId: number,
-  ): Promise<ExpenseReport> => {
-    const response = await axios.get(`api/report/aggregateAmount`, {
-      params: { tagId, excludeTagId }, // Pass tagId as a query parameter
-    });
+  getReport: async (filter: Filter): Promise<ExpenseReport> => {
+    const response = await axios.post(`api/report/aggregateAmount`, filter);
 
     if (!response.data) {
       throw new Error(`No data in response.data`);
@@ -104,13 +99,8 @@ const ReportService = {
     return response.data;
   },
 
-  downloadReport: async (
-    tagId: number,
-    excludeTagId: number,
-  ): Promise<ExpenseReport> => {
-    const response = await axios.get(`api/report/downloadReport`, {
-      params: { tagId, excludeTagId }, // Pass tagId as a query parameter
-    });
+  downloadReport: async (filter): Promise<ExpenseReport> => {
+    const response = await axios.post(`api/report/downloadReport`, filter);
 
     if (!response.data) {
       throw new Error(`No data in response.data`);
