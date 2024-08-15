@@ -3,19 +3,19 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import {
   Button,
   Card,
-  Title,
-  Paragraph,
   Divider,
   Icon,
-  Snackbar,
   IconButton,
+  Paragraph,
+  Snackbar,
+  Title,
 } from "react-native-paper";
 
 import { tagsState } from "../recoil/atom";
 import CustomDropDown from "../components/common/CustomDropdown";
 import { useRecoilState } from "recoil";
 import ReportService from "../services/ReportService";
-import { ExpenseReport } from "../types";
+import { ExpenseReport, Filter } from "../types";
 import commonItemStyles from "../src/styles/commonItemStyles";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
@@ -26,6 +26,7 @@ import {
   UI_ELEMENTS_GAP,
 } from "../src/styles/constants";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import CustomDateRange from "../src/components/common/CustomDateRange";
 
 interface ReportScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -47,16 +48,20 @@ const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
   const [selectedExcludingTags, setSelectedExcludingTags] =
     useState<number>(null);
   const [excludingTags] = useRecoilState(tagsState);
+  const thisMonth = new Date();
+  thisMonth.setDate(1);
+  const rangeState = React.useState({
+    startDate: thisMonth,
+    endDate: new Date(),
+  });
 
   const generateReport = async () => {
     setError("");
     setIsLoading(true);
 
     try {
-      const reportsRes = await ReportService.getReport(
-        selectedTags,
-        selectedExcludingTags,
-      );
+      const filter = createFilter();
+      const reportsRes = await ReportService.getReport(filter);
       setProfitOrLoss(
         reportsRes.totalSaleAmount +
           reportsRes.totalContributionAmount -
@@ -79,11 +84,21 @@ const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
     generateReport();
   };
 
+  const createFilter = () => {
+    return {
+      tags: [{ id: selectedTags }],
+      excludeTags: selectedExcludingTags ? [{ id: selectedExcludingTags }] : [],
+      fromDate: rangeState[0].startDate,
+      toDate: rangeState[0].endDate,
+    } as Filter;
+  };
+
   const downloadReport = async () => {
     setError("");
     setDownloadLoading(true); // Set loading to true when starting the download
     try {
-      await ReportService.downloadReport(selectedTags, selectedExcludingTags);
+      const filter = createFilter();
+      await ReportService.downloadReport(filter);
       setSnackbarVisible(true);
     } catch (e) {
       setError(e.message ?? "Some error");
@@ -107,7 +122,9 @@ const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
     <View style={commonStyles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <LoadingError error={error} isLoading={isLoading} />
-
+        <View style={{ marginBottom: UI_ELEMENTS_GAP }}>
+          <CustomDateRange rangeState={rangeState} />
+        </View>
         <CustomDropDown
           items={tags}
           zIndex={2000}

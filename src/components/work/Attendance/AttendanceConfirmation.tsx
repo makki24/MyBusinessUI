@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 import { User, Work, WorkType } from "../../../../types";
 import commonStyles from "../../../styles/commonStyles";
-import { Divider, Snackbar } from "react-native-paper";
+import { Divider, Snackbar, TextInput } from "react-native-paper";
 import Button from "../../../../components/common/Button";
 import attendanceService from "./AttendanceService";
 import LoadingError from "../../../../components/common/LoadingError";
@@ -11,6 +11,7 @@ import { UI_ELEMENTS_GAP } from "../../../styles/constants";
 import TagsSelectorButton from "../../common/TagsSelectorButton";
 import { useTagsClosed } from "../../tags/TagsSelector";
 import AttendanceConfirmationUser from "./AttendanceConfirmationUser";
+import commonAddScreenStyles from "../../../styles/commonAddScreenStyles";
 
 interface AttendanceConfirmationProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -36,6 +37,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
   const [respMessage, setRespMessage] = useState("");
   const [created, setCreated] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     setUsers(route.params.users);
@@ -45,7 +47,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
     route.params.users.forEach((user) => {
       const createdWork: Work = {
         pricePerUnit: route.params.type.pricePerUnit,
-        description: `Added by Attendance `,
+        description: description,
         quantity: route.params.date.length,
         user: user,
         date: new Date(),
@@ -58,6 +60,12 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
 
     setWorks(createdWorks);
   }, [route.params]);
+
+  useEffect(() => {
+    setWorks((prevState) =>
+      prevState.map((work: Work) => ({ ...work, description: description })),
+    );
+  }, [description]);
 
   const submitWorks = async () => {
     try {
@@ -99,6 +107,13 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
       <TagsSelectorButton openTags={openTags} selectedTags={selectedTags} />
+
+      <TextInput
+        label="Description (optional)"
+        value={description}
+        onChangeText={setDescription}
+        style={commonAddScreenStyles.inputField}
+      />
 
       <FlatList
         data={works}

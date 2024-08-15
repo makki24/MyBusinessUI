@@ -19,6 +19,7 @@ const CustomDateRange: React.FC<CustomDateRangeProps> = ({ rangeState }) => {
         withDateFormatInLabel={false}
         value={range.startDate}
         onChange={(d) => {
+          if (range.endDate && range.endDate < d) range.endDate = d;
           setRange({ ...range, startDate: d });
         }}
         inputMode="start"
