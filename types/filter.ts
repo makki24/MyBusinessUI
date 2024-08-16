@@ -9,6 +9,7 @@ export interface Filter {
   tags: Tag[];
   lastUpdateTime?: Date;
   type?: BaseTransactionType[];
+  excludeTags?: Tag[];
 }
 
 export type SortableProperties =
