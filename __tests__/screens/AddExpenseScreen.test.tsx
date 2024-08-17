@@ -43,8 +43,18 @@ describe("AddExpenseScreen", () => {
 
   it("should change selected expense type and receiving user state accordingly to isReceivingUser", () => {
     const types = [
-      { id: "1", name: "Expense Type 1", isReceivingUser: true },
-      { id: "2", name: "Expense Type 2", isReceivingUser: false },
+      {
+        id: "1",
+        name: "Expense Type 1",
+        isReceivingUser: true,
+        defaultTags: [],
+      },
+      {
+        id: "2",
+        name: "Expense Type 2",
+        isReceivingUser: false,
+        defaultTags: [],
+      },
     ];
     const { queryByTestId, getByTestId } = render(
       <RecoilRoot
@@ -73,8 +83,18 @@ describe("AddExpenseScreen", () => {
 
   it("should change selected expense type and receiving user state accordingly to not isReceivingUser", () => {
     const types = [
-      { id: "1", name: "Expense Type 1", isReceivingUser: true },
-      { id: "2", name: "Expense Type 2", isReceivingUser: false },
+      {
+        id: "1",
+        name: "Expense Type 1",
+        isReceivingUser: true,
+        defaultTags: [],
+      },
+      {
+        id: "2",
+        name: "Expense Type 2",
+        isReceivingUser: false,
+        defaultTags: [],
+      },
     ];
     const { queryByTestId, getByTestId } = render(
       <RecoilRoot

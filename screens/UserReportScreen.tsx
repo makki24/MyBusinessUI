@@ -84,14 +84,11 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
       setError(
         fetchError.message || "Error fetching reports. Please try again.",
       );
+      setHasMore(false);
     } finally {
       setIsRefreshing(false);
     }
   };
-
-  useEffect(() => {
-    if (error) onReset();
-  }, [error]);
 
   useEffect(() => {
     fetchReports(true); // Initial fetch with reset
@@ -102,6 +99,7 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
   };
 
   const handleLoadMore = () => {
+    if (error) return;
     fetchReports(); // Load next batch without reset
   };
 
@@ -114,17 +112,14 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
         }}
       >
         <FlatList
-          ListHeaderComponent={() => (
-            <View>
-              <LoadingError error={error} isLoading={false} />
-            </View>
-          )}
+          ListHeaderComponent={() => <View></View>}
           inverted={true}
           ListFooterComponent={() => {
             return (
               <View style={{ alignItems: "center" }}>
                 {!hasMore && <Text>You have reached the end of list </Text>}
                 {hasMore && <Loading />}
+                <LoadingError error={error} isLoading={false} />
               </View>
             );
           }}

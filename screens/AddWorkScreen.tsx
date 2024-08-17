@@ -60,6 +60,8 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
     if (route.params?.workType) {
       setWorkType(route.params.workType);
       setPricePerUnit(`${route.params.workType.pricePerUnit}`);
+      if (!selectedTags.length)
+        setSelectedTags(route.params.workType.defaultTags ?? []);
       if (route.params.workType.enterAmountDirectly) {
         setShowAmount(true);
         setAmount(`${route.params.workType.pricePerUnit}`);
