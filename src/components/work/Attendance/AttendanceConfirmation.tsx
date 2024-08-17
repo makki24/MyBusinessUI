@@ -57,6 +57,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
       };
       createdWorks.push(createdWork);
     });
+    setSelectedTags(route.params.type.defaultTags);
 
     setWorks(createdWorks);
   }, [route.params]);
