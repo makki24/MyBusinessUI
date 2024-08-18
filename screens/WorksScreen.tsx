@@ -51,7 +51,7 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
   const addWork = () => {
     navigation.navigate("WorkStack", {
       screen: "WorkType",
-      params: { title: "Select Work type", addingWork: true },
+      params: { title: "Select Work types", addingWork: true },
     });
   };
 

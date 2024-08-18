@@ -49,7 +49,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           style={homeScreenStyles.card}
           onPress={() => navigation.navigate("WorkStack", { screen: "Work" })}
         >
-          <Card.Cover source={require("../assets/work.jpeg")} />
+          <Card.Cover
+            style={homeScreenStyles.cardCover}
+            source={require("../assets/work.jpeg")}
+          />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Work / Loan</Title>
           </View>
@@ -61,7 +64,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           style={homeScreenStyles.card}
           onPress={() => navigation.navigate("SaleStack", { screen: "Sale" })}
         >
-          <Card.Cover source={require("../assets/sale.jpeg")} />
+          <Card.Cover
+            style={homeScreenStyles.cardCover}
+            source={require("../assets/sale.jpeg")}
+          />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Sale / Lending</Title>
           </View>
@@ -73,7 +79,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             navigation.navigate("ExpenseStack", { screen: "Expenses" })
           }
         >
-          <Card.Cover source={require("../assets/expense.jpeg")} />
+          <Card.Cover
+            style={homeScreenStyles.cardCover}
+            source={require("../assets/expense.jpeg")}
+          />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Expense (اخراجات)</Title>
           </View>
@@ -84,7 +93,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           style={homeScreenStyles.card}
           onPress={() => navigation.navigate("UsersStack", { screen: "Users" })}
         >
-          <Card.Cover source={require("../assets/user.jpeg")} />
+          <Card.Cover
+            style={homeScreenStyles.cardCover}
+            source={require("../assets/user.jpeg")}
+          />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Manage User</Title>
           </View>
@@ -95,12 +107,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           style={homeScreenStyles.card}
           onPress={() =>
             navigation.navigate("HomeStack", {
-              screen: "AdminScreen",
+              screen: "AdminStack",
               params: { title: "Admin" },
             })
           }
         >
-          <Card.Cover source={require("../assets/admin.jpeg")} />
+          <Card.Cover
+            style={homeScreenStyles.cardCover}
+            source={require("../assets/admin.jpeg")}
+          />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Admin</Title>
           </View>
@@ -118,7 +133,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             })
           }
         >
-          <Card.Cover source={require("../assets/charts.jpeg")} />
+          <Card.Cover
+            style={homeScreenStyles.cardCover}
+            source={require("../assets/charts.jpeg")}
+          />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Dashboard</Title>
           </View>

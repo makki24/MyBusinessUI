@@ -1,5 +1,5 @@
 // src/screens/AddExpenseTypeScreen.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useRecoilState } from "recoil";
 import Input from "../components/common/Input";
@@ -10,12 +10,22 @@ import SwitchInput from "../components/common/SwitchInput";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import { ExpenseType, Tag as Tags } from "../types";
+import TagsSelectorButton from "../src/components/common/TagsSelectorButton";
+import { useTagsClosed } from "../src/components/tags/TagsSelector";
 
 interface AddExpenseTypeScreenProps {
+  route: {
+    params: {
+      expenseType: ExpenseType;
+      isEditMode: boolean;
+    };
+  };
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 }
 
 const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
+  route,
   navigation,
 }) => {
   const [expenseTypeName, setExpenseTypeName] = useState("");
@@ -23,6 +33,19 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
   const [_, setExpenseTypes] = useRecoilState(expenseTypesState);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<Tags[]>([]);
+  const [isEdit, setIsEdit] = useState(false);
+
+  useEffect(() => {
+    // Check if the screen is in edit mode and workType data is provided
+    if (route.params?.isEditMode && route.params?.expenseType) {
+      setIsEdit(true);
+      const expenseType = route.params.expenseType;
+      setExpenseTypeName(expenseType.name);
+      setIsReceivingUser(expenseType.isReceivingUser);
+      setSelectedTags(expenseType.defaultTags);
+    }
+  }, [route.params?.isEditMode, route.params?.expenseType]);
 
   const handleAddExpenseType = async () => {
     try {
@@ -33,15 +56,24 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
 
       setIsLoading(true);
 
-      // Call your API service to add a new expense type with isReceivingUser parameter
-      const newExpenseType = await ExpenseTypesService.addExpenseType({
+      let newExpenseType: ExpenseType = {
         name: expenseTypeName,
         type: "expense",
         isReceivingUser,
-      });
+        defaultTags: selectedTags,
+      };
+
+      if (isEdit) {
+        newExpenseType.id = route.params.expenseType.id;
+      }
+
+      // Call your API service to add a new expense type with isReceivingUser parameter
+      newExpenseType = await ExpenseTypesService.addExpenseType(newExpenseType);
 
       setExpenseTypes((prevExpenseTypes) => [
-        ...prevExpenseTypes,
+        ...prevExpenseTypes.filter(
+          (expenseType) => expenseType.id !== newExpenseType.id,
+        ),
         newExpenseType,
       ]);
       navigation.goBack();
@@ -56,10 +88,25 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
     }
   };
 
+  const openTags = () => {
+    const index = navigation.getParent().getState().index;
+    const stack = navigation.getParent().getState().routes[index].name;
+    navigation.navigate(stack, {
+      screen: "TagsSelector",
+      params: {
+        selectedTags: selectedTags,
+      },
+    });
+  };
+
+  useTagsClosed(({ tags }) => {
+    setSelectedTags(tags);
+  }, []);
+
   return (
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
-
+      <TagsSelectorButton openTags={openTags} selectedTags={selectedTags} />
       <Input
         placeholder="Enter expense type name"
         value={expenseTypeName}

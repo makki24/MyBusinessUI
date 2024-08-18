@@ -50,16 +50,16 @@ const WorkTypeItem: React.FC<WorkTypeItemProps> = ({
             />
           </Card.Actions>
         )}
-      </Card.Content>
-      {!readOnly && (
-        <Card.Actions style={commonItemStyles.cardActionsWithTags}>
-          {/* Edit action button */}
-          <IconButton icon="pencil" onPress={() => onEdit(workType)} />
+        {!readOnly && (
+          <Card.Actions style={commonItemStyles.cardActionsWithTags}>
+            {/* Edit action button */}
+            <IconButton icon="pencil" onPress={() => onEdit(workType)} />
 
-          {/* Delete action button */}
-          <IconButton icon="delete" onPress={() => onDelete(workType)} />
-        </Card.Actions>
-      )}
+            {/* Delete action button */}
+            <IconButton icon="delete" onPress={() => onDelete(workType)} />
+          </Card.Actions>
+        )}
+      </Card.Content>
     </Card>
   </TouchableOpacity>
 );

@@ -49,7 +49,10 @@ const ExpenseTypesScreen: React.FC<ExpenseTypesScreenProps> = ({
   }, []);
 
   const handleEditExpenseType = (expenseType) => {
-    navigation.navigate("EditExpenseType", { expenseType });
+    navigation.navigate("ExpenseTypeStack", {
+      screen: "AddExpenseType",
+      params: { title: "Edit Expense Type", expenseType, isEditMode: true },
+    });
   };
 
   const handleDeleteExpenseType = (expenseType) => {

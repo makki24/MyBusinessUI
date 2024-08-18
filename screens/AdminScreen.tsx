@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import { Card, Title } from "react-native-paper";
 import homeScreenStyles from "../src/styles/homeScreenStyles";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
@@ -26,13 +26,13 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
           style={homeScreenStyles.card}
           onPress={() => navigation.navigate("RolesStack", { screen: "Roles" })}
         >
-          <Card.Cover source={require("../assets/roles.png")} />
+          <Card.Cover
+            style={homeScreenStyles.cardCover}
+            source={require("../assets/roles.png")}
+          />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Manage Roles</Title>
           </View>
-          <Card.Content>
-            <Text>Hello</Text>
-          </Card.Content>
         </Card>
 
         <View style={homeScreenStyles.gap} />
@@ -46,7 +46,10 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
             })
           }
         >
-          <Card.Cover source={require("../assets/expense_types.jpeg")} />
+          <Card.Cover
+            style={homeScreenStyles.cardCover}
+            source={require("../assets/expense_types.jpeg")}
+          />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Expense Types</Title>
           </View>
@@ -56,7 +59,10 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
           style={homeScreenStyles.card}
           onPress={() => navigation.navigate("TagsStack", { screen: "Tags" })}
         >
-          <Card.Cover source={require("../assets/tags.jpeg")} />
+          <Card.Cover
+            style={homeScreenStyles.cardCover}
+            source={require("../assets/tags.jpeg")}
+          />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Manage Tags</Title>
           </View>
@@ -65,13 +71,16 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
         <Card
           style={homeScreenStyles.card}
           onPress={() =>
-            navigation.navigate("WorkStack", {
-              screen: "WorkType",
+            navigation.navigate("AdminStack", {
+              screen: "WorkTypeList",
               params: { title: "Work type" },
             })
           }
         >
-          <Card.Cover source={require("../assets/work_type.jpeg")} />
+          <Card.Cover
+            style={homeScreenStyles.cardCover}
+            source={require("../assets/work_type.jpeg")}
+          />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Manage Work Type</Title>
           </View>
@@ -90,8 +99,10 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
             style={{ height: "50%" }}
             source={require("../assets/sale.jpeg")}
           />
-
-          <Card.Cover source={require("../assets/work.jpeg")} />
+          <Card.Cover
+            style={{ height: "50%" }}
+            source={require("../assets/work.jpeg")}
+          />
           <View style={homeScreenStyles.textOverlay}>
             <Title style={homeScreenStyles.cardTitle}>Middle Man</Title>
           </View>
@@ -107,7 +118,10 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
               })
             }
           >
-            <Card.Cover source={require("../assets/impersonate.jpeg")} />
+            <Card.Cover
+              style={homeScreenStyles.cardCover}
+              source={require("../assets/impersonate.jpeg")}
+            />
             <View style={homeScreenStyles.textOverlay}>
               <Title style={homeScreenStyles.cardTitle}>Impersonate</Title>
             </View>

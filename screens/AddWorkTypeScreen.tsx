@@ -5,13 +5,15 @@ import { useRecoilState } from "recoil";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import { workTypesState } from "../recoil/atom"; // Adjust the path accordingly
-import { WorkType } from "../types";
+import { Tag as Tags, WorkType } from "../types";
 import WorkService from "../services/WorkService";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import NumberInput from "../components/common/NumberInput";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import SwitchInput from "../components/common/SwitchInput";
+import TagsSelectorButton from "../src/components/common/TagsSelectorButton";
+import { useTagsClosed } from "../src/components/tags/TagsSelector";
 
 interface AddWorkTypeScreenProps {
   route: {
@@ -36,6 +38,7 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
   const [isEdit, setIsEdit] = useState(false);
   const [isEnterAmountDirectly, setIsEnterAmountDirectly] = useState(false); // New state for the switch
   const [showUnit, setShowUnit] = useState(true); // New state for the switch
+  const [selectedTags, setSelectedTags] = useState<Tags[]>([]);
 
   useEffect(() => {
     // Check if the screen is in edit mode and workType data is provided
@@ -46,6 +49,7 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
       setUnit(workType.unit);
       setDefaultPrice(workType.pricePerUnit.toString());
       setIsEnterAmountDirectly(workType.enterAmountDirectly);
+      setSelectedTags(workType.defaultTags);
       // ... set other state variables with workType data
     }
   }, [route.params?.isEditMode, route.params?.workType]);
@@ -67,6 +71,7 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
         unit: unit,
         enterAmountDirectly: isEnterAmountDirectly,
         type: "work",
+        defaultTags: selectedTags,
       };
 
       if (isEdit) {
@@ -95,15 +100,29 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
       setUnit("null");
       setShowUnit(false);
     } else {
-      setUnit("");
       setShowUnit(true);
     }
   }, [isEnterAmountDirectly]);
 
+  const openTags = () => {
+    const index = navigation.getParent().getState().index;
+    const stack = navigation.getParent().getState().routes[index].name;
+    navigation.navigate(stack, {
+      screen: "TagsSelector",
+      params: {
+        selectedTags: selectedTags,
+      },
+    });
+  };
+
+  useTagsClosed(({ tags }) => {
+    setSelectedTags(tags);
+  }, []);
+
   return (
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
-
+      <TagsSelectorButton openTags={openTags} selectedTags={selectedTags} />
       <Input
         placeholder="Enter type name"
         value={typeName}

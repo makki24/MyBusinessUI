@@ -53,10 +53,11 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
         date: new Date(),
         type: route.params.type,
         amount: route.params.type.pricePerUnit * route.params.date.length,
-        tags: [],
+        tags: route.params.type.defaultTags ?? [],
       };
       createdWorks.push(createdWork);
     });
+    setSelectedTags(route.params.type.defaultTags);
 
     setWorks(createdWorks);
   }, [route.params]);

@@ -96,10 +96,18 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   }, [users]);
 
   useEffect(() => {
+    const selectedExpenseType = expenseTypes.find((type) => type.id === value);
     const isReceivingUserlocal = expenseTypes.some(
       (type) => type.id === value && type.isReceivingUser,
     );
     setSelectedUser(null);
+    if (!selectedTags.length && selectedExpenseType)
+      setSelectedTags(
+        selectedExpenseType.defaultTags.map((selectedTag) => selectedTag.id),
+      );
+    if (isReceivingUserlocal) {
+      setSelectedTags([]);
+    }
     setIsReceivingUser(isReceivingUserlocal);
     if (
       route.params?.isEditMode &&
