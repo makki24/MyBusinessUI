@@ -11,7 +11,11 @@ import { RecoilRoot } from "recoil";
 import AddWorkScreen from "../../screens/AddWorkScreen";
 import { WorkType } from "../../types";
 import WorkService from "../../services/WorkService";
-import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  NavigationProp,
+  ParamListBase,
+} from "@react-navigation/native";
 jest.useFakeTimers();
 
 // Enable fetch mocks
@@ -81,7 +85,12 @@ describe("AddWorkScreen", () => {
     const { getByTestId, getByText } = render(
       <RecoilRoot>
         <PaperProvider>
-          <AddWorkScreen navigation={mockNavigation} route={mockRouteParams} />
+          <NavigationContainer>
+            <AddWorkScreen
+              navigation={mockNavigation}
+              route={mockRouteParams}
+            />
+          </NavigationContainer>
         </PaperProvider>
       </RecoilRoot>,
     );
@@ -148,7 +157,12 @@ describe("AddWorkScreen", () => {
     const { getByTestId, getByText } = render(
       <RecoilRoot>
         <PaperProvider>
-          <AddWorkScreen navigation={mockNavigation} route={mockRouteParams} />
+          <NavigationContainer>
+            <AddWorkScreen
+              navigation={mockNavigation}
+              route={mockRouteParams}
+            />
+          </NavigationContainer>
         </PaperProvider>
       </RecoilRoot>,
     );

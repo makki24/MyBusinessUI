@@ -104,17 +104,6 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
     }
   }, [isEnterAmountDirectly]);
 
-  const openTags = () => {
-    const index = navigation.getParent().getState().index;
-    const stack = navigation.getParent().getState().routes[index].name;
-    navigation.navigate(stack, {
-      screen: "TagsSelector",
-      params: {
-        selectedTags: selectedTags,
-      },
-    });
-  };
-
   useTagsClosed(({ tags }) => {
     setSelectedTags(tags);
   }, []);
@@ -122,7 +111,7 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
   return (
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
-      <TagsSelectorButton openTags={openTags} selectedTags={selectedTags} />
+      <TagsSelectorButton selectedTags={selectedTags} />
       <Input
         placeholder="Enter type name"
         value={typeName}

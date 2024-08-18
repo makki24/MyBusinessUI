@@ -7,22 +7,14 @@ import { ScrollView, View } from "react-native";
 import { Icon, Snackbar, Title, useTheme } from "react-native-paper";
 import { REPORT_ICON_SIZE } from "../../styles/constants";
 import commonAddScreenStyles from "../../styles/commonAddScreenStyles";
-import AddWorkInputs from "../common/AddWorkInputs";
+import AddWorkInputs from "./AddWorkInputs";
 import middleManService from "./MiddleManService";
 import LoadingError from "../../../components/common/LoadingError";
-import { useTagsClosed } from "../tags/TagsSelector";
-import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import TagsSelectorButton from "../common/TagsSelectorButton";
 import { WorkAndSale as WorkAndSaleType } from "../../../types";
 
-interface WorkAndSaleProps {
-  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
-}
-
-const WorkAndSale: React.FC<WorkAndSaleProps> = ({ navigation }) => {
+const WorkAndSale = () => {
   const theme = useTheme();
-  const [workAndSaleState, setWorkAndSaleState] =
-    useRecoilState(middleManState);
+  const [workAndSaleState] = useRecoilState(middleManState);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [respMessage, setRespMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -48,25 +40,6 @@ const WorkAndSale: React.FC<WorkAndSaleProps> = ({ navigation }) => {
       setIsLoading(false);
     }
   };
-
-  const openTags = () => {
-    navigation.navigate("MiddleManStack", {
-      screen: "TagsSelector",
-      params: {
-        selectedTags: workAndSaleState.sale.tags,
-      },
-    });
-  };
-
-  useTagsClosed(({ tags }) => {
-    setWorkAndSaleState(
-      (prev): WorkAndSaleType => ({
-        ...prev,
-        sale: { ...prev.sale, tags: tags },
-        works: [...prev.works.map((work) => ({ ...work, tags: tags }))],
-      }),
-    );
-  }, []);
 
   return (
     <ScrollView
@@ -98,12 +71,6 @@ const WorkAndSale: React.FC<WorkAndSaleProps> = ({ navigation }) => {
           <UserDetails key={index} user={work.user} />
         ))}
       </View>
-
-      <TagsSelectorButton
-        openTags={openTags}
-        selectedTags={workAndSaleState.sale.tags}
-      />
-
       <AddWorkInputs disabled={disabled} onAddWork={onAddWork} />
       <Snackbar
         visible={snackbarVisible}
