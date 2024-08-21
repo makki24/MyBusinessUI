@@ -9,7 +9,7 @@ import AttendanceConfirmation from "./Attendance/AttendanceConfirmation";
 import TagsSelector from "../tags/TagsSelector";
 import WorkersList from "./BatchEdit/WorkersList";
 import UserWorksList from "./BatchEdit/UserWorksList";
-import TypeList from "./BatchEdit/TypeList";
+import WorkTypeSelectorList from "./AddWork/WorkTypeSelectorList";
 
 const Stack = createStackNavigator();
 
@@ -27,7 +27,10 @@ const WorkStack = () => {
       <Stack.Screen name={"TagsSelector"} component={TagsSelector} />
       <Stack.Screen name={"WorkersList"} component={WorkersList} />
       <Stack.Screen name={"UserWorksList"} component={UserWorksList} />
-      <Stack.Screen name="TypeList" component={TypeList} />
+      <Stack.Screen
+        name="WorkTypeSelectorList"
+        component={WorkTypeSelectorList}
+      />
     </Stack.Navigator>
   );
 };

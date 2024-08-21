@@ -40,6 +40,7 @@ export const AddWorkInputs: React.FC<AddWorkInputProps> = ({
     if (workType) {
       if (workType.enterAmountDirectly) {
         setShowAmount(true);
+        setShowPricePerUnit(false);
       } else if (
         pricePerUnit &&
         pricePerUnit !== workType.pricePerUnit.toString()

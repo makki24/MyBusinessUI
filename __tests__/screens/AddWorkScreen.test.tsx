@@ -71,6 +71,7 @@ describe("AddWorkScreen", () => {
     // Mock route params
     const mockNavigation = {
       goBack: jest.fn(),
+      setParams: jest.fn(),
     } as unknown as NavigationProp<ParamListBase>;
     const mockRouteParams = {
       params: {
@@ -122,7 +123,7 @@ describe("AddWorkScreen", () => {
         tags: [],
         description: "",
       });
-      expect(mockNavigation.goBack).toHaveBeenCalled();
+      expect(mockNavigation.setParams).toHaveBeenCalled();
     });
   }, 10000);
 
@@ -143,6 +144,7 @@ describe("AddWorkScreen", () => {
     // Mock route params
     const mockNavigation = {
       goBack: jest.fn(),
+      setParams: jest.fn(),
     } as unknown as NavigationProp<ParamListBase>;
     const mockRouteParams = {
       params: {
@@ -197,7 +199,7 @@ describe("AddWorkScreen", () => {
         tags: [],
         description: "",
       });
-      expect(mockNavigation.goBack).toHaveBeenCalled();
+      expect(mockNavigation.setParams).toHaveBeenCalled();
     });
   });
 });
