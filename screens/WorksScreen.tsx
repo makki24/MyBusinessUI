@@ -1,10 +1,10 @@
 // src/screens/WorksScreen.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { useRecoilState } from "recoil";
 import workService from "../services/WorkService";
 import { worksState } from "../recoil/atom";
-import { Filter } from "../types";
+import { Filter, WorkType } from "../types";
 import commonStyles from "../src/styles/commonStyles";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import ItemsList from "../src/components/common/ItemsList";
@@ -12,12 +12,21 @@ import filterService from "../src/service/FilterService";
 import WorkItemWithActions from "../src/components/common/work/WorkItemWithActions";
 import { FAB } from "react-native-paper";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
+import { makeEventNotifier } from "../src/components/common/useEventListner";
+import { batchEditPayloadState } from "../src/components/work/BatchEdit/atom";
 
 type WorksScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 };
 
 const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
+  const notifier = useRef(
+    makeEventNotifier<{ workType: WorkType }, unknown>(
+      "OnWorksScreenWorkTypeSelectedAndClosed",
+    ),
+  ).current;
+  const [_editPayload, setEditPayload] = useRecoilState(batchEditPayloadState);
+
   const [works] = useRecoilState(worksState);
   const [uniqueFilters, setUniqueFilters] = useState<Filter>({
     sender: [],
@@ -56,11 +65,26 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
   };
 
   const onBatchEdit = () => {
+    const index = navigation.getParent().getState().index;
+    const stack = navigation.getParent().getState().routes[index].name;
+
+    navigation.navigate(stack, {
+      screen: "WorkTypeSelectorList",
+      params: {
+        notifyId: notifier.name,
+      },
+    });
+  };
+
+  const listner = (selectedType: { workType: WorkType }) => {
+    setEditPayload((prev) => ({ ...prev, type: selectedType.workType }));
     navigation.navigate("WorkStack", {
-      screen: "TypeList",
+      screen: "WorkersList",
       params: { title: "Select Type" },
     });
   };
+
+  notifier.useEventListener(listner, []);
 
   return (
     <View style={commonStyles.container}>

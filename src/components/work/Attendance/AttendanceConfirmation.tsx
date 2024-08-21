@@ -95,19 +95,10 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
     setSelectedTags(tags);
   }, []);
 
-  const openTags = () => {
-    navigation.navigate("WorkStack", {
-      screen: "TagsSelector",
-      params: {
-        selectedTags: selectedTags,
-      },
-    });
-  };
-
   return (
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
-      <TagsSelectorButton openTags={openTags} selectedTags={selectedTags} />
+      <TagsSelectorButton selectedTags={selectedTags} />
 
       <TextInput
         label="Description (optional)"

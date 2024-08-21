@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ScrollView } from "react-native";
 import { useRecoilState } from "recoil";
-import { Button } from "react-native-paper";
+import { Button, Text } from "react-native-paper";
 
 import { userState, usersState, worksState } from "../recoil/atom";
 import WorkService from "../services/WorkService";
@@ -13,6 +13,8 @@ import UserDropDownItem from "../components/common/UserDropDownItem";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { useTagsClosed } from "../src/components/tags/TagsSelector";
 import { AddWorkInputs } from "../src/components/common/work/AddWorkInputs";
+import WorkTypeSelectorButton from "../src/components/work/AddWork/WorkTypeSelectorButton";
+import { getAddWorkTitle } from "../src/util/Work";
 
 interface AddWorkScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -29,8 +31,8 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
-  const [workType, setWorkType] = useState<WorkType>(null);
 
+  const workTypeState = useState<WorkType>(null);
   const tagsState = useState<Tags[]>([]);
   const quantityState = useState("");
   const pricePerUnitState = useState("");
@@ -52,23 +54,19 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
   const [description, setDescription] = descriptionState;
   const [inputDate, setInputDate] = inputDateState;
   const [time, setTime] = timeState;
+  const [workType, setWorkType] = workTypeState;
 
   const [users] = useRecoilState(usersState);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [loggedInUser] = useRecoilState(userState);
   const [isEdit, setIsEdit] = useState(false);
   const [_, setAllWorks] = useRecoilState(worksState);
+  const [prevWork, setPrevWork] = useState(null);
 
   useEffect(() => {
     // Check if the screen is in edit mode and workType data is provided
     if (route.params?.workType) {
       setWorkType(route.params.workType);
-      setPricePerUnit(`${route.params.workType.pricePerUnit}`);
-      if (!selectedTags.length)
-        setSelectedTags(route.params.workType.defaultTags ?? []);
-      if (route.params.workType.enterAmountDirectly) {
-        setAmount(`${route.params.workType.pricePerUnit}`);
-      }
     }
   }, [route.params?.workType]);
 
@@ -103,8 +101,22 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
     setSelectedTags(tags);
   }, []);
 
+  useEffect(() => {
+    if (workType) {
+      navigation.setParams({ title: getAddWorkTitle(workType) });
+      if (!isEdit) {
+        setPricePerUnit(`${workType.pricePerUnit}`);
+        if (!selectedTags.length) setSelectedTags(workType.defaultTags ?? []);
+        if (workType.enterAmountDirectly) {
+          setAmount(`${workType.pricePerUnit}`);
+        }
+      }
+    }
+  }, [workType]);
+
   const submitWork = async () => {
     try {
+      setError("");
       setIsLoading(true);
       const workDate = new Date(inputDate);
       workDate.setHours(time.hours, time.minutes);
@@ -121,6 +133,17 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
         tags: selectedTags,
       };
 
+      if (
+        prevWork &&
+        newWork.type.id === prevWork.type.id &&
+        newWork.quantity === prevWork.quantity &&
+        newWork.pricePerUnit === prevWork.pricePerUnit &&
+        newWork.user.id === prevWork.user.id
+      ) {
+        setError("This work is already saved");
+        return;
+      }
+
       if (isEdit) {
         newWork.id = route.params.work.id;
       }
@@ -129,19 +152,14 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
 
       newWork.date = new Date(newWork.date);
       setAllWorks((prevWorks) => [
-        ...prevWorks.filter((wt) => wt.id !== newWork.id),
         newWork,
+        ...prevWorks.filter((wt) => wt.id !== newWork.id),
       ]);
+      setPrevWork(newWork);
 
       // Add logic to update Recoil state or other actions based on the new work
 
-      setQuantity("");
-      setWorkType(null);
-      setPricePerUnit("");
-      setAmount("");
-      setDescription("");
-
-      navigation.goBack();
+      if (isEdit) navigation.navigate("WorkStack", { screen: "Work" });
     } catch (err) {
       setError(err.message ?? "An error occurred while adding the work");
     } finally {
@@ -209,6 +227,8 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
         />
       )}
 
+      <WorkTypeSelectorButton workType={workTypeState} />
+
       <AddWorkInputs
         workType={workType}
         states={{
@@ -226,6 +246,14 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
       <Button mode="contained" onPress={handleAddWork} disabled={isLoading}>
         {isEdit ? "Save Work" : "Add Work"}
       </Button>
+
+      {prevWork && (
+        <>
+          <Text variant={"titleSmall"}>
+            Successfully created above work with id {prevWork.id}
+          </Text>
+        </>
+      )}
     </ScrollView>
   );
 };
