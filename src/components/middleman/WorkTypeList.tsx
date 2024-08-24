@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useRef } from "react";
 import CommonWorkTypeList from "../common/WorkTypeList";
 import { View } from "react-native";
 import commonStyles from "../../styles/commonStyles";
-import { Work, WorkAndSale } from "../../../types";
+import { User, Work, WorkAndSale, WorkType } from "../../../types";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { useRecoilState } from "recoil";
 import { middleManState } from "./atom";
-import { useAttendanceConfirmationListner } from "../work/Attendance/AttendanceScreen";
+import { makeEventNotifier } from "../common/useEventListner";
 
 interface WorkTypeListProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -19,6 +19,17 @@ interface WorkTypeListProps {
 
 const WorkTypeList: React.FC<WorkTypeListProps> = ({ navigation }) => {
   const [_workAndSale, setWorkAndSale] = useRecoilState(middleManState);
+
+  const attendanceConfirmNotifier = useRef(
+    makeEventNotifier<
+      {
+        type: WorkType;
+        date: string[];
+        users: User[];
+      },
+      unknown
+    >("OnAttendanceConfirmationInWorkTypeList"),
+  ).current;
 
   const onPress = (item) => {
     setWorkAndSale(
@@ -38,7 +49,7 @@ const WorkTypeList: React.FC<WorkTypeListProps> = ({ navigation }) => {
     });
   };
 
-  useAttendanceConfirmationListner(({ type, date, users }) => {
+  const useAttendanceConfirmationListner = ({ type, date, users }) => {
     const description = `Added by attendance & sale \n${date.map((d: string) => new Date(d).toLocaleDateString()).join(", ")}`;
     const works: Work[] = [];
 
@@ -63,7 +74,12 @@ const WorkTypeList: React.FC<WorkTypeListProps> = ({ navigation }) => {
       screen: "WorkAndSale",
       params: { title: "Confirm Details " },
     });
-  }, []);
+  };
+
+  attendanceConfirmNotifier.useEventListener(
+    useAttendanceConfirmationListner,
+    [],
+  );
 
   return (
     <View style={commonStyles.container}>
@@ -78,6 +94,7 @@ const WorkTypeList: React.FC<WorkTypeListProps> = ({ navigation }) => {
               title: "Select Attendance",
               type: item,
               tags: [],
+              notifyId: attendanceConfirmNotifier.name,
             },
           });
         }}

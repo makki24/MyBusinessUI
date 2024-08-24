@@ -23,6 +23,7 @@ interface AddWorkScreenProps {
       isEditMode: boolean;
       workType: WorkType;
       work: Work;
+      user: User;
     };
   };
 }
@@ -69,6 +70,10 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
       setWorkType(route.params.workType);
     }
   }, [route.params?.workType]);
+
+  useEffect(() => {
+    if (route.params.user?.id) setSelectedUser(route.params.user.id);
+  }, [route.params?.user]);
 
   useEffect(() => {
     // Check if the screen is in edit mode and workType data is provided
