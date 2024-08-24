@@ -36,7 +36,7 @@ const WorkTypeSelectorButton: React.FC<WorkTypeSelectorButtonProps> = ({
       screen: "WorkTypeSelectorList",
       params: {
         workType: workType[0],
-        notifyId: notifier.name,
+        typeSelectedNotifier: notifier.name,
       },
     });
   };

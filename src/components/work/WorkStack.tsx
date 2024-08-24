@@ -10,6 +10,7 @@ import TagsSelector from "../tags/TagsSelector";
 import WorkersList from "./BatchEdit/WorkersList";
 import UserWorksList from "./BatchEdit/UserWorksList";
 import WorkTypeSelectorList from "./AddWork/WorkTypeSelectorList";
+import UserSelectorList from "../common/user/UserSelectorList";
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,7 @@ const WorkStack = () => {
         name="WorkTypeSelectorList"
         component={WorkTypeSelectorList}
       />
+      <Stack.Screen name="UserSelectorList" component={UserSelectorList} />
     </Stack.Navigator>
   );
 };
