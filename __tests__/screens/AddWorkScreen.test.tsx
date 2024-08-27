@@ -11,7 +11,11 @@ import { RecoilRoot } from "recoil";
 import AddWorkScreen from "../../screens/AddWorkScreen";
 import { WorkType } from "../../types";
 import WorkService from "../../services/WorkService";
-import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  NavigationProp,
+  ParamListBase,
+} from "@react-navigation/native";
 jest.useFakeTimers();
 
 // Enable fetch mocks
@@ -67,6 +71,7 @@ describe("AddWorkScreen", () => {
     // Mock route params
     const mockNavigation = {
       goBack: jest.fn(),
+      setParams: jest.fn(),
     } as unknown as NavigationProp<ParamListBase>;
     const mockRouteParams = {
       params: {
@@ -81,7 +86,12 @@ describe("AddWorkScreen", () => {
     const { getByTestId, getByText } = render(
       <RecoilRoot>
         <PaperProvider>
-          <AddWorkScreen navigation={mockNavigation} route={mockRouteParams} />
+          <NavigationContainer>
+            <AddWorkScreen
+              navigation={mockNavigation}
+              route={mockRouteParams}
+            />
+          </NavigationContainer>
         </PaperProvider>
       </RecoilRoot>,
     );
@@ -113,7 +123,7 @@ describe("AddWorkScreen", () => {
         tags: [],
         description: "",
       });
-      expect(mockNavigation.goBack).toHaveBeenCalled();
+      expect(mockNavigation.setParams).toHaveBeenCalled();
     });
   }, 10000);
 
@@ -134,6 +144,7 @@ describe("AddWorkScreen", () => {
     // Mock route params
     const mockNavigation = {
       goBack: jest.fn(),
+      setParams: jest.fn(),
     } as unknown as NavigationProp<ParamListBase>;
     const mockRouteParams = {
       params: {
@@ -148,7 +159,12 @@ describe("AddWorkScreen", () => {
     const { getByTestId, getByText } = render(
       <RecoilRoot>
         <PaperProvider>
-          <AddWorkScreen navigation={mockNavigation} route={mockRouteParams} />
+          <NavigationContainer>
+            <AddWorkScreen
+              navigation={mockNavigation}
+              route={mockRouteParams}
+            />
+          </NavigationContainer>
         </PaperProvider>
       </RecoilRoot>,
     );
@@ -183,7 +199,7 @@ describe("AddWorkScreen", () => {
         tags: [],
         description: "",
       });
-      expect(mockNavigation.goBack).toHaveBeenCalled();
+      expect(mockNavigation.setParams).toHaveBeenCalled();
     });
   });
 });

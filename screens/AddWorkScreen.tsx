@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import { useRecoilState } from "recoil";
-import { Button, TextInput } from "react-native-paper";
+import { Button, Text } from "react-native-paper";
 
 import { userState, usersState, worksState } from "../recoil/atom";
 import WorkService from "../services/WorkService";
 import { WorkType, Tag as Tags, User, Work } from "../types";
 import CustomDropDown from "../components/common/CustomDropdown";
-import SwitchInput from "../components/common/SwitchInput";
-import DateTimePicker from "../components/common/DateTimePicker";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
-import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import UserDropDownItem from "../components/common/UserDropDownItem";
-import NumberInput from "../components/common/NumberInput";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { useTagsClosed } from "../src/components/tags/TagsSelector";
-import TagsSelectorButton from "../src/components/common/TagsSelectorButton";
+import { AddWorkInputs } from "../src/components/common/work/AddWorkInputs";
+import WorkTypeSelectorButton from "../src/components/work/AddWork/WorkTypeSelectorButton";
+import { getAddWorkTitle } from "../src/util/Work";
 
 interface AddWorkScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -25,6 +23,7 @@ interface AddWorkScreenProps {
       isEditMode: boolean;
       workType: WorkType;
       work: Work;
+      user: User;
     };
   };
 }
@@ -33,41 +32,48 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
-  const [workType, setWorkType] = useState<WorkType>(null);
-  const [selectedTags, setSelectedTags] = useState<Tags[]>([]);
-  const [quantity, setQuantity] = useState("");
-  const [pricePerUnit, setPricePerUnit] = useState("");
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
-  const [inputDate, setInputDate] = useState(new Date());
-  const [time, setTime] = useState<{
+
+  const workTypeState = useState<WorkType>(null);
+  const tagsState = useState<Tags[]>([]);
+  const quantityState = useState("");
+  const pricePerUnitState = useState("");
+  const amountState = useState("");
+  const descriptionState = useState("");
+  const inputDateState = useState(new Date());
+  const timeState = useState<{
     hours: number | undefined;
     minutes: number | undefined;
   }>({
     hours: new Date().getHours(),
     minutes: new Date().getMinutes(),
   });
+
+  const [selectedTags, setSelectedTags] = tagsState;
+  const [quantity, setQuantity] = quantityState;
+  const [pricePerUnit, setPricePerUnit] = pricePerUnitState;
+  const [_amount, setAmount] = amountState;
+  const [description, setDescription] = descriptionState;
+  const [inputDate, setInputDate] = inputDateState;
+  const [time, setTime] = timeState;
+  const [workType, setWorkType] = workTypeState;
+
   const [users] = useRecoilState(usersState);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [loggedInUser] = useRecoilState(userState);
-  const [showPricePerUnit, setShowPricePerUnit] = useState(false);
-  const [showAmount, setShowAmount] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [_, setAllWorks] = useRecoilState(worksState);
+  const [prevWork, setPrevWork] = useState(null);
 
   useEffect(() => {
     // Check if the screen is in edit mode and workType data is provided
     if (route.params?.workType) {
       setWorkType(route.params.workType);
-      setPricePerUnit(`${route.params.workType.pricePerUnit}`);
-      if (!selectedTags.length)
-        setSelectedTags(route.params.workType.defaultTags ?? []);
-      if (route.params.workType.enterAmountDirectly) {
-        setShowAmount(true);
-        setAmount(`${route.params.workType.pricePerUnit}`);
-      }
     }
   }, [route.params?.workType]);
+
+  useEffect(() => {
+    if (route.params.user?.id) setSelectedUser(route.params.user.id);
+  }, [route.params?.user]);
 
   useEffect(() => {
     // Check if the screen is in edit mode and workType data is provided
@@ -85,11 +91,6 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
       setSelectedTags(work.tags);
       setSelectedUser(work.user.id);
       setTime({ hours: paramDate.getHours(), minutes: paramDate.getMinutes() });
-      if (work.pricePerUnit && work.pricePerUnit !== work.type.pricePerUnit)
-        setShowPricePerUnit(true);
-      if (!work.pricePerUnit) {
-        setShowAmount(true);
-      }
     }
   }, [route.params?.isEditMode, route.params?.work]);
 
@@ -105,43 +106,48 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
     setSelectedTags(tags);
   }, []);
 
-  const openTags = () => {
-    const index = navigation.getParent().getState().index;
-    const stack = navigation.getParent().getState().routes[index].name;
-    navigation.navigate(stack, {
-      screen: "TagsSelector",
-      params: {
-        selectedTags: selectedTags,
-      },
-    });
-  };
+  useEffect(() => {
+    if (workType) {
+      navigation.setParams({ title: getAddWorkTitle(workType) });
+      if (!isEdit) {
+        setPricePerUnit(`${workType.pricePerUnit}`);
+        if (!selectedTags.length) setSelectedTags(workType.defaultTags ?? []);
+        if (workType.enterAmountDirectly) {
+          setAmount(`${workType.pricePerUnit}`);
+        }
+      }
+    }
+  }, [workType]);
 
   const submitWork = async () => {
     try {
+      setError("");
       setIsLoading(true);
       const workDate = new Date(inputDate);
       workDate.setHours(time.hours, time.minutes);
-      let calculatedAmount = parseFloat(amount);
-
-      if (!showAmount) {
-        // Calculate amount based on Price per unit and Quantity
-        if (pricePerUnit) {
-          calculatedAmount = parseFloat(pricePerUnit) * parseFloat(quantity);
-        }
-      } else {
-        setPricePerUnit(null);
-      }
+      const calculatedAmount = parseFloat(pricePerUnit) * parseFloat(quantity);
 
       let newWork: Work = {
         date: workDate,
         type: workType,
-        quantity: showAmount ? 1 : parseFloat(quantity),
-        pricePerUnit: showAmount ? calculatedAmount : parseFloat(pricePerUnit),
+        quantity: parseFloat(quantity),
+        pricePerUnit: parseFloat(pricePerUnit),
         amount: calculatedAmount,
         description,
         user: selectedUser ? ({ id: selectedUser } as User) : null,
         tags: selectedTags,
       };
+
+      if (
+        prevWork &&
+        newWork.type.id === prevWork.type.id &&
+        newWork.quantity === prevWork.quantity &&
+        newWork.pricePerUnit === prevWork.pricePerUnit &&
+        newWork.user.id === prevWork.user.id
+      ) {
+        setError("This work is already saved");
+        return;
+      }
 
       if (isEdit) {
         newWork.id = route.params.work.id;
@@ -151,19 +157,14 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
 
       newWork.date = new Date(newWork.date);
       setAllWorks((prevWorks) => [
-        ...prevWorks.filter((wt) => wt.id !== newWork.id),
         newWork,
+        ...prevWorks.filter((wt) => wt.id !== newWork.id),
       ]);
+      setPrevWork(newWork);
 
       // Add logic to update Recoil state or other actions based on the new work
 
-      setQuantity("");
-      setWorkType(null);
-      setPricePerUnit("");
-      setAmount("");
-      setDescription("");
-
-      navigation.goBack();
+      if (isEdit) navigation.navigate("WorkStack", { screen: "Work" });
     } catch (err) {
       setError(err.message ?? "An error occurred while adding the work");
     } finally {
@@ -176,8 +177,12 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
       setError("User is required");
       return;
     }
-    if (!showAmount && (!workType || !quantity)) {
-      setError("Work type and quantity are required");
+    if (!workType) {
+      setError("Work type is required");
+      return;
+    }
+    if (!quantity) {
+      setError("Quantity is required");
       return;
     }
 
@@ -191,32 +196,6 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
       contentContainerStyle={commonAddScreenStyles.scrollViewContainer}
     >
       <LoadingError error={error} isLoading={isLoading} />
-
-      {/* Switch to show/hide Price per unit field */}
-      <View style={{ ...commonStyles.row, justifyContent: "space-between" }}>
-        <SwitchInput
-          label={"Show Price per unit"}
-          value={showPricePerUnit}
-          onValueChange={(value) => {
-            if (value) setShowAmount(false);
-            setShowPricePerUnit(value);
-          }}
-        />
-        <SwitchInput
-          label={"Enter amount directly"}
-          value={showAmount}
-          onValueChange={(showAmountParam) => {
-            if (showAmountParam) {
-              setShowPricePerUnit(false);
-              setQuantity(`1`);
-            }
-            setShowAmount(showAmountParam);
-          }}
-        />
-      </View>
-
-      {/* New selector for tags */}
-      <TagsSelectorButton openTags={openTags} selectedTags={selectedTags} />
 
       {/* Additional selector for users if required */}
       {workType && (
@@ -253,47 +232,33 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
         />
       )}
 
-      {/* Input fields for quantity, price per unit, amount, and description */}
-      {showPricePerUnit && (
-        <NumberInput
-          label="Price per unit"
-          value={pricePerUnit}
-          onChangeText={setPricePerUnit}
-        />
-      )}
+      <WorkTypeSelectorButton workType={workTypeState} />
 
-      {!showAmount && (
-        <NumberInput
-          label="Quantity"
-          value={quantity}
-          onChangeText={setQuantity}
-        />
-      )}
-
-      {showAmount && (
-        <NumberInput label="Amount" value={amount} onChangeText={setAmount} />
-      )}
-
-      <TextInput
-        label="Description (optional)"
-        value={description}
-        onChangeText={setDescription}
-        style={commonAddScreenStyles.inputField}
-      />
-
-      {/* Time picker */}
-      <DateTimePicker
-        label="Work date"
-        dateValue={inputDate}
-        onDateChange={setInputDate}
-        onTimeChange={setTime}
-        timeValue={time}
+      <AddWorkInputs
+        workType={workType}
+        states={{
+          tags: tagsState,
+          quantity: quantityState,
+          amount: amountState,
+          pricePerUnit: pricePerUnitState,
+          date: inputDateState,
+          time: timeState,
+          description: descriptionState,
+        }}
       />
 
       {/* Button to add the work */}
       <Button mode="contained" onPress={handleAddWork} disabled={isLoading}>
         {isEdit ? "Save Work" : "Add Work"}
       </Button>
+
+      {prevWork && (
+        <>
+          <Text variant={"titleSmall"}>
+            Successfully created above work with id {prevWork.id}
+          </Text>
+        </>
+      )}
     </ScrollView>
   );
 };

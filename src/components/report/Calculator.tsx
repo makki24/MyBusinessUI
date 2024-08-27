@@ -11,6 +11,7 @@ import reportService from "../../../services/ReportService";
 import commonStyles from "../../styles/commonStyles";
 import Button from "../../../components/common/Button";
 import LoadingError from "../../../components/common/LoadingError";
+import { Filter } from "../../../types";
 
 interface RenderTooltipProps {
   label: string;
@@ -22,6 +23,10 @@ interface CalculatorProps {
     params: {
       tagId: number;
       excludeTagId: number;
+      range: {
+        startDate: string;
+        endDate: string;
+      };
     };
   };
 }
@@ -49,13 +54,21 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
     return Math.round(amount * 100) / 100;
   };
 
+  const createFilter = () => {
+    return {
+      tags: [{ id: tagId }],
+      excludeTags: excludeTagId ? [{ id: excludeTagId }] : [],
+      fromDate: new Date(route.params.range.startDate),
+      toDate: new Date(route.params.range.endDate),
+    } as Filter;
+  };
+
   const fetchGroupedData = async () => {
     setIsLoading(true);
     try {
-      const response = await reportService.getGroupedReport(
-        tagId,
-        excludeTagId,
-      );
+      const filter: Filter = createFilter();
+
+      const response = await reportService.getGroupedReport(filter);
 
       // Calculate total amount for each group
       const groupTotals = {};

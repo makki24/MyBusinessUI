@@ -88,17 +88,6 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
     }
   };
 
-  const openTags = () => {
-    const index = navigation.getParent().getState().index;
-    const stack = navigation.getParent().getState().routes[index].name;
-    navigation.navigate(stack, {
-      screen: "TagsSelector",
-      params: {
-        selectedTags: selectedTags,
-      },
-    });
-  };
-
   useTagsClosed(({ tags }) => {
     setSelectedTags(tags);
   }, []);
@@ -106,7 +95,7 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
   return (
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
-      <TagsSelectorButton openTags={openTags} selectedTags={selectedTags} />
+      <TagsSelectorButton selectedTags={selectedTags} />
       <Input
         placeholder="Enter expense type name"
         value={expenseTypeName}

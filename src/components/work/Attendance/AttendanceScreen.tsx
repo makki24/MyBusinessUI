@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { View } from "react-native";
 import { useRecoilValue } from "recoil";
 import { otherUsersState } from "../../../../recoil/selectors";
@@ -14,26 +14,10 @@ interface AttendanceScreenProps {
   route: {
     params: {
       type: WorkType;
+      notifyId: string;
     };
   };
   navigation: NavigationProp<ParamListBase>;
-}
-
-const notifer = makeEventNotifier<
-  {
-    type: WorkType;
-    date: string[];
-    users: User[];
-  },
-  unknown
->("OnAttendanceConfirmed");
-
-// Youy can add a snippet to generate this
-export function useAttendanceConfirmationListner<T>(
-  listener: typeof notifer.notify,
-  deps: ReadonlyArray<T>,
-) {
-  notifer.useEventListener(listener, deps);
 }
 
 const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ route }) => {
@@ -42,10 +26,21 @@ const AttendanceScreen: React.FC<AttendanceScreenProps> = ({ route }) => {
   const [dateModelOpen, setDateModelOpen] = useState<boolean>(false);
   const [dates, setDates] = useState<Date[]>([]);
 
+  const notifier = useRef(
+    makeEventNotifier<
+      {
+        type: WorkType;
+        date: string[];
+        users: User[];
+      },
+      unknown
+    >(route.params.notifyId),
+  ).current;
+
   const onConfirm = (params) => {
     setDateModelOpen(false);
     setDates(params.dates);
-    notifer.notify({
+    notifier.notify({
       type: route.params.type,
       date: params.dates.map((date) => date.toISOString()),
       users: selectedUserState[0],

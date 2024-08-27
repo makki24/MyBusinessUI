@@ -16,10 +16,8 @@ const ReportService = {
     return response.data;
   },
 
-  getGroupedReport: async (tagId: number, excludeTagId: number) => {
-    const response = await axios.get(`api/report/byTag/grouped`, {
-      params: { tagId, excludeTagId }, // Pass tagId as a query parameter
-    });
+  getGroupedReport: async (filter: Filter) => {
+    const response = await axios.post(`api/report/byTag/grouped`, filter);
 
     if (!response.data) {
       throw new Error(`No data in response.data`);

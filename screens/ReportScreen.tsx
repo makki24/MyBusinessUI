@@ -108,12 +108,21 @@ const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
   };
 
   const goToCalc = () => {
+    const range: { startDate: string; endDate: string } = {
+      startDate: "",
+      endDate: "",
+    };
+
+    range.startDate = rangeState[0].startDate.toISOString();
+    range.endDate = rangeState[0].endDate.toISOString();
+
     navigation.navigate("ReportStack", {
       screen: "Calculator",
       params: {
         title: "Select Work type",
         tagId: selectedTags,
         excludeTagId: selectedExcludingTags,
+        range: range,
       },
     });
   };
