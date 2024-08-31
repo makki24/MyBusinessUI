@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import dashboardService from "./DashboardService";
 import { LineChart } from "react-native-gifted-charts";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import LoadingError from "../../../components/common/LoadingError";
 import commonAddScreenStyles from "../../styles/commonAddScreenStyles";
 import { IconButton, useTheme, Text } from "react-native-paper";
-import { scaleValue } from "../../util/Calculation";
 import commonStyles from "../../styles/commonStyles";
 import { DatePickerInput } from "react-native-paper-dates";
 import reportService from "../../../services/ReportService";
@@ -28,30 +27,8 @@ const LineChartScreen = () => {
     setIsLoading(true);
     try {
       const res = await dashboardService.getLineGraph(inputDate);
-      let min = 10000000000,
-        max = 0;
-      [...res.toPay, ...res.toReceive].forEach((toPay) => {
-        if (toPay.value < min) {
-          min = toPay.value;
-        }
-        if (toPay.value > max) {
-          max = toPay.value;
-        }
-      });
-      setLineData1(
-        res.toPay.map((toPay) => ({
-          ...toPay,
-          dataPointRadius: 4,
-          value: scaleValue(toPay.value, Math.floor(min), Math.ceil(max)),
-        })),
-      );
-      setLineData2(
-        res.toReceive.map((toPay) => ({
-          ...toPay,
-          dataPointRadius: 4,
-          value: scaleValue(toPay.value, Math.floor(min), Math.ceil(max)),
-        })),
-      );
+      setLineData1(res.toPay);
+      setLineData2(res.toReceive);
     } catch (e) {
       setError(e.message ?? "Can not draw graph");
     } finally {
@@ -99,36 +76,41 @@ const LineChartScreen = () => {
           style={commonAddScreenStyles.inputField}
         />
       </View>
-      {!isLoading && (
-        <LineChart
-          data={lineData1}
-          data2={lineData2}
-          scrollRef={ref}
-          color1={theme.colors.error}
-          color2={theme.colors.primary}
-          height={400}
-          textColor1={theme.colors.onBackground}
-          textColor2={theme.colors.onSurfaceVariant}
-          dataPointsColor1={theme.colors.onBackground}
-          textFontSize={15}
-          hideYAxisText
-          curved={true}
-          onPress={() => {}}
-          rotateLabel={true}
-          xAxisLabelsVerticalShift={10}
-          xAxisLabelTextStyle={{ color: theme.colors.onBackground }}
-        />
-      )}
-      {netAmount && (
-        <View style={{ marginTop: UI_ELEMENTS_GAP * 2 }}>
-          <Text style={{ color: theme.colors.error }}>
-            Total to pay {netAmount.totalToPay}
-          </Text>
-          <Text style={{ color: theme.colors.primary }}>
-            Total to receive {netAmount.totalToReceive}
-          </Text>
-        </View>
-      )}
+      <ScrollView
+        contentContainerStyle={commonAddScreenStyles.scrollViewContainer}
+      >
+        {!isLoading && (
+          <LineChart
+            data={lineData1}
+            data2={lineData2}
+            scrollRef={ref}
+            color1={theme.colors.error}
+            color2={theme.colors.primary}
+            height={400}
+            textColor1={theme.colors.onBackground}
+            textColor2={theme.colors.onSurfaceVariant}
+            dataPointsColor1={theme.colors.onBackground}
+            textFontSize={15}
+            hideYAxisText
+            maxValue={21}
+            curved={true}
+            onPress={() => {}}
+            rotateLabel={true}
+            xAxisLabelsVerticalShift={10}
+            xAxisLabelTextStyle={{ color: theme.colors.onBackground }}
+          />
+        )}
+        {netAmount && (
+          <View style={{ marginTop: UI_ELEMENTS_GAP * 2 }}>
+            <Text style={{ color: theme.colors.error }}>
+              Total to pay {netAmount.totalToPay}
+            </Text>
+            <Text style={{ color: theme.colors.primary }}>
+              Total to receive {netAmount.totalToReceive}
+            </Text>
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 };
