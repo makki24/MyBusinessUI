@@ -1,17 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { View, StyleSheet, TouchableOpacity, FlatList } from "react-native";
-import {
-  DataTable,
-  TextInput,
-  useTheme,
-  Tooltip,
-  Text,
-} from "react-native-paper";
+import { DataTable, useTheme, Tooltip, Text } from "react-native-paper";
 import reportService from "../../../services/ReportService";
 import commonStyles from "../../styles/commonStyles";
 import Button from "../../../components/common/Button";
 import LoadingError from "../../../components/common/LoadingError";
 import { Filter } from "../../../types";
+import NumericInput from "./NumericInput";
 
 interface RenderTooltipProps {
   label: string;
@@ -178,18 +173,15 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
               {""}
             </DataTable.Cell>
             <DataTable.Cell style={styles.largeColumn} numeric>
-              <TextInput
-                mode="outlined"
-                keyboardType="numeric"
-                value={
+              <NumericInput
+                initialValue={
                   editingGroup[key]
                     ? editingGroup[key].toString()
                     : pricePerUnit.toString()
                 }
-                onChangeText={(text) =>
+                onChange={(text) =>
                   setEditingGroup({ ...editingGroup, [key]: text })
                 }
-                style={styles.input}
               />
             </DataTable.Cell>
           </DataTable.Row>
@@ -212,15 +204,13 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
                 />
               </DataTable.Cell>
               <DataTable.Cell style={styles.largeColumn} numeric>
-                <TextInput
-                  mode="outlined"
-                  keyboardType="numeric"
-                  value={
+                <NumericInput
+                  initialValue={
                     editingSubGroup[key] && editingSubGroup[key][user.userId]
                       ? editingSubGroup[key][user.userId].toString()
                       : pricePerUnit.toString()
                   }
-                  onChangeText={(text) =>
+                  onChange={(text) =>
                     setEditingSubGroup({
                       ...editingSubGroup,
                       [key]: {
@@ -229,7 +219,6 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
                       },
                     })
                   }
-                  style={styles.input}
                 />
               </DataTable.Cell>
             </DataTable.Row>

@@ -6,6 +6,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import ReportHeader from "./ReportHeader";
 import UserSummary from "./UserSummary";
+import WorkTypeSelectorList from "../work/AddWork/WorkTypeSelectorList";
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,10 @@ const UsersStack = () => {
         name={"UserSummary"}
         options={{ header: (props) => <ReportHeader {...props} /> }}
         component={UserSummary}
+      />
+      <Stack.Screen
+        name="WorkTypeSelectorList"
+        component={WorkTypeSelectorList}
       />
     </Stack.Navigator>
   );

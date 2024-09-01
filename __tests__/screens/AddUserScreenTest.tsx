@@ -12,6 +12,7 @@ import AddUserScreen from "../../screens/AddUserScreen";
 import UserService from "../../services/UserService";
 import { Role } from "../../types";
 import { rolesState } from "../../recoil/atom";
+import { NavigationContainer } from "@react-navigation/native";
 jest.useFakeTimers();
 
 // Enable fetch mocks
@@ -60,8 +61,11 @@ describe("AddUserScreen", () => {
       roles: [{ id: "1" }] as Role[],
       amountHolding: 0,
       amountToReceive: 0,
-      isOwnAsset: false,
-      isOwnLiability: false,
+      userProperties: {
+        isOwnAsset: false,
+        isOwnLiability: false,
+        workTypePrices: [],
+      },
     };
 
     // Mock route params
@@ -79,7 +83,9 @@ describe("AddUserScreen", () => {
         initializeState={(snapshot) => snapshot.set(rolesState, roles)}
       >
         <PaperProvider>
-          <AddUserScreen route={mockRouteParams} />
+          <NavigationContainer>
+            <AddUserScreen route={mockRouteParams} />
+          </NavigationContainer>
         </PaperProvider>
       </RecoilRoot>,
     );
@@ -109,8 +115,7 @@ describe("AddUserScreen", () => {
         roles: [{ id: "1", name: "MEMBER" }],
         amountHolding: NaN,
         amountToReceive: NaN,
-        isOwnAsset: false,
-        isOwnLiability: false,
+        userProperties: null,
       });
     });
   });
@@ -126,8 +131,11 @@ describe("AddUserScreen", () => {
       amountHolding: 0,
       amountToReceive: 0,
       id: "5",
-      isOwnAsset: false,
-      isOwnLiability: false,
+      userProperties: {
+        isOwnAsset: false,
+        isOwnLiability: false,
+        workTypePrices: [],
+      },
     };
 
     const mockRouteParams = {
@@ -144,7 +152,9 @@ describe("AddUserScreen", () => {
         initializeState={(snapshot) => snapshot.set(rolesState, roles)}
       >
         <PaperProvider>
-          <AddUserScreen route={mockRouteParams} />
+          <NavigationContainer>
+            <AddUserScreen route={mockRouteParams} />
+          </NavigationContainer>
         </PaperProvider>
       </RecoilRoot>,
     );
@@ -170,8 +180,14 @@ describe("AddUserScreen", () => {
         amountHolding: 0,
         amountToReceive: 0,
         id: "5",
-        isOwnAsset: false,
-        isOwnLiability: false,
+        userProperties: {
+          isOwnAsset: false,
+          isOwnLiability: false,
+          user: {
+            id: "5",
+          },
+          workTypePrices: [],
+        },
       });
     });
   });

@@ -1,4 +1,19 @@
 import { Role } from "./roles";
+import { WorkType } from "./work";
+
+export interface UserWorkTypePrice {
+  id?: number;
+  unit: string;
+  type: WorkType;
+  pricePerUnit?: number;
+}
+
+interface UserProperties {
+  user?: User;
+  isOwnAsset: boolean;
+  isOwnLiability: boolean;
+  workTypePrices: UserWorkTypePrice[];
+}
 
 export interface User {
   name: string;
@@ -7,8 +22,7 @@ export interface User {
   phoneNumber: string;
   amountToReceive: number;
   amountHolding: number;
-  isOwnAsset: boolean;
-  isOwnLiability: boolean;
+  userProperties: UserProperties;
   id?: string;
   roles: Role[]; // Assuming you have a Role interface defined
   notificationToken?: string;
