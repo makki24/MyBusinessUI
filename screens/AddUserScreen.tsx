@@ -7,14 +7,20 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
-import { Button, TextInput, Snackbar } from "react-native-paper";
+import {
+  Button,
+  TextInput,
+  Snackbar,
+  Text,
+  IconButton,
+} from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import EmailInput from "../components/common/EmailInput";
 import PhoneNumberInput from "../components/common/PhoneNumberInput";
 import * as ImagePicker from "expo-image-picker";
 import uploadImgtoImgBB from "../src/util/UploadImgtoImgBB";
 import userService from "../services/UserService";
-import { User } from "../types";
+import { User, UserWorkTypePrice, WorkType } from "../types";
 import { DEFAULT_AVATAR_URL } from "../constants/mybusiness.constants";
 import { useRecoilState } from "recoil";
 import { rolesState } from "../recoil/atom";
@@ -30,6 +36,8 @@ import { StyleProp } from "react-native/Libraries/StyleSheet/StyleSheet";
 import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import SwitchInput from "../components/common/SwitchInput";
 import commonStyles from "../src/styles/commonStyles";
+import WorkTypeSelectorButton from "../src/components/work/AddWork/WorkTypeSelectorButton";
+import NumericInput from "../src/components/common/NumericInput";
 
 interface AddUserScreenProps {
   route: {
@@ -61,14 +69,32 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
   const [roles] = useRecoilState(rolesState);
   const [isOwnAsset, setIsOwnAsset] = useState(false);
   const [isOwnLiability, setIsOwnLiability] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [workTypePrices, setWorkTypePrices] = useState<UserWorkTypePrice[]>([]);
+  const workTypeState = useState<WorkType>(null);
+  const [selectedType] = workTypeState;
 
   const onSnackbarDismiss = () => {
     setSnackbarVisible(false);
   };
 
   useEffect(() => {
+    if (selectedType) {
+      setWorkTypePrices((prev) => [
+        ...prev,
+        {
+          type: selectedType,
+          unit: "k.g",
+          pricePerUnit: 0,
+        },
+      ]);
+    }
+  }, [selectedType]);
+
+  useEffect(() => {
     // Check if the screen is in edit mode and user data is provided
     if (route.params?.isEditMode && route.params?.user) {
+      setIsEdit(true);
       const editingUser = route.params.user as User;
       setUsername(editingUser.name);
       setEmail(editingUser.email);
@@ -76,8 +102,11 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
       setAmountToReceive(`${editingUser.amountToReceive}`);
       setAmountHolding(`${editingUser.amountHolding}`);
       setPhoneNumber(editingUser.phoneNumber);
-      setIsOwnLiability(editingUser.isOwnLiability);
-      setIsOwnAsset(editingUser.isOwnAsset);
+      if (editingUser.userProperties) {
+        setWorkTypePrices(editingUser.userProperties.workTypePrices);
+        setIsOwnLiability(editingUser.userProperties.isOwnLiability);
+        setIsOwnAsset(editingUser.userProperties.isOwnAsset);
+      }
     }
   }, [route.params?.isEditMode, route.params?.user]);
 
@@ -118,13 +147,20 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
           : [memberRole],
         amountHolding: parseFloat(amountHolding),
         amountToReceive: parseFloat(amountToReceive),
-        isOwnAsset: isOwnAsset,
-        isOwnLiability: isOwnLiability,
+        userProperties: null,
       };
 
       if (route.params?.isEditMode && route.params?.user) {
         // If in edit mode, update the existing user
         user.id = route.params.user.id;
+        user.userProperties = {
+          user: {
+            id: route.params.user.id,
+          } as User,
+          isOwnAsset: isOwnAsset,
+          isOwnLiability: isOwnLiability,
+          workTypePrices: workTypePrices,
+        };
       }
       user = await userService.addUser(user);
 
@@ -217,22 +253,60 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
         setPhoneNumber={setPhoneNumber}
         style={commonAddScreenStyles.inputField}
       />
-      <View style={commonStyles.row}>
-        <SwitchInput
-          label="Is Own Asset ?"
-          value={isOwnAsset}
-          onValueChange={(value) => {
-            setIsOwnAsset(value);
-          }}
-        />
-        <SwitchInput
-          label="Is Own Liability ?"
-          value={isOwnLiability}
-          onValueChange={(value) => {
-            setIsOwnLiability(value);
-          }}
-        />
-      </View>
+      {isEdit && (
+        <>
+          <View style={commonStyles.row}>
+            <SwitchInput
+              label="Is Own Asset ?"
+              value={isOwnAsset}
+              onValueChange={(value) => {
+                setIsOwnAsset(value);
+              }}
+            />
+            <SwitchInput
+              label="Is Own Liability ?"
+              value={isOwnLiability}
+              onValueChange={(value) => {
+                setIsOwnLiability(value);
+              }}
+            />
+          </View>
+          {workTypePrices.map((price, index) => {
+            return (
+              <View
+                style={{ ...commonStyles.row, alignItems: "center" }}
+                key={index}
+              >
+                <Text>{price.type.name}</Text>
+                <NumericInput
+                  initialValue={`${price.pricePerUnit}`}
+                  onChange={(value) => {
+                    setWorkTypePrices((prev) => [
+                      ...prev.map((workTypePrice, ind) => {
+                        let pp = workTypePrice.pricePerUnit;
+                        if (index === ind) {
+                          pp = +value;
+                        }
+                        return { ...workTypePrice, pricePerUnit: pp };
+                      }),
+                    ]);
+                  }}
+                />
+                <Text>{price.unit}</Text>
+                <IconButton
+                  icon="delete"
+                  onPress={() => {
+                    setWorkTypePrices((prev) =>
+                      prev.filter((item, ind) => index !== ind),
+                    );
+                  }}
+                />
+              </View>
+            );
+          })}
+          <WorkTypeSelectorButton workType={workTypeState} />
+        </>
+      )}
       <Button mode="contained" onPress={handleAddUser}>
         {route.params?.isEditMode ? "Update User" : "Add User"}
       </Button>

@@ -1,7 +1,7 @@
 // AddContributionScreen.tsx
 import React, { useState, useEffect } from "react";
 import { View, ScrollView } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { Button, Text, TextInput } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import { tagsState, usersState, userState } from "../recoil/atom";
 import UserDropDownItem from "../components/common/UserDropDownItem";
@@ -51,6 +51,7 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
   const [isSelf, setIsSelf] = useState(false); // State for SwitchInput
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     if (route.params?.isEditMode && route.params?.contribution) {
@@ -81,6 +82,7 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
         amount: parseFloat(amountToAdd),
         date: contributionDate,
         receiver: loggedInUser,
+        description,
         tags: selectedTags.map((tag) => ({ id: tag })) as Tag[],
       };
       let newAmount = loggedInUser.amountHolding + contribution.amount;
@@ -193,6 +195,13 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
         label="Amount to Add"
         value={amountToAdd}
         onChangeText={setAmountToAdd}
+      />
+
+      <TextInput
+        label="Description (optional)"
+        value={description}
+        onChangeText={setDescription}
+        style={commonAddScreenStyles.inputField}
       />
 
       <DateTimePicker
