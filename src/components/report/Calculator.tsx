@@ -7,6 +7,12 @@ import Button from "../../../components/common/Button";
 import LoadingError from "../../../components/common/LoadingError";
 import { Filter } from "../../../types";
 import NumericInput from "./NumericInput";
+import {
+  CollapsedGroups,
+  GroupedData,
+  GroupTotals,
+  PricePerUnitAndTypeGroupedData,
+} from "./types";
 
 interface RenderTooltipProps {
   label: string;
@@ -27,17 +33,17 @@ interface CalculatorProps {
 }
 
 const Calculator: React.FC<CalculatorProps> = ({ route }) => {
-  const [groupedData, setGroupedData] = useState({});
-  const [totalOfAll, setTotalOfAll] = useState(0);
-  const [profit, setProfit] = useState(0);
+  const [groupedData, setGroupedData] = useState<GroupedData>({});
+  const [totalOfAll, setTotalOfAll] = useState<number>(0);
+  const [profit, setProfit] = useState<number>(0);
   const [editingGroup, setEditingGroup] = useState({});
   const [editingSubGroup, setEditingSubGroup] = useState({});
-  const [updatedTotalOfAll, setUpdatedTotalOfAll] = useState(0);
-  const [tagId] = useState(route.params.tagId); // Example tagId
-  const [excludeTagId] = useState(route.params.excludeTagId); // Example excludeTagId
+  const [updatedTotalOfAll, setUpdatedTotalOfAll] = useState<number>(0);
+  const [tagId] = useState(route.params.tagId);
+  const [excludeTagId] = useState(route.params.excludeTagId);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [collapsedGroups, setCollapsedGroups] = useState({});
+  const [collapsedGroups, setCollapsedGroups] = useState<CollapsedGroups>({});
 
   const theme = useTheme();
 
@@ -62,20 +68,29 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
     setIsLoading(true);
     try {
       const filter: Filter = createFilter();
+      const response: PricePerUnitAndTypeGroupedData =
+        await reportService.getGroupedReport(filter);
 
-      const response = await reportService.getGroupedReport(filter);
-
-      // Calculate total amount for each group
-      const groupTotals = {};
+      const groupTotals: GroupTotals = {};
       Object.keys(response.groupedData).forEach((key) => {
-        const totalAmount = response.groupedData[key].reduce(
-          (sum, user) => sum + user.totalAmount,
-          0,
-        );
+        const totalAmount = response.groupedData[key].reduce((sum, user) => {
+          const multiplier = user.userWorkTypePricePerUnit
+            ? user.userWorkTypePricePerUnit / 10
+            : 1;
+          const adjustedAmount = user.totalAmount * multiplier;
+          return sum + adjustedAmount;
+        }, 0);
+
         groupTotals[key] = totalAmount;
+
+        response.groupedData[key].forEach((user) => {
+          const multiplier = user.userWorkTypePricePerUnit
+            ? user.userWorkTypePricePerUnit / 10
+            : 1;
+          user.updatedTotalAmount = user.totalAmount * multiplier;
+        });
       });
 
-      // Sort groups by total amount
       const sortedGroupedData = Object.keys(response.groupedData)
         .sort((a, b) => groupTotals[b] - groupTotals[a])
         .reduce((obj, key) => {
@@ -84,11 +99,14 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
         }, {});
 
       setGroupedData(sortedGroupedData);
-      setTotalOfAll(roundUp(response.totalOfAll));
-      setUpdatedTotalOfAll(roundUp(response.totalOfAll));
-      setProfit(roundUp(response.profit));
+      const total = Object.values(groupTotals).reduce(
+        (sum, amount) => sum + amount,
+        0,
+      );
+      setTotalOfAll(roundUp(total));
+      setUpdatedTotalOfAll(roundUp(total));
+      setProfit(roundUp(response.profit + response.totalOfAll - total));
 
-      // Initialize all groups as collapsed
       const initialCollapsedGroups = {};
       Object.keys(sortedGroupedData).forEach((key) => {
         initialCollapsedGroups[key] = true;
@@ -115,8 +133,20 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
           editingSubGroup[key] && editingSubGroup[key][user.userId]
             ? parseFloat(editingSubGroup[key][user.userId])
             : groupPrice;
+
+        const newMultiplier =
+          editingSubGroup[key] &&
+          editingSubGroup[key][`${user.userId}_multiplier`]
+            ? parseFloat(editingSubGroup[key][`${user.userId}_multiplier`]) / 10
+            : user.userWorkTypePricePerUnit
+              ? user.userWorkTypePricePerUnit / 10
+              : 1;
+
         const newTotalAmount =
-          (user.totalAmount / parseFloat(pricePerUnit)) * newSubPrice;
+          (user.totalAmount / parseFloat(pricePerUnit)) *
+          newSubPrice *
+          newMultiplier;
+
         user.updatedTotalAmount = roundUp(newTotalAmount);
         newTotal += newTotalAmount;
       });
@@ -189,17 +219,46 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
         {!collapsedGroups[key] &&
           groupedData[key].map((user) => (
             <DataTable.Row key={user.userId}>
-              <DataTable.Cell style={styles.largeColumn}>{""}</DataTable.Cell>
+              {user.userWorkTypePricePerUnit !== null && (
+                <>
+                  <DataTable.Cell style={styles.largeColumn}>
+                    <NumericInput
+                      initialValue={
+                        editingSubGroup[key] &&
+                        editingSubGroup[key][`${user.userId}_multiplier`]
+                          ? editingSubGroup[key][
+                              `${user.userId}_multiplier`
+                            ].toString()
+                          : user.userWorkTypePricePerUnit
+                            ? user.userWorkTypePricePerUnit.toString()
+                            : ""
+                      }
+                      onChange={(text) =>
+                        setEditingSubGroup({
+                          ...editingSubGroup,
+                          [key]: {
+                            ...editingSubGroup[key],
+                            [`${user.userId}_multiplier`]: text,
+                          },
+                        })
+                      }
+                    />
+                  </DataTable.Cell>
+                </>
+              )}
+              {user.userWorkTypePricePerUnit === null && (
+                <>
+                  <DataTable.Cell style={styles.largeColumn}>
+                    {""}
+                  </DataTable.Cell>
+                </>
+              )}
               <DataTable.Cell style={styles.mediumColumn}>
                 <RenderTooltip label={user.userName} ellipse={false} />
               </DataTable.Cell>
               <DataTable.Cell style={styles.largeColumn} numeric>
                 <RenderTooltip
-                  label={
-                    user.updatedTotalAmount !== undefined
-                      ? user.updatedTotalAmount
-                      : user.totalAmount
-                  }
+                  label={`${user.updatedTotalAmount}`}
                   ellipse={true}
                 />
               </DataTable.Cell>
@@ -235,7 +294,7 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
       <View style={{ ...commonStyles.row, alignItems: "center" }}>
         <View>
           <Text>T Amount of Works: {totalOfAll}</Text>
-          <Text>After Edit: {updatedTotalOfAll}</Text>
+          <Text>After edit, amt of Works: {updatedTotalOfAll}</Text>
           <Text>
             Profit:{" "}
             <Text
@@ -271,7 +330,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    width: 80, // Fixed width for the input fields
+    width: 80,
     fontSize: 12,
   },
   largeColumn: {

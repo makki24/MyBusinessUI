@@ -197,7 +197,6 @@ const AppContent = () => {
             options={{
               headerShown: false,
               drawerLabel: "Report by Tags",
-              unmountOnBlur: true,
             }}
             name="ReportStack"
             component={ReportStack}
