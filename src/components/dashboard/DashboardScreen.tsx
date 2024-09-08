@@ -6,6 +6,14 @@ import reportService from "../../../services/ReportService";
 
 const NotificationsRoute = () => <Text>Notifications</Text>;
 
+const ExpenseSummary = () => {
+  return <SummaryByType api={reportService.getExpenseSummaryByType} />;
+};
+
+const WorkSummary = () => {
+  return <SummaryByType api={reportService.getWorkSummaryByType} />;
+};
+
 const DashboardScreen = () => {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
@@ -20,13 +28,9 @@ const DashboardScreen = () => {
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
+    byExpenseType: ExpenseSummary,
     lineChart: LineChartScreen,
-    byExpenseType: () => (
-      <SummaryByType api={reportService.getExpenseSummaryByType} />
-    ),
-    byWorkType: () => (
-      <SummaryByType api={reportService.getWorkSummaryByType} />
-    ),
+    byWorkType: WorkSummary,
     notifications: NotificationsRoute,
   });
 

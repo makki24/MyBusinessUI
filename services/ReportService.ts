@@ -1,6 +1,7 @@
 import axios from "./NetworkInterceptor";
 import { ExpenseReport, Filter, UserReport } from "../types";
 import { Range } from "../src/components/users/report-summary.model";
+import { PricePerUnitAndTypeGroupedData } from "../src/components/report/types";
 
 let getReportByUserRequest = null;
 
@@ -16,7 +17,9 @@ const ReportService = {
     return response.data;
   },
 
-  getGroupedReport: async (filter: Filter) => {
+  getGroupedReport: async (
+    filter: Filter,
+  ): Promise<PricePerUnitAndTypeGroupedData> => {
     const response = await axios.post(`api/report/byTag/grouped`, filter);
 
     if (!response.data) {
