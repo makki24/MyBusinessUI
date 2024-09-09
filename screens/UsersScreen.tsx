@@ -86,7 +86,7 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
 
   const confirmDeleteUser = async () => {
     setIsLoading(true);
-
+    setError("");
     try {
       await UserService.deleteUser(selectedUser.id);
       setUsers((prevUsers) =>
@@ -132,15 +132,6 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
           ListHeaderComponent={() => (
             <View>
               <LoadingError error={error} isLoading={isLoading} />
-              {/*<Text
-                variant={"titleLarge"}
-                style={{
-                  color: toRecieve ? theme.colors.primary : theme.colors.error,
-                  alignSelf: 'flex-end'
-                }}
-              >
-                {totalAmount}
-              </Text>*/}
             </View>
           )}
           renderItem={({ item }) => (
