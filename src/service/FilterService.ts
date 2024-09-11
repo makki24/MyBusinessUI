@@ -31,6 +31,18 @@ const FilterService = {
 
     return response.data;
   },
+
+  getContributionFilters: async (): Promise<Filter> => {
+    const response = await axios.get(
+      `/api/contributions/filter/getContributionFilters`,
+    );
+
+    if (!response.data) {
+      throw new Error(`Error fetching contributions: ${response.statusText}`);
+    }
+
+    return response.data;
+  },
 };
 
 export default FilterService;

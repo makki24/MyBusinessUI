@@ -5,9 +5,10 @@ export interface Contribution {
   id?: number;
   date: Date;
   amount: number;
-  sender?: User;
   receiver: User;
   tags: Tag[];
+  quantity: number;
+  pricePerUnit: number;
   description?: string;
 }
 
