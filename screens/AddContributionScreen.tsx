@@ -1,16 +1,14 @@
 // AddContributionScreen.tsx
 import React, { useState, useEffect } from "react";
-import { View, ScrollView } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { ScrollView } from "react-native";
+import { Button } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import { userState } from "../recoil/atom";
 import { Contribution, Tag as Tags } from "../types";
 import contributionService from "../services/ContributionService";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
-import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import Modal from "../components/common/Modal";
 import CommonAddFormInputs from "../src/components/common/CommonAddFormInputs";
 import { useTagsClosed } from "../src/components/tags/TagsSelector";
 
@@ -33,8 +31,6 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
   const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage] = useState("");
 
   const tagsState = useState<Tags[]>([]);
   const quantityState = useState("");
@@ -49,17 +45,17 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
     hours: new Date().getHours(),
     minutes: new Date().getMinutes(),
   });
-  const showPricePerUnitState = useState(false);
-  const showAmountState = useState(true);
+  const showPricePerUnitState = useState(null);
+  const showAmountState = useState(null);
 
   const [selectedTags, setSelectedTags] = tagsState;
-  const [quantity] = quantityState;
-  const [pricePerUnit] = pricePerUnitState;
+  const [quantity, setQuantity] = quantityState;
+  const [pricePerUnit, setPricePerUnit] = pricePerUnitState;
   const [amount, setAmount] = amountState;
   const [description] = descriptionState;
   const [inputDate, setInputDate] = inputDateState;
   const [time, setTime] = timeState;
-  const [showPricePerUnit] = showPricePerUnitState;
+  const [showPricePerUnit, setShowPricePerUnit] = showPricePerUnitState;
   const [_showAmount, setShowAmount] = showAmountState;
 
   useTagsClosed(({ tags }) => {
@@ -76,15 +72,24 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
       setInputDate(paramDate);
       setTime({ hours: paramDate.getHours(), minutes: paramDate.getMinutes() });
       setSelectedTags(extractedContribution.tags);
+      if (extractedContribution.quantity) {
+        setQuantity(extractedContribution.quantity.toString());
+        if (extractedContribution.quantity > 1) {
+          setShowPricePerUnit(true);
+          setShowAmount(false);
+        } else {
+          setShowPricePerUnit(false);
+        }
+      }
+      if (extractedContribution.pricePerUnit)
+        setPricePerUnit(extractedContribution.pricePerUnit.toString());
+    } else {
+      setShowPricePerUnit(false);
     }
   }, [route.params?.isEditMode, route.params?.contribution]);
 
-  const handleModalClose = () => {
-    setModalVisible(false);
-  };
-
   useEffect(() => {
-    if (!showPricePerUnit) setShowAmount(true);
+    if (showPricePerUnit === false) setShowAmount(true);
   }, [showPricePerUnit]);
 
   const submitContribution = async () => {
@@ -126,8 +131,8 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
 
   const addContribution = async () => {
     setError("");
-    if (!amount) {
-      setError("Amount is needed");
+    if (!amount && !pricePerUnit && !quantity) {
+      setError("Amount is needed or pricePerUnit and quantity is needed");
       return;
     }
     submitContribution();
@@ -163,22 +168,6 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
           ? "Update Contribution"
           : "Declare the contribution"}
       </Button>
-
-      <Modal
-        isModalVisible={modalVisible}
-        setIsModalVisible={handleModalClose}
-        contentContainerStyle={commonStyles.modalContainer}
-      >
-        <Text>{modalMessage}</Text>
-        <View style={commonStyles.modalButtonGap} />
-        <Button icon="check" mode="contained" onPress={submitContribution}>
-          Continue
-        </Button>
-        <View style={commonStyles.modalButtonGap} />
-        <Button icon="cancel" mode="outlined" onPress={handleModalClose}>
-          Cancel
-        </Button>
-      </Modal>
     </ScrollView>
   );
 };
