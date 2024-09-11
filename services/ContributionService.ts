@@ -1,4 +1,8 @@
-import { Contribution, LoanToHoldingTransaction } from "../types";
+import {
+  Contribution,
+  FilterAndSort,
+  LoanToHoldingTransaction,
+} from "../types";
 import axios from "./NetworkInterceptor";
 
 const ContributionService = {
@@ -55,6 +59,16 @@ const ContributionService = {
     id: number,
   ): Promise<LoanToHoldingTransaction> => {
     const response = await axios.delete(`/api/loan/clearLoan/${id}`);
+    return response.data;
+  },
+
+  filterContribution: async (
+    filter: FilterAndSort,
+  ): Promise<Contribution[]> => {
+    const response = await axios.post(`/api/contributions/filter`, filter);
+    if (!response.data) {
+      throw new Error(`No data in response.data`);
+    }
     return response.data;
   },
 };

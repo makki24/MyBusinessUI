@@ -39,6 +39,7 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
   const [editingGroup, setEditingGroup] = useState({});
   const [editingSubGroup, setEditingSubGroup] = useState({});
   const [updatedTotalOfAll, setUpdatedTotalOfAll] = useState<number>(0);
+  const [groupSums, setGroupSums] = useState<{ [key: string]: number }>({});
   const [tagId] = useState(route.params.tagId);
   const [excludeTagId] = useState(route.params.excludeTagId);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,6 +73,8 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
         await reportService.getGroupedReport(filter);
 
       const groupTotals: GroupTotals = {};
+      const fetchedGroupSums: { [key: string]: number } = {};
+
       Object.keys(response.groupedData).forEach((key) => {
         const totalAmount = response.groupedData[key].reduce((sum, user) => {
           const multiplier = user.userWorkTypePricePerUnit
@@ -82,6 +85,7 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
         }, 0);
 
         groupTotals[key] = totalAmount;
+        fetchedGroupSums[key] = totalAmount; // Store initial sum
 
         response.groupedData[key].forEach((user) => {
           const multiplier = user.userWorkTypePricePerUnit
@@ -99,6 +103,8 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
         }, {});
 
       setGroupedData(sortedGroupedData);
+      setGroupSums(fetchedGroupSums);
+
       const total = Object.values(groupTotals).reduce(
         (sum, amount) => sum + amount,
         0,
@@ -121,6 +127,7 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
 
   const handleUpdate = () => {
     let newTotal = 0;
+    const newGroupSums = { ...groupSums };
 
     Object.keys(groupedData).forEach((key) => {
       const [pricePerUnit] = key.split("|");
@@ -150,12 +157,21 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
         user.updatedTotalAmount = roundUp(newTotalAmount);
         newTotal += newTotalAmount;
       });
+
+      // Update sum for the group
+      newGroupSums[key] = groupedData[key].reduce(
+        (sum, user) => sum + user.updatedTotalAmount,
+        0,
+      );
     });
 
     setUpdatedTotalOfAll((prev) => {
       setProfit(roundUp(profit - newTotal + prev));
       return roundUp(newTotal);
     });
+
+    // Update group sums state
+    setGroupSums(newGroupSums);
   };
 
   const RenderTooltip: React.FC<RenderTooltipProps> = ({ label, ellipse }) => {
@@ -200,7 +216,7 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
               {""}
             </DataTable.Cell>
             <DataTable.Cell style={styles.largeColumn} numeric>
-              {""}
+              <Text>{roundUp(groupSums[key])}</Text> {/* Display group sum */}
             </DataTable.Cell>
             <DataTable.Cell style={styles.largeColumn} numeric>
               <NumericInput
@@ -257,10 +273,7 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
                 <RenderTooltip label={user.userName} ellipse={false} />
               </DataTable.Cell>
               <DataTable.Cell style={styles.largeColumn} numeric>
-                <RenderTooltip
-                  label={`${user.updatedTotalAmount}`}
-                  ellipse={true}
-                />
+                <Text>{user.updatedTotalAmount.toFixed(2)}</Text>
               </DataTable.Cell>
               <DataTable.Cell style={styles.largeColumn} numeric>
                 <NumericInput
@@ -289,7 +302,7 @@ const Calculator: React.FC<CalculatorProps> = ({ route }) => {
   const sortedKeys = useMemo(() => Object.keys(groupedData), [groupedData]);
 
   return (
-    <View style={commonStyles.container}>
+    <View style={[commonStyles.container, styles.container]}>
       <LoadingError error={error} isLoading={isLoading} />
       <View style={{ ...commonStyles.row, alignItems: "center" }}>
         <View>

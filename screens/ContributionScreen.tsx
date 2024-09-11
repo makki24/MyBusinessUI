@@ -1,17 +1,17 @@
 // src/screens/ContributionScreen.tsx
 import React, { useEffect, useState } from "react";
-import { View, FlatList, RefreshControl } from "react-native";
-import { FAB } from "react-native-paper";
+import { View } from "react-native";
 import { useRecoilState } from "recoil";
 import ContributionService from "../services/ContributionService";
 import ContributionItem from "../components/ContributionItem";
 import { contributionsState, userState } from "../recoil/atom";
-import { Contribution } from "../types";
-import commonScreenStyles from "../src/styles/commonScreenStyles";
+import { Contribution, Filter } from "../types";
 import commonStyles from "../src/styles/commonStyles";
-import LoadingError from "../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import ConfirmationModal from "../components/common/ConfirmationModal";
+import ItemsList from "../src/components/common/ItemsList";
+import filterService from "../src/service/FilterService";
+import LoadingError from "../components/common/LoadingError";
 
 type ContributionScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -23,30 +23,27 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
   const [contributions, setContributions] = useRecoilState(contributionsState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedContribution, setSelectedContribution] =
     useState<Contribution>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [_, setLoggedInUser] = useRecoilState(userState);
+  const [uniqueFilters, setUniqueFilters] = useState<Filter>({
+    sender: [],
+    receiver: [],
+    tags: [],
+    user: [],
+  });
 
-  const fetchContributions = async () => {
-    setError("");
-    try {
-      setIsRefreshing(true);
+  const transformAndSetContribution = (contributionData) => {
+    return contributionData.map((contribution) => ({
+      ...contribution,
+      date: new Date(contribution.date),
+    }));
+  };
 
-      let contributionsData = await ContributionService.getContributions();
-      contributionsData = contributionsData.map((contribution) => ({
-        ...contribution,
-        date: new Date(contribution.date),
-      }));
-      setContributions(contributionsData);
-    } catch (fetchError) {
-      setError(
-        fetchError.message || "Error fetching contributions. Please try again.",
-      );
-    } finally {
-      setIsRefreshing(false);
-    }
+  const getUnique = async () => {
+    const uniQueFilter = await filterService.getContributionFilters();
+    setUniqueFilters(uniQueFilter);
   };
 
   useEffect(() => {
@@ -54,7 +51,7 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
   }, [error]);
 
   useEffect(() => {
-    fetchContributions();
+    getUnique();
   }, []);
 
   const handleEditContribution = (contribution: Contribution) => {
@@ -101,46 +98,36 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
     }
   };
 
-  const handleRefresh = () => {
-    fetchContributions();
+  const handleSearch = (query) => {
+    return contributions.filter((contribution) =>
+      contribution.receiver.name.toLowerCase().includes(query.toLowerCase()),
+    );
   };
 
   return (
     <View style={commonStyles.container}>
-      {
-        <FlatList
-          data={contributions}
-          ListHeaderComponent={() => (
-            <View>
-              <LoadingError error={error} isLoading={isLoading} />
-            </View>
-          )}
-          renderItem={({ item }) => (
-            <ContributionItem
-              contribution={item}
-              onPress={() => handleEditContribution(item)}
-              onDelete={() => handleDeleteContribution(item)}
-            />
-          )}
-          keyExtractor={(item) => item.id.toString()} // Ensure key is a string
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={handleRefresh}
-            />
-          }
-        />
-      }
-
-      <FAB
-        style={commonScreenStyles.fab}
-        icon="plus"
-        onPress={() =>
+      <LoadingError error={error} isLoading={isLoading} />
+      <ItemsList
+        uniQueFilterValues={uniqueFilters}
+        searchBar={true}
+        sort={true}
+        handleSearch={handleSearch}
+        fetchData={ContributionService.filterContribution}
+        recoilState={contributionsState}
+        renderItem={({ item }) => (
+          <ContributionItem
+            contribution={item}
+            onPress={() => handleEditContribution(item)}
+            onDelete={() => handleDeleteContribution(item)}
+          />
+        )}
+        transFormData={transformAndSetContribution}
+        onAdd={() => {
           navigation.navigate("ProfileStack", {
             screen: "AddContribution",
             params: { title: "Create Contribution" },
-          })
-        }
+          });
+        }}
       />
 
       {/* Delete Contribution Modal */}
