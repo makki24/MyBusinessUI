@@ -21,10 +21,12 @@ interface CommonAddFormInputsProps {
     showPricePerUnit: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
     showAmount: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
   };
+  tagsSelectedNotifier: string;
 }
 
 export const CommonAddFormInputs: React.FC<CommonAddFormInputsProps> = ({
   states,
+  tagsSelectedNotifier,
 }) => {
   const [showPricePerUnit, setShowPricePerUnit] = states.showPricePerUnit;
   const [showAmount, setShowAmount] = states.showAmount;
@@ -45,7 +47,10 @@ export const CommonAddFormInputs: React.FC<CommonAddFormInputsProps> = ({
 
   return (
     <View>
-      <TagsSelectorButton selectedTags={selectedTags} />
+      <TagsSelectorButton
+        selectedTags={selectedTags}
+        notifyId={tagsSelectedNotifier}
+      />
       <View style={{ ...commonStyles.row, justifyContent: "space-between" }}>
         <SwitchInput
           label="Show Price per unit"

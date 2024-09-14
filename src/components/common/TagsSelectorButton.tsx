@@ -7,10 +7,14 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 
 interface TagsSelectorButtonProps {
   selectedTags: Tag[];
+  label?: string;
+  notifyId: string;
 }
 
 const TagsSelectorButton: React.FC<TagsSelectorButtonProps> = ({
   selectedTags,
+  label,
+  notifyId,
 }) => {
   const theme = useTheme();
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
@@ -22,6 +26,7 @@ const TagsSelectorButton: React.FC<TagsSelectorButtonProps> = ({
       screen: "TagsSelector",
       params: {
         selectedTags: selectedTags,
+        notifyId: notifyId,
       },
     });
   };
@@ -30,7 +35,7 @@ const TagsSelectorButton: React.FC<TagsSelectorButtonProps> = ({
     <>
       <>{selectedTags && <Labels label={""} items={selectedTags} />}</>
       <Button style={{ alignSelf: "flex-start" }} onPress={openTags}>
-        Select Tags
+        {label ?? "Select Tags"}
         <Icon source="tag" size={20} color={theme.colors.primary} />
       </Button>
     </>

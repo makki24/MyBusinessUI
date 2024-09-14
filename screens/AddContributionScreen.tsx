@@ -1,16 +1,16 @@
 // AddContributionScreen.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ScrollView } from "react-native";
 import { Button } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import { userState } from "../recoil/atom";
-import { Contribution, Tag as Tags } from "../types";
+import { Contribution, Tag, Tag as Tags } from "../types";
 import contributionService from "../services/ContributionService";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import LoadingError from "../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import CommonAddFormInputs from "../src/components/common/CommonAddFormInputs";
-import { useTagsClosed } from "../src/components/tags/TagsSelector";
+import { makeEventNotifier } from "../src/components/common/useEventListner";
 
 let oldAmount = 0;
 
@@ -58,9 +58,17 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
   const [showPricePerUnit, setShowPricePerUnit] = showPricePerUnitState;
   const [_showAmount, setShowAmount] = showAmountState;
 
-  useTagsClosed(({ tags }) => {
+  const tagsSelectedNotifier = useRef(
+    makeEventNotifier<{ tags: Tag[] }, unknown>(
+      "OnTagsSelectedAndClosedInAddContributionScreen",
+    ),
+  ).current;
+
+  const tagsSelectedListner = ({ tags }) => {
     setSelectedTags(tags);
-  }, []);
+  };
+
+  tagsSelectedNotifier.useEventListener(tagsSelectedListner, []);
 
   useEffect(() => {
     if (route.params?.isEditMode && route.params?.contribution) {
@@ -156,6 +164,7 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
           showAmount: showAmountState,
           showPricePerUnit: showPricePerUnitState,
         }}
+        tagsSelectedNotifier={tagsSelectedNotifier.name}
       />
 
       <Button

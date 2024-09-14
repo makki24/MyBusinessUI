@@ -7,3 +7,7 @@ export function scaleValue(value, originalMin, originalMax) {
     newMin
   );
 }
+
+export const roundUp = (amount) => {
+  return Math.round(amount * 100) / 100;
+};

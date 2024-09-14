@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { Button } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import {
+  Tag,
   Tag as Tags,
   WorkAndSale as WorkAndSaleType,
   WorkAndSale,
 } from "../../../types";
 import { middleManState } from "./atom";
 import { AddWorkInputs as CommonAddWorkInputs } from "../common/work/AddWorkInputs";
-import { useTagsClosed } from "../tags/TagsSelector";
+import { makeEventNotifier } from "../common/useEventListner";
 
 interface AddWorkInputProps {
   onAddWork: (arg: WorkAndSale) => void;
@@ -70,7 +71,13 @@ const AddWorkInputs: React.FC<AddWorkInputProps> = ({
     }
   }, [worksLength]);
 
-  useTagsClosed(({ tags }) => {
+  const tagsSelectedNotifier = useRef(
+    makeEventNotifier<{ tags: Tag[] }, unknown>(
+      "OnTagsSelectedAndClosedInMiddleManAddWorkScreen",
+    ),
+  ).current;
+
+  const tagsSelectedListner = ({ tags }) => {
     setSelectedTags(tags);
     setWorkAndSaleState(
       (prev): WorkAndSaleType => ({
@@ -79,7 +86,9 @@ const AddWorkInputs: React.FC<AddWorkInputProps> = ({
         works: [...prev.works.map((work) => ({ ...work, tags: tags }))],
       }),
     );
-  }, []);
+  };
+
+  tagsSelectedNotifier.useEventListener(tagsSelectedListner, []);
 
   const addWork = () => {
     let calculatedAmount = parseFloat(pricePerUnit) * parseFloat(quantity);
@@ -116,6 +125,7 @@ const AddWorkInputs: React.FC<AddWorkInputProps> = ({
           description: descriptionState,
         }}
         workType={workAndSaleState.works[0]?.type}
+        tagsSelectedNotifier={tagsSelectedNotifier.name}
       />
       <Button mode="contained" onPress={addWork} disabled={buttonDisabled}>
         Add Work
