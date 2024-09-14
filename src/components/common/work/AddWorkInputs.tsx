@@ -13,11 +13,13 @@ interface AddWorkInputProps {
     tags: [Tags[], React.Dispatch<React.SetStateAction<Tags[]>>];
   };
   workType: WorkType;
+  tagsSelectedNotifier: string;
 }
 
 export const AddWorkInputs: React.FC<AddWorkInputProps> = ({
   states,
   workType,
+  tagsSelectedNotifier,
 }) => {
   const showAmountState = useState(false);
   const showPricePerUnitState = useState(false);
@@ -53,6 +55,7 @@ export const AddWorkInputs: React.FC<AddWorkInputProps> = ({
         showAmount: showAmountState,
         showPricePerUnit: showPricePerUnitState,
       }}
+      tagsSelectedNotifier={tagsSelectedNotifier}
     />
   );
 };

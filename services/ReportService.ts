@@ -1,6 +1,5 @@
 import axios from "./NetworkInterceptor";
 import { ExpenseReport, Filter, UserReport } from "../types";
-import { Range } from "../src/components/users/report-summary.model";
 import { PricePerUnitAndTypeGroupedData } from "../src/components/report/types";
 
 let getReportByUserRequest = null;
@@ -41,10 +40,10 @@ const ReportService = {
     return response.data;
   },
 
-  getExpenseSummaryByType: async (range: Range) => {
+  getExpenseSummaryByType: async (filter: Filter) => {
     const response = await axios.post(
       `api/report/expenseSummary/getTotalAmountByType`,
-      range,
+      filter,
     );
 
     if (!response.data) {
@@ -55,10 +54,10 @@ const ReportService = {
     return response.data;
   },
 
-  getWorkSummaryByType: async (range: Range) => {
+  getWorkSummaryByType: async (filter: Filter) => {
     const response = await axios.post(
       `api/report/workSummary/getTotalAmountByType`,
-      range,
+      filter,
     );
 
     if (!response.data) {

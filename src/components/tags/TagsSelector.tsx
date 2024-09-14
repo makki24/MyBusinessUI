@@ -1,5 +1,5 @@
 import Labels from "../../../components/common/Labels";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { tagsState } from "../../../recoil/atom";
 import { ScrollView, View } from "react-native";
@@ -26,23 +26,12 @@ interface TagsSelectorProps {
   route: {
     params: {
       selectedTags: Tag[];
+      notifyId: string;
     };
   };
 }
 
 type NavigationProp = StackNavigationProp<RootStackParamList, "TagsStack">;
-
-const notifer = makeEventNotifier<{ tags: Tag[] }, unknown>(
-  "OnTagsSelectedAndClosed",
-);
-
-// Youy can add a snippet to generate this
-export function useTagsClosed<T>(
-  listener: typeof notifer.notify,
-  deps: ReadonlyArray<T>,
-) {
-  notifer.useEventListener(listener, deps);
-}
 
 const TagsSelector: React.FC<TagsSelectorProps> = ({ route }) => {
   const tags = useRecoilValue(tagsState);
@@ -51,8 +40,12 @@ const TagsSelector: React.FC<TagsSelectorProps> = ({ route }) => {
   );
   const navigation = useNavigation<NavigationProp>();
 
+  const notifier = useRef(
+    makeEventNotifier<{ tags: Tag[] }, unknown>(route.params.notifyId),
+  ).current;
+
   const navigate = () => {
-    notifer.notify({ tags: selectedTags });
+    notifier.notify({ tags: selectedTags });
     navigation.goBack();
   };
 

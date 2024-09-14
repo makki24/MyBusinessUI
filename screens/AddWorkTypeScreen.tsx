@@ -1,11 +1,11 @@
 // src/screens/AddWorkTypeScreen.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { useRecoilState } from "recoil";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import { workTypesState } from "../recoil/atom"; // Adjust the path accordingly
-import { Tag as Tags, WorkType } from "../types";
+import { Tag, Tag as Tags, WorkType } from "../types";
 import WorkService from "../services/WorkService";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
@@ -13,7 +13,7 @@ import NumberInput from "../components/common/NumberInput";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import SwitchInput from "../components/common/SwitchInput";
 import TagsSelectorButton from "../src/components/common/TagsSelectorButton";
-import { useTagsClosed } from "../src/components/tags/TagsSelector";
+import { makeEventNotifier } from "../src/components/common/useEventListner";
 
 interface AddWorkTypeScreenProps {
   route: {
@@ -104,14 +104,25 @@ const AddWorkTypeScreen: React.FC<AddWorkTypeScreenProps> = ({
     }
   }, [isEnterAmountDirectly]);
 
-  useTagsClosed(({ tags }) => {
+  const tagsSelectedNotifier = useRef(
+    makeEventNotifier<{ tags: Tag[] }, unknown>(
+      "OnTagsSelectedAndClosedInAddWorkTypeScreen",
+    ),
+  ).current;
+
+  const tagsSelectedListner = ({ tags }) => {
     setSelectedTags(tags);
-  }, []);
+  };
+
+  tagsSelectedNotifier.useEventListener(tagsSelectedListner, []);
 
   return (
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
-      <TagsSelectorButton selectedTags={selectedTags} />
+      <TagsSelectorButton
+        selectedTags={selectedTags}
+        notifyId={tagsSelectedNotifier.name}
+      />
       <Input
         placeholder="Enter type name"
         value={typeName}

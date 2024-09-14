@@ -1,14 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CustomDateRange from "../common/CustomDateRange";
-import { Text } from "react-native-paper";
-import { View } from "react-native";
+import { Button, List, Text } from "react-native-paper";
+import { ScrollView, View } from "react-native";
 import commonStyles from "../../styles/commonStyles";
 import LoadingError from "../../../components/common/LoadingError";
 import { TransactionSummaryByType } from "./types";
-import { Range } from "../users/report-summary.model";
+import { Filter, Tag } from "../../../types";
+import { UI_ELEMENTS_GAP } from "../../styles/constants";
+import commonAddScreenStyles from "../../styles/commonAddScreenStyles";
+import TagsSelectorButton from "../common/TagsSelectorButton";
+import { makeEventNotifier } from "../common/useEventListner";
+import { roundUp } from "../../util/Calculation";
 
 interface SummaryByTypeProps {
-  api: (arg1: Range) => Promise<TransactionSummaryByType[]>;
+  api: (arg1: Filter) => Promise<TransactionSummaryByType[]>;
+}
+
+interface TransactionItemProps {
+  label: string;
+  amount: string;
+  index: string;
 }
 
 const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
@@ -21,15 +32,55 @@ const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
   });
   const [total, setTotal] = useState<number>();
 
+  const [selectedExcludingTags, setSelectedExcludingTags] =
+    useState<Tag[]>(null);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>(null);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const tagsSelectedNotifier = useRef(
+    makeEventNotifier<{ tags: Tag[] }, unknown>(
+      "OnTagsSelectedAndClosedInSummaryByType",
+    ),
+  ).current;
+
+  const tagsSelectedListner = ({ tags }) => {
+    setSelectedTags(tags);
+  };
+
+  tagsSelectedNotifier.useEventListener(tagsSelectedListner, []);
+
+  const excludingTagsSelectedNotifier = useRef(
+    makeEventNotifier<{ tags: Tag[] }, unknown>(
+      "OnExcludingTagsSelectedAndClosedInSummaryByType",
+    ),
+  ).current;
+
+  const excludingTagsSelectedListner = ({ tags }) => {
+    setSelectedExcludingTags(tags);
+  };
+
+  excludingTagsSelectedNotifier.useEventListener(
+    excludingTagsSelectedListner,
+    [],
+  );
+
+  const createFilter = () => {
+    return {
+      tags: selectedTags ?? [],
+      excludeTags: selectedExcludingTags ?? [],
+      fromDate: rangeState[0].startDate,
+      toDate: rangeState[0].endDate,
+    } as Filter;
+  };
 
   const getSummary = async () => {
     setIsLoading(true);
     setError("");
     try {
-      const res = await api(rangeState[0]);
-      setTotal(res.reduce((a, b) => a + b.totalAmount, 0));
+      const res = await api(createFilter());
+      setTotal(roundUp(res.reduce((a, b) => a + b.totalAmount, 0)));
       setResult(res);
     } catch (e) {
       setError(e.message);
@@ -42,11 +93,56 @@ const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
     getSummary();
   }, [rangeState[0]]);
 
+  const TransactionItem: React.FC<TransactionItemProps> = ({
+    label,
+    amount,
+    index,
+  }) => {
+    return (
+      <List.Item
+        key={index}
+        title={label}
+        style={{ paddingVertical: 0 }}
+        right={() => <Text style={{ alignSelf: "center" }}>{amount}</Text>}
+      />
+    );
+  };
+
   return (
-    <View style={commonStyles.container}>
+    <ScrollView
+      contentContainerStyle={commonAddScreenStyles.scrollViewContainer}
+    >
+      <View style={commonStyles.row}>
+        <View style={{ width: "50%" }}>
+          <TagsSelectorButton
+            selectedTags={selectedTags}
+            notifyId={tagsSelectedNotifier.name}
+          />
+        </View>
+
+        <View>
+          <TagsSelectorButton
+            label={"Excluding tags"}
+            selectedTags={selectedExcludingTags}
+            notifyId={excludingTagsSelectedNotifier.name}
+          />
+        </View>
+      </View>
+
       <CustomDateRange rangeState={rangeState} />
+
+      <Button
+        mode="contained"
+        onPress={getSummary}
+        style={{ marginVertical: UI_ELEMENTS_GAP }}
+      >
+        See Report
+      </Button>
+
       <LoadingError error={error} isLoading={isLoading} />
-      <View style={commonStyles.simpleRow}>
+      <View
+        style={{ ...commonStyles.simpleRow, marginLeft: UI_ELEMENTS_GAP * 2 }}
+      >
         <Text variant={"titleSmall"} style={{ width: "45%" }}>
           Total
         </Text>
@@ -59,32 +155,48 @@ const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
       </View>
       {result.map((value, index) => {
         return (
-          <View style={commonStyles.simpleRow} key={index}>
-            <Text style={{ width: "45%" }}>
-              {value.baseTransactionType.name}
-            </Text>
-            <View style={{ width: "25%" }}>
-              {!!value.totalQuantity && (
-                <Text>
-                  {value.totalQuantity}{" "}
-                  {value.baseTransactionType.unit !== "null"
-                    ? value.baseTransactionType.unit
-                    : ""}
-                </Text>
-              )}
-            </View>
-            <Text style={{ alignSelf: "center" }}>{value.totalAmount}</Text>
-          </View>
+          <>
+            {value.subTransactions ? (
+              <List.Accordion
+                key={`accordion${index}`}
+                title={value.baseTransactionType.name}
+                left={(props) => <List.Icon {...props} icon="folder" />} // You can change the icon here
+                right={() => (
+                  <Text style={{ alignSelf: "center" }}>
+                    {value.totalAmount}
+                  </Text>
+                )}
+              >
+                {value.subTransactions.map((sub, subIndex) => (
+                  <View
+                    style={{ marginLeft: UI_ELEMENTS_GAP }}
+                    key={`${subIndex}${value.baseTransactionType.name}View`}
+                  >
+                    <TransactionItem
+                      index={`${subIndex}${value.baseTransactionType.name}`}
+                      label={sub.receiver.name}
+                      amount={sub.totalAmount}
+                    />
+                  </View>
+                ))}
+              </List.Accordion>
+            ) : (
+              <TransactionItem
+                index={index.toString()}
+                label={value.baseTransactionType.name}
+                amount={value.totalAmount}
+              />
+            )}
+          </>
         );
       })}
-      <View style={commonStyles.simpleRow}>
-        <Text variant={"titleSmall"} style={{ width: "45%" }}>
-          Total
-        </Text>
-        <Text style={{ width: "25%" }}>{""}</Text>
-        <Text variant={"titleSmall"}>{total}</Text>
-      </View>
-    </View>
+      <List.Item
+        key={"Footer"}
+        title={"Total"}
+        style={{ paddingVertical: 0 }}
+        right={() => <Text variant={"titleSmall"}>{total}</Text>}
+      />
+    </ScrollView>
   );
 };
 

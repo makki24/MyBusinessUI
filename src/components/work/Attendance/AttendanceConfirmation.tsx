@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FlatList, View } from "react-native";
-import { User, Work, WorkType } from "../../../../types";
+import { Tag, User, Work, WorkType } from "../../../../types";
 import commonStyles from "../../../styles/commonStyles";
 import { Divider, Snackbar, TextInput } from "react-native-paper";
 import Button from "../../../../components/common/Button";
@@ -9,9 +9,9 @@ import LoadingError from "../../../../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { UI_ELEMENTS_GAP } from "../../../styles/constants";
 import TagsSelectorButton from "../../common/TagsSelectorButton";
-import { useTagsClosed } from "../../tags/TagsSelector";
 import AttendanceConfirmationUser from "./AttendanceConfirmationUser";
 import commonAddScreenStyles from "../../../styles/commonAddScreenStyles";
+import { makeEventNotifier } from "../../common/useEventListner";
 
 interface AttendanceConfirmationProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -90,15 +90,26 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
     />
   );
 
-  useTagsClosed(({ tags }) => {
+  const tagsSelectedNotifier = useRef(
+    makeEventNotifier<{ tags: Tag[] }, unknown>(
+      "OnTagsSelectedAndClosedInAttendanceConfirmation",
+    ),
+  ).current;
+
+  const tagsSelectedListner = ({ tags }) => {
     setWorks((prevWorks) => prevWorks.map((work) => ({ ...work, tags: tags })));
     setSelectedTags(tags);
-  }, []);
+  };
+
+  tagsSelectedNotifier.useEventListener(tagsSelectedListner, []);
 
   return (
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
-      <TagsSelectorButton selectedTags={selectedTags} />
+      <TagsSelectorButton
+        selectedTags={selectedTags}
+        notifyId={tagsSelectedNotifier.name}
+      />
 
       <TextInput
         label="Description (optional)"

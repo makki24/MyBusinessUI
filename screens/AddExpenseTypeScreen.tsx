@@ -1,5 +1,5 @@
 // src/screens/AddExpenseTypeScreen.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { useRecoilState } from "recoil";
 import Input from "../components/common/Input";
@@ -10,9 +10,9 @@ import SwitchInput from "../components/common/SwitchInput";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { ExpenseType, Tag as Tags } from "../types";
+import { ExpenseType, Tag, Tag as Tags } from "../types";
 import TagsSelectorButton from "../src/components/common/TagsSelectorButton";
-import { useTagsClosed } from "../src/components/tags/TagsSelector";
+import { makeEventNotifier } from "../src/components/common/useEventListner";
 
 interface AddExpenseTypeScreenProps {
   route: {
@@ -88,14 +88,25 @@ const AddExpenseTypeScreen: React.FC<AddExpenseTypeScreenProps> = ({
     }
   };
 
-  useTagsClosed(({ tags }) => {
+  const tagsSelectedNotifier = useRef(
+    makeEventNotifier<{ tags: Tag[] }, unknown>(
+      "OnTagsSelectedAndClosedInAddExpenseTypeScreen",
+    ),
+  ).current;
+
+  const tagsSelectedListner = ({ tags }) => {
     setSelectedTags(tags);
-  }, []);
+  };
+
+  tagsSelectedNotifier.useEventListener(tagsSelectedListner, []);
 
   return (
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
-      <TagsSelectorButton selectedTags={selectedTags} />
+      <TagsSelectorButton
+        selectedTags={selectedTags}
+        notifyId={tagsSelectedNotifier.name}
+      />
       <Input
         placeholder="Enter expense type name"
         value={expenseTypeName}

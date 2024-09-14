@@ -26,7 +26,6 @@ import {
   UI_ELEMENTS_GAP,
 } from "../src/styles/constants";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import CustomDateRange from "../src/components/common/CustomDateRange";
 
 interface ReportScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -88,8 +87,6 @@ const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
     return {
       tags: [{ id: selectedTags }],
       excludeTags: selectedExcludingTags ? [{ id: selectedExcludingTags }] : [],
-      fromDate: rangeState[0].startDate,
-      toDate: rangeState[0].endDate,
     } as Filter;
   };
 
@@ -131,9 +128,6 @@ const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
     <View style={commonStyles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <LoadingError error={error} isLoading={isLoading} />
-        <View style={{ marginBottom: UI_ELEMENTS_GAP }}>
-          <CustomDateRange rangeState={rangeState} />
-        </View>
         <CustomDropDown
           items={tags}
           zIndex={2000}
