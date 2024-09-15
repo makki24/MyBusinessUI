@@ -155,7 +155,7 @@ const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
       </View>
       {result.map((value, index) => {
         return (
-          <>
+          <View key={`result${index}`}>
             {value.subTransactions ? (
               <List.Accordion
                 key={`accordion${index}`}
@@ -187,7 +187,7 @@ const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
                 amount={value.totalAmount}
               />
             )}
-          </>
+          </View>
         );
       })}
       <List.Item
