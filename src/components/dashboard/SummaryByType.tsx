@@ -11,19 +11,15 @@ import commonAddScreenStyles from "../../styles/commonAddScreenStyles";
 import TagsSelectorButton from "../common/TagsSelectorButton";
 import { makeEventNotifier } from "../common/useEventListner";
 import { roundUp } from "../../util/Calculation";
+import TransactionsByType from "./TransactionsByType";
 
+// Define the full structure of the transaction items and their sub-transactions
 interface SummaryByTypeProps {
   api: (arg1: Filter) => Promise<TransactionSummaryByType[]>;
 }
 
-interface TransactionItemProps {
-  label: string;
-  amount: string;
-  index: string;
-}
-
 const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState<TransactionSummaryByType[]>([]);
   const thisMonth = new Date();
   thisMonth.setDate(1);
   const rangeState = React.useState({
@@ -45,7 +41,7 @@ const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
     ),
   ).current;
 
-  const tagsSelectedListner = ({ tags }) => {
+  const tagsSelectedListner = ({ tags }: { tags: Tag[] }) => {
     setSelectedTags(tags);
   };
 
@@ -57,7 +53,7 @@ const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
     ),
   ).current;
 
-  const excludingTagsSelectedListner = ({ tags }) => {
+  const excludingTagsSelectedListner = ({ tags }: { tags: Tag[] }) => {
     setSelectedExcludingTags(tags);
   };
 
@@ -66,7 +62,7 @@ const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
     [],
   );
 
-  const createFilter = () => {
+  const createFilter = (): Filter => {
     return {
       tags: selectedTags ?? [],
       excludeTags: selectedExcludingTags ?? [],
@@ -92,21 +88,6 @@ const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
   useEffect(() => {
     getSummary();
   }, [rangeState[0]]);
-
-  const TransactionItem: React.FC<TransactionItemProps> = ({
-    label,
-    amount,
-    index,
-  }) => {
-    return (
-      <List.Item
-        key={index}
-        title={label}
-        style={{ paddingVertical: 0 }}
-        right={() => <Text style={{ alignSelf: "center" }}>{amount}</Text>}
-      />
-    );
-  };
 
   return (
     <ScrollView
@@ -148,46 +129,18 @@ const SummaryByType: React.FC<SummaryByTypeProps> = ({ api }) => {
         </Text>
         <View style={{ width: "25%" }}>
           {result[0] && !!result[0].totalQuantity && (
-            <Text variant={"titleSmall"}>{"Quantity"}</Text>
+            <Text variant={"titleSmall"}>{""}</Text>
           )}
         </View>
         <Text variant={"titleSmall"}>{"Total Amount"}</Text>
       </View>
       {result.map((value, index) => {
         return (
-          <View key={`result${index}`}>
-            {value.subTransactions ? (
-              <List.Accordion
-                key={`accordion${index}`}
-                title={value.baseTransactionType.name}
-                left={(props) => <List.Icon {...props} icon="folder" />} // You can change the icon here
-                right={() => (
-                  <Text style={{ alignSelf: "center" }}>
-                    {value.totalAmount}
-                  </Text>
-                )}
-              >
-                {value.subTransactions.map((sub, subIndex) => (
-                  <View
-                    style={{ marginLeft: UI_ELEMENTS_GAP }}
-                    key={`${subIndex}${value.baseTransactionType.name}View`}
-                  >
-                    <TransactionItem
-                      index={`${subIndex}${value.baseTransactionType.name}`}
-                      label={sub.receiver.name}
-                      amount={sub.totalAmount}
-                    />
-                  </View>
-                ))}
-              </List.Accordion>
-            ) : (
-              <TransactionItem
-                index={index.toString()}
-                label={value.baseTransactionType.name}
-                amount={value.totalAmount}
-              />
-            )}
-          </View>
+          <TransactionsByType
+            key={`result${index}`}
+            value={value}
+            index={index}
+          />
         );
       })}
       <List.Item

@@ -5,4 +5,5 @@ export abstract class BaseTransactionType {
   name: string;
   type?: "work" | "expense";
   defaultTags: Tag[];
+  unit?: string;
 }
