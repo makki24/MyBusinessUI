@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ScrollView } from "react-native";
 import { useRecoilState } from "recoil";
 import { Button, Text } from "react-native-paper";
 
 import { userState, usersState, worksState } from "../recoil/atom";
 import WorkService from "../services/WorkService";
-import { WorkType, Tag as Tags, User, Work } from "../types";
+import { WorkType, Tag as Tags, User, Work, Tag } from "../types";
 import CustomDropDown from "../components/common/CustomDropdown";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import LoadingError from "../components/common/LoadingError";
 import UserDropDownItem from "../components/common/UserDropDownItem";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { useTagsClosed } from "../src/components/tags/TagsSelector";
 import { AddWorkInputs } from "../src/components/common/work/AddWorkInputs";
 import WorkTypeSelectorButton from "../src/components/work/AddWork/WorkTypeSelectorButton";
 import { getAddWorkTitle } from "../src/util/Work";
+import { makeEventNotifier } from "../src/components/common/useEventListner";
 
 interface AddWorkScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -102,9 +102,17 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
     if (user) setSelectedUser(user);
   };
 
-  useTagsClosed(({ tags }) => {
+  const tagsSelectedNotifier = useRef(
+    makeEventNotifier<{ tags: Tag[] }, unknown>(
+      "OnTagsSelectedAndClosedInAddWorkScreen",
+    ),
+  ).current;
+
+  const tagsSelectedListner = ({ tags }) => {
     setSelectedTags(tags);
-  }, []);
+  };
+
+  tagsSelectedNotifier.useEventListener(tagsSelectedListner, []);
 
   useEffect(() => {
     if (workType) {
@@ -245,6 +253,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
           time: timeState,
           description: descriptionState,
         }}
+        tagsSelectedNotifier={tagsSelectedNotifier.name}
       />
 
       {/* Button to add the work */}

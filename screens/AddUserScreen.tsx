@@ -126,7 +126,12 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
 
       let imageUrl;
       if (picture) {
-        if (!picture.includes("googleusercontent")) {
+        if (
+          !(
+            picture.includes("googleusercontent") ||
+            picture.includes("i.ibb.co")
+          )
+        ) {
           imageUrl = await uploadImgtoImgBB(picture);
           setPictureUrl(imageUrl);
         } else {
