@@ -147,7 +147,7 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
     navigation.navigate(stack, {
       screen: "WorkTypeSelectorList",
       params: {
-        notifyId: notifier.name,
+        typeSelectedNotifier: notifier.name,
       },
     });
   };
@@ -156,7 +156,7 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
     setEditPayload((prev) => ({ ...prev, type: selectedType.workType }));
     navigation.navigate("WorkStack", {
       screen: "WorkersList",
-      params: { title: "Select Type", users: [] },
+      params: { title: "Select User", users: [] },
     });
   };
 
