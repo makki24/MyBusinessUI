@@ -44,7 +44,7 @@
     "production": {
       "channel": "production",
       "env": {
-        "EXPO_PUBLIC_URL": "http://129.213.146.93:8090",
+        "EXPO_PUBLIC_URL": "http://140.245.21.83:8090",
         "APP_VARIANT": "prod",
         "EXPO_PUBLIC_ANDROID_CLIENT_ID": "82740835529-o5ahaetmhfilc8ot561hp8hnhmvtfpp2.apps.googleusercontent.com",
         "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com"
