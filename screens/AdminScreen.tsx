@@ -123,7 +123,7 @@ const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
               source={require("../assets/impersonate.jpeg")}
             />
             <View style={homeScreenStyles.textOverlay}>
-              <Title style={homeScreenStyles.cardTitle}>Impersonate</Title>
+              <Title style={homeScreenStyles.cardTitle}>Impersonate Yo</Title>
             </View>
           </Card>
         )}
