@@ -4,6 +4,7 @@ import {
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { View } from "react-native";
 import commonStyles from "../../styles/commonStyles";
@@ -30,12 +31,14 @@ const CustomHeader = () => {
     setCanGoBack(navigation.canGoBack());
   }, []);
 
+  const insets = useSafeAreaInsets();
   return (
     <View
       style={{
         ...commonStyles.row,
         alignItems: "center",
         padding: UI_ELEMENTS_GAP,
+        paddingTop: insets.top,
         paddingBottom: 0,
       }}
     >
