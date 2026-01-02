@@ -68,6 +68,8 @@ const CombinedDarkTheme = {
   },
 };
 
+import { StatusBar } from "expo-status-bar";
+
 const AppContent = () => {
   const userInfo = useRecoilValue(userState);
   const [_users, setUsers] = useRecoilState(usersState);
@@ -134,6 +136,7 @@ const AppContent = () => {
         subscribe,
       }}
     >
+      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
       {userInfo ? (
         <Drawer.Navigator
           screenOptions={{

@@ -9,7 +9,7 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { View } from "react-native";
 import commonStyles from "../../styles/commonStyles";
 import { HEADING_SIZE, UI_ELEMENTS_GAP } from "../../styles/constants";
-import { IconButton, Text } from "react-native-paper";
+import { IconButton, Text, useTheme } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import DrawerToggler from "../header/DrawerToggler";
 
@@ -18,6 +18,7 @@ interface RouteParams {
 }
 
 const CustomHeader = () => {
+  const theme = useTheme();
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
   const route = useRoute<RouteProp<Record<string, RouteParams>, string>>();
   const title = route.params?.title || route.name;
@@ -40,6 +41,7 @@ const CustomHeader = () => {
         padding: UI_ELEMENTS_GAP,
         paddingTop: insets.top,
         paddingBottom: 0,
+        backgroundColor: theme.colors.background,
       }}
     >
       <View style={commonStyles.simpleRow}>
