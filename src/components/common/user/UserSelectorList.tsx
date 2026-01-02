@@ -16,10 +16,7 @@ type UserSelectorListProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 };
 
-const UserSelectorList: React.FC<UserSelectorListProps> = ({
-  navigation,
-  route,
-}) => {
+const UserSelectorList: React.FC<UserSelectorListProps> = ({ route }) => {
   const selectedUserState = useState<User[]>([]);
   const [selectedUser] = selectedUserState;
   const notifier = useRef(
@@ -32,7 +29,6 @@ const UserSelectorList: React.FC<UserSelectorListProps> = ({
 
   const notify = (user: User) => {
     notifier.notify({ user: user });
-    navigation.goBack();
   };
 
   return (

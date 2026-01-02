@@ -76,7 +76,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     bottomSheetModalRef.current?.present();
 
     const backAction = () => {
-      bottomSheetModalRef.current.close();
+      bottomSheetModalRef.current.dismiss();
       return true;
     };
 
@@ -104,7 +104,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
 
     setIsCleared(compareDeep(arg));
 
-    bottomSheetModalRef.current.close();
+    bottomSheetModalRef.current.dismiss();
     onApply(arg);
   };
 
@@ -238,6 +238,9 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
         snapPoints={snapPoints}
         backdropComponent={customBackDrop}
         backgroundStyle={{ backgroundColor: theme.colors.background }}
+        enablePanDownToClose={true}
+        enableDismissOnClose={true}
+        enableDynamicSizing={false}
       >
         <FilterScreen
           user={user}
@@ -246,7 +249,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           type={type}
           onApply={onApplyFilter}
           defaultFilter={currentFilter}
-          onClose={() => bottomSheetModalRef.current.close()}
+          onClose={() => bottomSheetModalRef.current.dismiss()}
         />
       </BottomSheetModal>
     </View>

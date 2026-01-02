@@ -46,7 +46,6 @@ const LoginScreen = ({ navigation }) => {
     try {
       const user = await loginService.login(token, url);
       setUserInfo(user);
-      navigation.navigate("Home");
     } catch (loginError) {
       setUserInfo(null);
       throw new Error(loginError.message);

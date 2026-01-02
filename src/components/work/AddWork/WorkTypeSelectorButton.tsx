@@ -25,6 +25,7 @@ const WorkTypeSelectorButton: React.FC<WorkTypeSelectorButtonProps> = ({
 
   const listener = (selectedType: { workType: WorkType }) => {
     workType[1](selectedType.workType);
+    navigation.goBack();
   };
   notifier.useEventListener(listener, []);
 

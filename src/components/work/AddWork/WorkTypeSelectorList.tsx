@@ -16,10 +16,7 @@ type WorkTypeScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
 };
 
-const WorkTypeSelectorList: React.FC<WorkTypeScreenProps> = ({
-  navigation,
-  route,
-}) => {
+const WorkTypeSelectorList: React.FC<WorkTypeScreenProps> = ({ route }) => {
   const typeSelectedNotifier = useRef(
     makeEventNotifier<{ workType: WorkType }, unknown>(
       route.params.typeSelectedNotifier,
@@ -33,12 +30,10 @@ const WorkTypeSelectorList: React.FC<WorkTypeScreenProps> = ({
 
   const onPress = (workType: WorkType) => {
     typeSelectedNotifier.notify({ workType });
-    navigation.goBack();
   };
 
   const onAttendance = (workType: WorkType) => {
     attendanceTypeNotifier.notify({ workType });
-    navigation.goBack();
   };
 
   return (

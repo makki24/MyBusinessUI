@@ -42,7 +42,9 @@ const WorkItem: React.FC<WorkItemProps> = ({ work, onPress, onDelete }) => {
           <View style={commonStyles.row}>
             <Paragraph>
               Price Per Unit:{" "}
-              <Text style={{ fontWeight: "bold" }}>{work.pricePerUnit}</Text>{" "}
+              <Text style={{ fontWeight: "bold" }}>
+                {work.pricePerUnit}
+              </Text>{" "}
             </Paragraph>
             <Paragraph>
               T. Amount:{" "}
