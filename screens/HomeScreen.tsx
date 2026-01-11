@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { View, ScrollView, Text, TouchableOpacity } from "react-native";
-import { Card, Title } from "react-native-paper";
+import { Title } from "react-native-paper";
 import homeScreenStyles from "../src/styles/homeScreenStyles";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import Notification from "../src/notifications/Notification";
