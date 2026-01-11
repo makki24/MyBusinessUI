@@ -20,7 +20,7 @@ interface ReportHeaderProps {
 
 const ReportHeader: React.FC<ReportHeaderProps> = ({ route, summary }) => {
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
-  const [user] = useState<User>(route.params.user);
+  const [user] = useState<User>(route?.params?.user ?? ({} as User));
   const [canGoBack, setCanGoBack] = useState<boolean>();
   const theme = useTheme();
 
@@ -38,7 +38,6 @@ const ReportHeader: React.FC<ReportHeaderProps> = ({ route, summary }) => {
       screen: "UserSummary",
       params: { title: "Summary", user },
     });
-    navigation.navigate("UserSummary");
   };
 
   return (
