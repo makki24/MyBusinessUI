@@ -24,6 +24,40 @@ interface CardItemProps {
   received: boolean;
 }
 
+const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
+  const theme = useTheme();
+  // Derived state for better performance and correctness
+  const received = !reportData.received;
+
+  return (
+    <View style={received ? styles.cardLeft : styles.cardRight}>
+      {!received && (
+        <ProfilePicture
+          size={40}
+          style={received ? styles.userImageLeft : styles.userImageRight}
+          picture={reportData.sender?.picture}
+        />
+      )}
+      <CardItem
+        reportData={reportData}
+        amount={received ? reportData.sent : reportData.received}
+        style={
+          received
+            ? {
+              ...styles.cardItemLeft,
+              backgroundColor: theme.colors.background,
+            }
+            : {
+              ...styles.cardItemRight,
+              backgroundColor: theme.colors.primaryContainer,
+            }
+        }
+        received={!received}
+      />
+    </View>
+  );
+};
+
 const CardItem: React.FC<CardItemProps> = ({
   reportData,
   style,
@@ -59,43 +93,6 @@ const CardItem: React.FC<CardItemProps> = ({
         </Card.Content>
       </Card>
     </TouchableOpacity>
-  );
-};
-
-const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
-  const theme = useTheme();
-  const [received, setIsReceived] = useState(false);
-
-  useEffect(() => {
-    setIsReceived(!reportData.received);
-  }, []);
-
-  return (
-    <View style={received ? styles.cardLeft : styles.cardRight}>
-      {!received && (
-        <ProfilePicture
-          size={40}
-          style={received ? styles.userImageLeft : styles.userImageRight}
-          picture={reportData.sender?.picture}
-        />
-      )}
-      <CardItem
-        reportData={reportData}
-        amount={received ? reportData.sent : reportData.received}
-        style={
-          received
-            ? {
-                ...styles.cardItemLeft,
-                backgroundColor: theme.colors.background,
-              }
-            : {
-                ...styles.cardItemRight,
-                backgroundColor: theme.colors.primaryContainer,
-              }
-        }
-        received={!received}
-      />
-    </View>
   );
 };
 

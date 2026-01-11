@@ -8,11 +8,13 @@ import { HEADING_SIZE, UI_ELEMENTS_GAP } from "../../styles/constants";
 import { IconButton, Text, useTheme } from "react-native-paper";
 import ProfilePicture from "../common/ProfilePicture";
 import DrawerToggler from "../header/DrawerToggler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import CustomHeader from "../common/CustomHeader";
 
 interface ReportHeaderProps {
   route: {
-    params: {
-      user: User;
+    params?: {
+      user?: User;
     };
   };
   summary: boolean;
@@ -20,9 +22,17 @@ interface ReportHeaderProps {
 
 const ReportHeader: React.FC<ReportHeaderProps> = ({ route, summary }) => {
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
-  const [user] = useState<User>(route.params.user);
+  const userParam = route.params?.user;
+
+  // Guard clause: If no user is passed, fallback to standard header
+  if (!userParam) {
+    return <CustomHeader />;
+  }
+
+  const [user] = useState<User>(userParam);
   const [canGoBack, setCanGoBack] = useState<boolean>();
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     setCanGoBack(navigation.canGoBack());
@@ -47,7 +57,8 @@ const ReportHeader: React.FC<ReportHeaderProps> = ({ route, summary }) => {
         ...commonStyles.row,
         alignItems: "center",
         padding: UI_ELEMENTS_GAP,
-        paddingBottom: 0,
+        backgroundColor: theme.colors.background,
+        paddingTop: insets.top,
       }}
     >
       <View style={commonStyles.simpleRow}>

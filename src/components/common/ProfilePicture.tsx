@@ -15,28 +15,27 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
   picture,
   size,
 }) => {
-  const [pictureUrl, setPictureUrl] = useState("");
-
-  const checkImageExists = async () => {
-    try {
-      if (!picture || picture === "") throw new Error("No image");
-      await fetch(picture);
-      setPictureUrl(picture);
-    } catch (error) {
-      setPictureUrl(DEFAULT_AVATAR_URL);
-    }
-  };
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    checkImageExists();
-  }, []);
+    if (!picture) {
+      setHasError(true);
+    } else {
+      setHasError(false);
+    }
+  }, [picture]);
+
+  if (hasError || !picture) {
+    return <Avatar.Icon size={size} icon="account" style={style} />;
+  }
 
   return (
-    <>
-      {pictureUrl && (
-        <Avatar.Image size={size} source={{ uri: pictureUrl }} style={style} />
-      )}
-    </>
+    <Avatar.Image
+      size={size}
+      source={{ uri: picture }}
+      style={style}
+      onError={() => setHasError(true)}
+    />
   );
 };
 

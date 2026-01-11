@@ -159,14 +159,6 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   time.hours !== undefined && timeDate.setHours(time.hours);
   time.minutes !== undefined && timeDate.setMinutes(time.minutes);
 
-  // Handler for changing the selected expense type
-  const handleExpenseTypeChange = () => {};
-
-  // New handler for changing the selected tags
-  const handleTagChange = () => {
-    // Handle tag change logic if needed
-  };
-
   const handleUserChange = (user: string | null) => {
     if (user) setSelectedUser(user);
   };
@@ -342,7 +334,6 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
           setValue={setValue}
           itemSeparator={true}
           placeholder="Select Type (Mazori, Medical etc...)"
-          onChangeValue={handleExpenseTypeChange}
           testID="expense-type-picker"
         />
 
@@ -396,7 +387,6 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
             setValue={setSelectedTags}
             itemSeparator={true}
             placeholder="Select Tags"
-            onChangeValue={handleTagChange}
           />
         )}
 

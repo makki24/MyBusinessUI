@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Text, TouchableOpacity } from "react-native";
 import { Card, Title } from "react-native-paper";
 import homeScreenStyles from "../src/styles/homeScreenStyles";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
@@ -9,10 +9,37 @@ import { useLinkTo } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 import crashlytics from "@react-native-firebase/crashlytics";
 import { PushNotificationTrigger } from "expo-notifications/src/Notifications.types";
+import { LinearGradient } from "expo-linear-gradient";
+
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { PRIMARY, SECONDARY } from "../src/styles/colors";
 
 type HomeScreenProps = {
-  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+  navigation: NavigationProp<ParamListBase>;
 };
+
+// Reusable Modern Card Component
+const DashboardCard = ({
+  title,
+  icon,
+  onPress,
+}: {
+  title: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  onPress: () => void;
+}) => (
+  <TouchableOpacity onPress={onPress} style={homeScreenStyles.cardContainer}>
+    <View style={homeScreenStyles.cardContent}>
+      <LinearGradient
+        colors={["#F5F5F5", "#FFFFFF"]}
+        style={homeScreenStyles.iconContainer}
+      >
+        <MaterialCommunityIcons name={icon} size={40} color={PRIMARY} />
+      </LinearGradient>
+      <Text style={homeScreenStyles.cardTitle}>{title}</Text>
+    </View>
+  </TouchableOpacity>
+);
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const linkTo = useLinkTo();
@@ -42,105 +69,72 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   }, []); // Empty dependency array
 
   return (
-    <ScrollView contentContainerStyle={homeScreenStyles.container}>
-      {/* Two Cards in One Row */}
+    <ScrollView
+      contentContainerStyle={homeScreenStyles.container}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Header Section */}
+      <LinearGradient
+        colors={[PRIMARY, SECONDARY]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={homeScreenStyles.headerGradient}
+      >
+        <Title style={homeScreenStyles.welcomeText}>MyBusiness</Title>
+        <Title style={homeScreenStyles.subtitleText}>
+          Financial Management
+        </Title>
+      </LinearGradient>
+
+      {/* Cards Grid */}
       <View style={homeScreenStyles.cardsContainer}>
-        <Card
-          style={homeScreenStyles.card}
+        <DashboardCard
+          title="Work / Loan"
+          icon="briefcase-variant-outline"
           onPress={() => navigation.navigate("WorkStack", { screen: "Work" })}
-        >
-          <Card.Cover
-            style={homeScreenStyles.cardCover}
-            source={require("../assets/work.jpeg")}
-          />
-          <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Work / Loan</Title>
-          </View>
-        </Card>
+        />
 
-        <View style={homeScreenStyles.gap} />
-
-        <Card
-          style={homeScreenStyles.card}
+        <DashboardCard
+          title="Sale / Lending"
+          icon="cash-register"
           onPress={() => navigation.navigate("SaleStack", { screen: "Sale" })}
-        >
-          <Card.Cover
-            style={homeScreenStyles.cardCover}
-            source={require("../assets/sale.jpeg")}
-          />
-          <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Sale / Lending</Title>
-          </View>
-        </Card>
+        />
 
-        <Card
-          style={homeScreenStyles.card}
+        <DashboardCard
+          title="Expense (اخراجات)"
+          icon="wallet-outline"
           onPress={() =>
             navigation.navigate("ExpenseStack", { screen: "Expenses" })
           }
-        >
-          <Card.Cover
-            style={homeScreenStyles.cardCover}
-            source={require("../assets/expense.jpeg")}
-          />
-          <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Expense (اخراجات)</Title>
-          </View>
-        </Card>
-        <View style={homeScreenStyles.gap} />
+        />
 
-        <Card
-          style={homeScreenStyles.card}
+        <DashboardCard
+          title="Manage User"
+          icon="account-group-outline"
           onPress={() => navigation.navigate("UsersStack", { screen: "Users" })}
-        >
-          <Card.Cover
-            style={homeScreenStyles.cardCover}
-            source={require("../assets/user.jpeg")}
-          />
-          <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Manage User</Title>
-          </View>
-        </Card>
+        />
 
-        {/* Admin Card */}
-        <Card
-          style={homeScreenStyles.card}
+        <DashboardCard
+          title="Admin"
+          icon="shield-account-outline"
           onPress={() =>
             navigation.navigate("HomeStack", {
               screen: "AdminStack",
               params: { title: "Admin" },
             })
           }
-        >
-          <Card.Cover
-            style={homeScreenStyles.cardCover}
-            source={require("../assets/admin.jpeg")}
-          />
-          <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Admin</Title>
-          </View>
-        </Card>
+        />
 
-        <View style={homeScreenStyles.gap} />
-
-        {/* Admin Card */}
-        <Card
-          style={homeScreenStyles.card}
+        <DashboardCard
+          title="Dashboard"
+          icon="view-dashboard-outline"
           onPress={() =>
             navigation.navigate("DashboardStack", {
               screen: "Dashboard",
               params: { title: "Dashboard" },
             })
           }
-        >
-          <Card.Cover
-            style={homeScreenStyles.cardCover}
-            source={require("../assets/charts.jpeg")}
-          />
-          <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Dashboard</Title>
-          </View>
-        </Card>
+        />
 
         <Notification />
       </View>
