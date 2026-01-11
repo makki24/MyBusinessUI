@@ -11,6 +11,7 @@ import AddWorkInputs from "./AddWorkInputs";
 import middleManService from "./MiddleManService";
 import LoadingError from "../../../components/common/LoadingError";
 import { WorkAndSale as WorkAndSaleType } from "../../../types";
+import { CURRENCY_SYMBOL } from "../../constants/labels";
 
 const WorkAndSale = () => {
   const theme = useTheme();
@@ -62,7 +63,8 @@ const WorkAndSale = () => {
             {workAndSaleState.works[worksLength].type?.unit !== "null"
               ? `Per ${workAndSaleState.works[worksLength].type?.unit} :`
               : ""}{" "}
-            {workAndSaleState.works[worksLength].type?.pricePerUnit} )
+            {workAndSaleState.works[worksLength].type?.pricePerUnit}{" "}
+            {CURRENCY_SYMBOL}
           </Title>
         </View>
       </View>
