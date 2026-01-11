@@ -18,7 +18,8 @@ interface CustomDropDownProps<T> {
     React.SetStateAction<string | string[] | number[] | number>
   >;
   itemSeparator?: boolean;
-  onChangeValue?: (value: string | null) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onChangeValue?: (value: any) => void;
   zIndex?: number;
   zIndexInverse?: number;
   placeholder?: string;
@@ -74,7 +75,8 @@ const CustomDropDown = <T,>({
         itemSeparator={itemSeparator}
         onChangeValue={onChangeValue}
         placeholder={placeholder}
-        multiple={multiple} // Pass the multiple prop to DropDownPicker
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        multiple={multiple as any} // Pass the multiple prop to DropDownPicker
         renderListItem={renderListItem}
         style={{
           borderRadius: 0,

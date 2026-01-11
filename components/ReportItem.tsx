@@ -66,7 +66,7 @@ const CardItem: React.FC<CardItemProps> = ({
 }) => {
   return (
     <TouchableOpacity>
-      <Card style={{ ...style, ...styles.card }}>
+      <Card style={[styles.card, style]}>
         <Card.Content style={commonItemStyles.cardContent}>
           <View style={commonItemStyles.titleContainer}>
             <Title>{amount}</Title>

@@ -15,7 +15,7 @@ jest.mock("../../services/ReportService", () => ({
 
 jest.mock("../../src/components/common/LoadingError", () => "LoadingError");
 jest.mock("../../src/components/common/Loading", () => "Loading");
-jest.mock("../../src/components/common/NumberInput", () => "NumberInput");
+jest.mock("../../src/components/common/NumericInput", () => "NumericInput");
 jest.mock(
   "../../src/components/common/SwitchInputDynamicLabel",
   () => "SwitchInputDynamicLabel",

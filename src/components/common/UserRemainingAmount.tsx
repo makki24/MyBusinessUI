@@ -21,7 +21,10 @@ const UserRemainingAmount: React.FC<UserRemainingAmountProps> = ({ user }) => {
           color: toRecieve ? theme.colors.primary : theme.colors.error,
         }}
       >
-        {amount}
+        {new Intl.NumberFormat(undefined, {
+          style: "currency",
+          currency: user.currency || "USD",
+        }).format(amount)}
       </Text>
     </View>
   );

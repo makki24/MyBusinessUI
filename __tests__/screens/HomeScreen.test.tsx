@@ -70,7 +70,7 @@ describe("HomeScreen UI & Navigation", () => {
     const { getByText } = setup();
     await waitFor(() => {
       expect(getByText("MyBusiness")).toBeTruthy();
-      expect(getByText("Financial Management")).toBeTruthy();
+      expect(getByText("Financial Overview")).toBeTruthy();
     });
   });
 
