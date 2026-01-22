@@ -11,6 +11,7 @@ import AddWorkInputs from "./AddWorkInputs";
 import middleManService from "./MiddleManService";
 import LoadingError from "../../../components/common/LoadingError";
 import { WorkAndSale as WorkAndSaleType } from "../../../types";
+import { CURRENCY_SYMBOL } from "../../constants/labels";
 
 const WorkAndSale = () => {
   const theme = useTheme();
@@ -48,21 +49,24 @@ const WorkAndSale = () => {
     >
       <LoadingError error={error} isLoading={isLoading} />
       <View style={commonStyles.row}>
-        <View style={{ width: "50%" }}>
+        <View style={{ flex: 1, paddingRight: 8 }}>
           <UserDetails user={workAndSaleState.sale.user} />
-          <Icon
-            source="chevron-triple-down"
-            size={REPORT_ICON_SIZE * 2}
-            color={theme.colors.primary}
-          />
+          <View style={{ alignItems: "center", marginTop: 4 }}>
+            <Icon
+              source="chevron-triple-down"
+              size={REPORT_ICON_SIZE * 2}
+              color={theme.colors.primary}
+            />
+          </View>
         </View>
-        <View style={{ ...commonStyles.simpleRow, width: "50%" }}>
+        <View style={{ ...commonStyles.simpleRow, flex: 1 }}>
           <Title>
             Adding {workAndSaleState.works[worksLength].type?.name} ({" "}
             {workAndSaleState.works[worksLength].type?.unit !== "null"
               ? `Per ${workAndSaleState.works[worksLength].type?.unit} :`
               : ""}{" "}
-            {workAndSaleState.works[worksLength].type?.pricePerUnit} )
+            {workAndSaleState.works[worksLength].type?.pricePerUnit}{" "}
+            {CURRENCY_SYMBOL}
           </Title>
         </View>
       </View>

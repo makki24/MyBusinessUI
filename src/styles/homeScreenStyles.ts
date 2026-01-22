@@ -74,6 +74,34 @@ const homeScreenStyles = StyleSheet.create({
     textAlign: "center",
     marginTop: 4,
   },
+  // Legacy card styles for AdminScreen
+  card: {
+    width: cardWidth,
+    marginBottom: CONTAINER_PADDING,
+    borderRadius: BORDER_RADIUS,
+    overflow: "hidden",
+    backgroundColor: SURFACE,
+    ...SHADOW,
+    elevation: 4,
+  },
+  cardCover: {
+    height: 120,
+    borderTopLeftRadius: BORDER_RADIUS,
+    borderTopRightRadius: BORDER_RADIUS,
+  },
+  textOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 8,
+    borderBottomLeftRadius: BORDER_RADIUS,
+    borderBottomRightRadius: BORDER_RADIUS,
+  },
+  gap: {
+    width: CONTAINER_PADDING,
+  },
 });
 
 export default homeScreenStyles;

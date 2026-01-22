@@ -1,4 +1,6 @@
 // App.tsx
+import "react-native-gesture-handler"; // Must be at the very top
+import "react-native-reanimated";
 import React from "react";
 import { Provider as PaperProvider } from "react-native-paper";
 import { RecoilRoot } from "recoil";

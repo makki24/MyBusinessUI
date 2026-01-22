@@ -1,5 +1,5 @@
 // src/components/ReportItem.tsx
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Card, Title, Paragraph, useTheme, Text } from "react-native-paper";
 import { UserReport } from "../types";
@@ -44,13 +44,13 @@ const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
         style={
           received
             ? {
-              ...styles.cardItemLeft,
-              backgroundColor: theme.colors.background,
-            }
+                ...styles.cardItemLeft,
+                backgroundColor: theme.colors.background,
+              }
             : {
-              ...styles.cardItemRight,
-              backgroundColor: theme.colors.primaryContainer,
-            }
+                ...styles.cardItemRight,
+                backgroundColor: theme.colors.primaryContainer,
+              }
         }
         received={!received}
       />
@@ -66,7 +66,7 @@ const CardItem: React.FC<CardItemProps> = ({
 }) => {
   return (
     <TouchableOpacity>
-      <Card style={{ ...style, ...styles.card }}>
+      <Card style={[styles.card, style]}>
         <Card.Content style={commonItemStyles.cardContent}>
           <View style={commonItemStyles.titleContainer}>
             <Title>{amount}</Title>

@@ -1,4 +1,3 @@
-import { DEFAULT_AVATAR_URL } from "../../../constants/mybusiness.constants";
 import { Avatar } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import { StyleProp } from "react-native/Libraries/StyleSheet/StyleSheet";

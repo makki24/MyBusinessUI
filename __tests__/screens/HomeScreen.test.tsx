@@ -21,7 +21,7 @@ jest.mock("@react-native-firebase/crashlytics", () => () => ({
 }));
 
 jest.mock("expo-linear-gradient", () => ({
-  LinearGradient: ({ children }: any) => children,
+  LinearGradient: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 jest.mock("@expo/vector-icons", () => ({
@@ -49,7 +49,9 @@ jest.mock("../../src/components/common/ProfilePicture", () => "ProfilePicture");
 const mockNavigate = jest.fn();
 const mockNavigation = {
   navigate: mockNavigate,
-} as any;
+} as unknown as import("@react-navigation/native").NavigationProp<
+  import("@react-navigation/native").ParamListBase
+>;
 
 describe("HomeScreen UI & Navigation", () => {
   const setup = () => {
@@ -68,7 +70,7 @@ describe("HomeScreen UI & Navigation", () => {
     const { getByText } = setup();
     await waitFor(() => {
       expect(getByText("MyBusiness")).toBeTruthy();
-      expect(getByText("Financial Management")).toBeTruthy();
+      expect(getByText("Financial Overview")).toBeTruthy();
     });
   });
 

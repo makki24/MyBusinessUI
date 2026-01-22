@@ -24,13 +24,28 @@ jest.mock(
 
 // Mock CustomDropdown to expose a button that calls setValue
 jest.mock("../../components/common/CustomDropdown", () => {
-  const { View, Button } = require("react-native");
-  return ({ setValue, testID, placeholder }) => (
-    <View testID={testID}>
-      <Button title={placeholder || "Select Tag"} onPress={() => setValue(1)} />
-    </View>
-  );
+  const MockDropdown = (props: {
+    setValue: (value: number) => void;
+    testID: string;
+    placeholder?: string;
+  }) => {
+    const { View, Button } = jest.requireActual("react-native");
+    return (
+      <View testID={props.testID}>
+        <Button
+          title={props.placeholder || "Select Tag"}
+          onPress={() => props.setValue(1)}
+        />
+      </View>
+    );
+  };
+  MockDropdown.displayName = "MockCustomDropdown";
+  return MockDropdown;
 });
+
+interface StyleObject {
+  display?: string;
+}
 
 describe("ReportScreen", () => {
   afterEach(() => {
@@ -38,7 +53,12 @@ describe("ReportScreen", () => {
     jest.clearAllMocks();
   });
 
-  const setup = (mockReportData) => {
+  const setup = (mockReportData: {
+    totalSaleAmount: number;
+    totalContributionAmount: number;
+    totalExpenseAmount: number;
+    totalWorkAmount: number;
+  }) => {
     (ReportService.getReport as jest.Mock).mockResolvedValue(mockReportData);
 
     const tags = [{ id: 1, name: "Test Tag" }];
@@ -46,7 +66,8 @@ describe("ReportScreen", () => {
     const { getByText, getByTestId } = render(
       <RecoilRoot initializeState={(snapshot) => snapshot.set(tagsState, tags)}>
         <PaperProvider>
-          <ReportScreen navigation={{ navigate: jest.fn() } as any} />
+          {/* @ts-expect-error Testing with partial navigation mock */}
+          <ReportScreen navigation={{ navigate: jest.fn() }} />
         </PaperProvider>
       </RecoilRoot>,
     );
@@ -89,11 +110,11 @@ describe("ReportScreen", () => {
     // Check styles to see if hidden
     // We expect Profit (Green) to NOT have display: none
     const isProfitHidden = profitContainer.props.style.some(
-      (s: any) => s && s.display === "none",
+      (s: StyleObject) => s && s.display === "none",
     );
     // We expect Loss (Red) TO have display: none
     const isLossHidden = lossContainer.props.style.some(
-      (s: any) => s && s.display === "none",
+      (s: StyleObject) => s && s.display === "none",
     );
 
     expect(isProfitHidden).toBeFalsy(); // Should show profit icon
