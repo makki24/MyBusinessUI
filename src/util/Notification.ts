@@ -31,7 +31,11 @@ export async function schedulePushNotification() {
       body: "Here is the notification body",
       data: { someData: "goes here", url: "mybusinessui://admin/" },
     },
-    trigger: { seconds: 2 },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds: 2,
+      repeats: false,
+    },
   });
 }
 

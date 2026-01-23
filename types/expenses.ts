@@ -17,4 +17,5 @@ export interface Expense {
   tags: Tag[];
   description?: string;
   type: ExpenseType;
+  currency?: string;
 }
