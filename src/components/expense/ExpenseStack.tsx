@@ -8,7 +8,10 @@ const Stack = createStackNavigator();
 
 const ExpenseStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+    <Stack.Navigator
+      id="ExpenseStack"
+      screenOptions={{ header: () => <CustomHeader /> }}
+    >
       <Stack.Screen name="Expenses" component={ExpenseScreen} />
       <Stack.Screen name="AddExpense" component={AddExpenseScreen} />
     </Stack.Navigator>

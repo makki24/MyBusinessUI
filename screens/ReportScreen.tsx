@@ -25,6 +25,7 @@ import {
   ICON_SIZE,
   UI_ELEMENTS_GAP,
 } from "../src/styles/constants";
+import { SUCCESS, ERROR } from "../src/styles/colors";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import CustomDateRange from "../src/components/common/CustomDateRange";
 
@@ -138,6 +139,7 @@ const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
           items={tags}
           zIndex={2000}
           zIndexInverse={2000}
+          testID="tags-dropdown"
           schema={{
             label: "name",
             value: "id",
@@ -199,24 +201,26 @@ const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
                 <View
                   style={[
                     styles.profitOrLossIcon,
-                    profitOrLoss <= 0 && styles.hidden,
+                    profitOrLoss < 0 && styles.hidden,
                   ]}
+                  testID="profit-icon-container"
                 >
                   <Icon
                     source="arrow-up-bold-circle"
-                    color="green"
+                    color={SUCCESS}
                     size={ICON_SIZE}
                   />
                 </View>
                 <View
                   style={[
                     styles.profitOrLossIcon,
-                    profitOrLoss > 0 && styles.hidden,
+                    profitOrLoss >= 0 && styles.hidden,
                   ]}
+                  testID="loss-icon-container"
                 >
                   <Icon
                     source="arrow-down-bold-circle"
-                    color="red"
+                    color={ERROR}
                     size={ICON_SIZE}
                   />
                 </View>

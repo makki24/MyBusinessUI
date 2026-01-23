@@ -1,135 +1,245 @@
-import React, { useState, useEffect } from "react";
-import { View, ScrollView } from "react-native";
-import { Card, Title } from "react-native-paper";
-import homeScreenStyles from "../src/styles/homeScreenStyles";
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  View,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
+import { Title, useTheme } from "react-native-paper";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { useRecoilState } from "recoil";
 import { userState } from "../recoil/atom";
+import { LinearGradient } from "expo-linear-gradient";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { PRIMARY, SECONDARY } from "../src/styles/colors";
+import {
+  BORDER_RADIUS,
+  CONTAINER_PADDING,
+  SHADOW,
+} from "../src/styles/constants";
 
 type AdminScreenProps = {
-  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+  navigation: NavigationProp<ParamListBase>;
 };
 
+// Modern Dashboard Card Component
+const AdminCard = ({
+  title,
+  icon,
+  onPress,
+  theme,
+  accessibilityLabel,
+}: {
+  title: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  onPress: () => void;
+  theme: {
+    colors: {
+      surface: string;
+      onSurface: string;
+      primary: string;
+      background: string;
+    };
+  };
+  accessibilityLabel?: string;
+}) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={[styles.cardContainer, { backgroundColor: theme.colors.surface }]}
+    accessibilityLabel={accessibilityLabel || title}
+    accessibilityRole="button"
+    accessibilityHint={`Navigates to ${title}`}
+  >
+    <View style={styles.cardContent}>
+      <LinearGradient
+        colors={[theme.colors.background, theme.colors.surface]}
+        style={styles.iconContainer}
+      >
+        <MaterialCommunityIcons
+          name={icon}
+          size={40}
+          color={theme.colors.primary}
+        />
+      </LinearGradient>
+      <Text style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
+        {title}
+      </Text>
+    </View>
+  </TouchableOpacity>
+);
+
 const AdminScreen: React.FC<AdminScreenProps> = ({ navigation }) => {
+  const theme = useTheme();
   const [loggedInUser] = useRecoilState(userState);
   const [impersonate, setImpersonate] = useState<boolean>(false);
 
   useEffect(() => {
     setImpersonate(loggedInUser.roles.some((role) => role.name === "ADMIN"));
-  }, []);
+  }, [loggedInUser.roles]);
+
+  const dynamicStyles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          padding: CONTAINER_PADDING,
+          paddingTop: CONTAINER_PADDING + 10,
+          backgroundColor: theme.colors.background,
+          minHeight: "100%",
+        },
+      }),
+    [theme.colors.background],
+  );
 
   return (
-    <ScrollView contentContainerStyle={homeScreenStyles.container}>
-      {/* Two Cards in One Row */}
-      <View style={homeScreenStyles.cardsContainer}>
-        <Card
-          style={homeScreenStyles.card}
+    <ScrollView
+      contentContainerStyle={dynamicStyles.container}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Header */}
+      <LinearGradient
+        colors={[PRIMARY, SECONDARY]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerGradient}
+      >
+        <Title style={styles.welcomeText}>Admin Panel</Title>
+        <Title style={styles.subtitleText}>Manage your business settings</Title>
+      </LinearGradient>
+
+      {/* Cards Grid */}
+      <View style={styles.cardsContainer}>
+        <AdminCard
+          title="Manage Roles"
+          icon="shield-account"
+          theme={theme}
           onPress={() => navigation.navigate("RolesStack", { screen: "Roles" })}
-        >
-          <Card.Cover
-            style={homeScreenStyles.cardCover}
-            source={require("../assets/roles.png")}
-          />
-          <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Manage Roles</Title>
-          </View>
-        </Card>
+          accessibilityLabel="Manage user roles"
+        />
 
-        <View style={homeScreenStyles.gap} />
-
-        <Card
-          style={homeScreenStyles.card}
+        <AdminCard
+          title="Expense Types"
+          icon="receipt"
+          theme={theme}
           onPress={() =>
             navigation.navigate("ExpenseTypeStack", {
               screen: "ExpenseTypes",
               params: { title: "Expense types" },
             })
           }
-        >
-          <Card.Cover
-            style={homeScreenStyles.cardCover}
-            source={require("../assets/expense_types.jpeg")}
-          />
-          <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Expense Types</Title>
-          </View>
-        </Card>
+          accessibilityLabel="Manage expense types"
+        />
 
-        <Card
-          style={homeScreenStyles.card}
+        <AdminCard
+          title="Manage Tags"
+          icon="tag-multiple"
+          theme={theme}
           onPress={() => navigation.navigate("TagsStack", { screen: "Tags" })}
-        >
-          <Card.Cover
-            style={homeScreenStyles.cardCover}
-            source={require("../assets/tags.jpeg")}
-          />
-          <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Manage Tags</Title>
-          </View>
-        </Card>
+          accessibilityLabel="Manage tags"
+        />
 
-        <Card
-          style={homeScreenStyles.card}
+        <AdminCard
+          title="Work Types"
+          icon="briefcase-variant"
+          theme={theme}
           onPress={() =>
             navigation.navigate("AdminStack", {
               screen: "WorkTypeList",
               params: { title: "Work type" },
             })
           }
-        >
-          <Card.Cover
-            style={homeScreenStyles.cardCover}
-            source={require("../assets/work_type.jpeg")}
-          />
-          <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Manage Work Type</Title>
-          </View>
-        </Card>
+          accessibilityLabel="Manage work types"
+        />
 
-        <Card
-          style={homeScreenStyles.card}
+        <AdminCard
+          title="Middle Man"
+          icon="account-switch"
+          theme={theme}
           onPress={() =>
             navigation.navigate("MiddleManStack", {
               screen: "WorkAndSaleList",
               params: { title: "Work And Sale" },
             })
           }
-        >
-          <Card.Cover
-            style={{ height: "50%" }}
-            source={require("../assets/sale.jpeg")}
-          />
-          <Card.Cover
-            style={{ height: "50%" }}
-            source={require("../assets/work.jpeg")}
-          />
-          <View style={homeScreenStyles.textOverlay}>
-            <Title style={homeScreenStyles.cardTitle}>Middle Man</Title>
-          </View>
-        </Card>
+          accessibilityLabel="Manage middle man work and sales"
+        />
 
         {impersonate && (
-          <Card
-            style={homeScreenStyles.card}
+          <AdminCard
+            title="Impersonate"
+            icon="account-convert"
+            theme={theme}
             onPress={() =>
               navigation.navigate("HomeStack", {
                 screen: "ImpersonationScreen",
-                params: { title: "Impersonatione user" },
+                params: { title: "Impersonation User" },
               })
             }
-          >
-            <Card.Cover
-              style={homeScreenStyles.cardCover}
-              source={require("../assets/impersonate.jpeg")}
-            />
-            <View style={homeScreenStyles.textOverlay}>
-              <Title style={homeScreenStyles.cardTitle}>Impersonate Yo</Title>
-            </View>
-          </Card>
+            accessibilityLabel="Impersonate another user"
+          />
         )}
       </View>
     </ScrollView>
   );
 };
+
+const { width: screenWidth } = Dimensions.get("window");
+// 2 columns with padding: (screenWidth - (padding * 3)) / 2
+const cardWidth = (screenWidth - CONTAINER_PADDING * 3) / 2;
+
+const styles = StyleSheet.create({
+  headerGradient: {
+    marginBottom: CONTAINER_PADDING * 1.5,
+    padding: CONTAINER_PADDING,
+    paddingTop: CONTAINER_PADDING * 2,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    marginTop: -CONTAINER_PADDING - 10,
+    marginHorizontal: -CONTAINER_PADDING,
+  },
+  welcomeText: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    marginBottom: 4,
+  },
+  subtitleText: {
+    fontSize: 16,
+    color: "#E0E0E0",
+  },
+  cardsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    paddingBottom: CONTAINER_PADDING,
+    marginTop: -30,
+  },
+  cardContainer: {
+    width: cardWidth,
+    marginBottom: CONTAINER_PADDING,
+    borderRadius: BORDER_RADIUS,
+    ...SHADOW,
+    elevation: 4,
+  },
+  cardContent: {
+    alignItems: "center",
+    padding: CONTAINER_PADDING,
+    justifyContent: "center",
+    minHeight: 140,
+  },
+  iconContainer: {
+    marginBottom: 12,
+    padding: 15,
+    borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+});
 
 export default AdminScreen;

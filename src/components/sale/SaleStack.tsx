@@ -8,7 +8,10 @@ const Stack = createStackNavigator();
 
 const SaleStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+    <Stack.Navigator
+      id="SaleStack"
+      screenOptions={{ header: () => <CustomHeader /> }}
+    >
       <Stack.Screen name="Sale" component={SaleScreen} />
       <Stack.Screen name="AddSale" component={AddSaleScreen} />
     </Stack.Navigator>
