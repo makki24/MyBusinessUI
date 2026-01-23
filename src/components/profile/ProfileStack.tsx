@@ -11,7 +11,10 @@ const Stack = createStackNavigator();
 
 const ProfileStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+    <Stack.Navigator
+      id="ProfileStack"
+      screenOptions={{ header: () => <CustomHeader /> }}
+    >
       <Stack.Screen
         name="ManageAmounts"
         component={AddLoanClearTransaction}

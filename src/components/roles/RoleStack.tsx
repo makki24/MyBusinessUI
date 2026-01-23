@@ -9,7 +9,10 @@ const Stack = createStackNavigator();
 
 const RoleStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+    <Stack.Navigator
+      id="RoleStack"
+      screenOptions={{ header: () => <CustomHeader /> }}
+    >
       <Stack.Screen name="Roles" component={RolesScreen} />
       <Stack.Screen name="AddRole" component={AddRoleScreen} />
       <Stack.Screen name="EditRole" component={EditRoleScreen} />

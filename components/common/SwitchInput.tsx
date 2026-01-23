@@ -1,6 +1,5 @@
-// SwitchInput.tsx
 import React from "react";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useTheme, Switch, Text } from "react-native-paper";
 
 interface SwitchInputProps {
@@ -17,15 +16,33 @@ const SwitchInput: React.FC<SwitchInputProps> = ({
   const theme = useTheme();
 
   return (
-    <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <View style={[styles.container, { backgroundColor: value ? theme.colors.primaryContainer + "30" : "transparent" }]}>
       <Switch
         value={value}
         onValueChange={onValueChange}
-        color={theme.colors.primary} // Adjust the color based on your theme
+        color={theme.colors.primary}
       />
-      <Text>{label}</Text>
+      <Text style={[styles.label, { color: theme.colors.onSurface }]}>{label}</Text>
     </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  label: {
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: "500",
+    flex: 1,
+  },
+});
+
 export default SwitchInput;
+

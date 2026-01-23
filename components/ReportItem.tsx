@@ -1,5 +1,5 @@
 // src/components/ReportItem.tsx
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Card, Title, Paragraph, useTheme, Text } from "react-native-paper";
 import { UserReport } from "../types";
@@ -24,51 +24,10 @@ interface CardItemProps {
   received: boolean;
 }
 
-const CardItem: React.FC<CardItemProps> = ({
-  reportData,
-  style,
-  amount,
-  received,
-}) => {
-  return (
-    <TouchableOpacity>
-      <Card style={{ ...style, ...styles.card }}>
-        <Card.Content style={commonItemStyles.cardContent}>
-          <View style={commonItemStyles.titleContainer}>
-            <Title>{amount}</Title>
-            {received && <Text>from {reportData.sender?.name}</Text>}
-          </View>
-          <View
-            style={reportData.receiver?.name ? {} : { ...commonStyles.row }}
-          >
-            <Paragraph>
-              {reportData.type}{" "}
-              {reportData.receiver?.name
-                ? `to ${reportData.receiver.name}`
-                : ""}
-            </Paragraph>
-            <Paragraph>{`${reportData.date.toDateString()}`}</Paragraph>
-          </View>
-          {reportData.description && (
-            <Paragraph>{`${reportData.description}`}</Paragraph>
-          )}
-          <View style={commonStyles.row}>
-            <Paragraph>{`T S ${reportData.totalSent}`}</Paragraph>
-            <Paragraph>{`T R ${reportData.totalReceived}`}</Paragraph>
-          </View>
-        </Card.Content>
-      </Card>
-    </TouchableOpacity>
-  );
-};
-
 const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
   const theme = useTheme();
-  const [received, setIsReceived] = useState(false);
-
-  useEffect(() => {
-    setIsReceived(!reportData.received);
-  }, []);
+  // Derived state for better performance and correctness
+  const received = !reportData.received;
 
   return (
     <View style={received ? styles.cardLeft : styles.cardRight}>
@@ -96,6 +55,44 @@ const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
         received={!received}
       />
     </View>
+  );
+};
+
+const CardItem: React.FC<CardItemProps> = ({
+  reportData,
+  style,
+  amount,
+  received,
+}) => {
+  return (
+    <TouchableOpacity>
+      <Card style={[styles.card, style]}>
+        <Card.Content style={commonItemStyles.cardContent}>
+          <View style={commonItemStyles.titleContainer}>
+            <Title>{amount}</Title>
+            {received && <Text>from {reportData.sender?.name}</Text>}
+          </View>
+          <View
+            style={reportData.receiver?.name ? {} : { ...commonStyles.row }}
+          >
+            <Paragraph>
+              {reportData.type}{" "}
+              {reportData.receiver?.name
+                ? `to ${reportData.receiver.name}`
+                : ""}
+            </Paragraph>
+            <Paragraph>{`${reportData.date.toDateString()}`}</Paragraph>
+          </View>
+          {reportData.description && (
+            <Paragraph>{`${reportData.description}`}</Paragraph>
+          )}
+          <View style={commonStyles.row}>
+            <Paragraph>{`T S ${reportData.totalSent}`}</Paragraph>
+            <Paragraph>{`T R ${reportData.totalReceived}`}</Paragraph>
+          </View>
+        </Card.Content>
+      </Card>
+    </TouchableOpacity>
   );
 };
 

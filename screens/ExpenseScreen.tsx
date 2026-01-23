@@ -1,10 +1,10 @@
 // src/screens/ExpenseScreen.tsx
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import ExpenseService from "../services/ExpenseService";
 import ExpenseItem from "../components/ExpenseItem";
-import { expensesState } from "../recoil/atom";
+import { expensesState, userState } from "../recoil/atom";
 import { Expense, Filter } from "../types";
 import commonStyles from "../src/styles/commonStyles";
 import expenseService from "../services/ExpenseService";
@@ -23,6 +23,7 @@ type ExpenseScreenProps = {
 
 const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   const [expenses, setExpenses] = useRecoilState(expensesState);
+  const loggedInUser = useRecoilValue(userState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
@@ -34,6 +35,13 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
     user: [],
   });
   const defaultSort = DEFAULT_SORT; // Use a state variable
+
+  // Check if user can delete expenses
+  const isAdmin = loggedInUser?.roles?.some((role) => role.name === "ADMIN");
+
+  const canDeleteExpense = (expense: Expense): boolean => {
+    return isAdmin || expense.sender?.id === loggedInUser?.id;
+  };
 
   const transFormAndSetExpense = (expensesData: Expense[]) => {
     setExpenses(transformedData(expensesData));
@@ -166,6 +174,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
             expense={item}
             onPress={() => handleEditExpense(item)}
             onDelete={() => handleDeleteExpense(item)}
+            canDelete={canDeleteExpense(item)}
           />
         )}
         transFormData={transformedData}

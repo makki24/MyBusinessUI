@@ -76,11 +76,6 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
     }
   }, [route.params?.isEditMode, route.params?.sale]);
 
-  const handleTagChange = () => {
-    // Handle tag change logic if needed
-    // ...
-  };
-
   const submitSale = async () => {
     setError("");
     try {
@@ -219,7 +214,6 @@ const AddSaleScreen: React.FC<AddSaleScreenProps> = ({ route, navigation }) => {
         setValue={setSelectedTags}
         itemSeparator={true}
         placeholder="Select Tags"
-        onChangeValue={handleTagChange}
         loading={isDataLoading}
       />
 
