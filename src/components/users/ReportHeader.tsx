@@ -48,7 +48,6 @@ const ReportHeader: React.FC<ReportHeaderProps> = ({ route, summary }) => {
       screen: "UserSummary",
       params: { title: "Summary", user },
     });
-    navigation.navigate("UserSummary");
   };
 
   return (
