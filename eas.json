@@ -11,7 +11,8 @@
         "EXPO_PUBLIC_URL": "http://192.168.1.146:9191",
         "APP_VARIANT": "development",
         "EXPO_PUBLIC_ANDROID_CLIENT_ID": "82740835529-a19jnqjanlffvd06ceqfol0hkoqe2k0h.apps.googleusercontent.com",
-        "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com"
+        "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com",
+        "GOOGLE_SERVICES_JSON": "./assets/google-services.json"
       }
     },
     "preview": {
@@ -23,7 +24,8 @@
         "EXPO_PUBLIC_URL": "http://129.213.146.93:9083",
         "APP_VARIANT": "development",
         "EXPO_PUBLIC_ANDROID_CLIENT_ID": "82740835529-a19jnqjanlffvd06ceqfol0hkoqe2k0h.apps.googleusercontent.com",
-        "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com"
+        "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com",
+        "GOOGLE_SERVICES_JSON": "./assets/google-services.json"
       },
       "android": {
         "buildType": "apk"

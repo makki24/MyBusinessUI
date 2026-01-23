@@ -1,9 +1,19 @@
 import { StyleSheet } from "react-native";
-import { UI_ELEMENTS_GAP } from "./constants";
+import {
+  BORDER_RADIUS,
+  CONTAINER_PADDING,
+  UI_ELEMENTS_GAP,
+  SHADOW,
+} from "./constants";
+import { SURFACE } from "./colors";
 
 const commonItemStyles = StyleSheet.create({
   card: {
+    padding: CONTAINER_PADDING,
+    borderRadius: BORDER_RADIUS,
     marginBottom: UI_ELEMENTS_GAP,
+    backgroundColor: SURFACE,
+    ...SHADOW,
   },
   cardContent: {
     paddingBottom: UI_ELEMENTS_GAP,

@@ -1,6 +1,6 @@
 import React from "react";
 import { TextInput } from "react-native-paper";
-import commonAddScreenStyles from "../../src/styles/commonAddScreenStyles";
+import { UI_ELEMENTS_GAP } from "../../src/styles/constants";
 
 interface NumberInputProps {
   label: string;
@@ -22,10 +22,12 @@ const NumberInput: React.FC<NumberInputProps> = ({
       value={value}
       onChangeText={onChangeText}
       testID={label.split(" ").join("")}
-      style={commonAddScreenStyles.inputField}
+      style={{ marginBottom: UI_ELEMENTS_GAP }}
+      mode="outlined"
       disabled={disabled}
     />
   );
 };
 
 export default NumberInput;
+

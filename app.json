@@ -10,7 +10,13 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.syedsons.mybusiness.dev",
+      "googleServicesFile": "./assets/google-services.json"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.syedsons.mybusiness",

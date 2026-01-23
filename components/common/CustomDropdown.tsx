@@ -1,7 +1,7 @@
 import React from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Chip, MD3DarkTheme, MD3LightTheme } from "react-native-paper";
-import { useColorScheme, View } from "react-native";
+import { useColorScheme, View, StyleSheet } from "react-native";
 
 interface CustomDropDownProps<T> {
   schema?: {
@@ -18,11 +18,12 @@ interface CustomDropDownProps<T> {
     React.SetStateAction<string | string[] | number[] | number>
   >;
   itemSeparator?: boolean;
-  onChangeValue?: (value: string | null) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onChangeValue?: (value: any) => void;
   zIndex?: number;
   zIndexInverse?: number;
   placeholder?: string;
-  multiple?: boolean; // Added a new prop for multiple selections
+  multiple?: boolean;
   loading?: boolean;
   renderListItem?;
   testID?: string;
@@ -42,7 +43,7 @@ const CustomDropDown = <T,>({
   zIndex,
   zIndexInverse,
   placeholder,
-  multiple = false, // Default to false if not provided
+  multiple = false,
   loading = false,
   renderListItem,
   testID,
@@ -55,6 +56,7 @@ const CustomDropDown = <T,>({
 
   const colorScheme = useColorScheme();
   const theme = colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme;
+  const isDark = colorScheme === "dark";
 
   return (
     <>
@@ -68,39 +70,99 @@ const CustomDropDown = <T,>({
         searchable={searchable}
         open={open}
         setOpen={setOpen}
-        containerStyle={{ height: 40, marginBottom: 16, ...containerStyle }}
+        containerStyle={{ height: 50, marginBottom: 12, ...containerStyle }}
         value={value}
         setValue={setValue}
         itemSeparator={itemSeparator}
         onChangeValue={onChangeValue}
         placeholder={placeholder}
-        multiple={multiple} // Pass the multiple prop to DropDownPicker
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        multiple={multiple as any}
         renderListItem={renderListItem}
+        // Modern rounded style
         style={{
-          borderRadius: 0,
-          borderWidth: 0,
-          backgroundColor: theme.colors.surfaceVariant,
+          borderRadius: 12,
+          borderWidth: 1,
+          borderColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)",
+          backgroundColor: theme.colors.surface,
+          minHeight: 50,
+          paddingHorizontal: 14,
         }}
-        textStyle={{ color: theme.colors.onSurfaceVariant }}
-        searchTextInputStyle={{
-          backgroundColor: theme.colors.surfaceVariant,
+        textStyle={{
+          color: theme.colors.onSurface,
+          fontSize: 15,
+          fontWeight: "500",
+        }}
+        placeholderStyle={{
           color: theme.colors.onSurfaceVariant,
+          fontSize: 15,
         }}
+        arrowIconStyle={{
+          width: 20,
+          height: 20,
+        }}
+        tickIconStyle={{
+          width: 18,
+          height: 18,
+        }}
+        // Search input styling
+        searchTextInputStyle={{
+          backgroundColor: theme.colors.surface,
+          color: theme.colors.onSurface,
+          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+          paddingHorizontal: 12,
+          height: 44,
+        }}
+        searchContainerStyle={{
+          borderBottomColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+          paddingBottom: 10,
+        }}
+        // Dropdown container styling
         dropDownContainerStyle={{
-          backgroundColor: theme.colors.background,
-          borderColor: theme.colors.onBackground,
+          backgroundColor: theme.colors.surface,
+          borderColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)",
+          borderRadius: 12,
+          borderWidth: 1,
+          marginTop: 4,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: isDark ? 0.3 : 0.15,
+          shadowRadius: 8,
+          elevation: 8,
         }}
-        listItemLabelStyle={{ color: theme.colors.onBackground }}
-        listMessageTextStyle={{ color: theme.colors.onBackground }}
-        itemSeparatorStyle={{ backgroundColor: theme.colors.onBackground }}
-        searchContainerStyle={{ borderBottomColor: theme.colors.onBackground }}
-        listItemContainerStyle={{ height: 50 }}
-        maxHeight={300}
+        // List item styling
+        listItemContainerStyle={{
+          height: 52,
+          paddingHorizontal: 14,
+        }}
+        listItemLabelStyle={{
+          color: theme.colors.onSurface,
+          fontSize: 15,
+        }}
+        selectedItemContainerStyle={{
+          backgroundColor: isDark ? "rgba(255,255,255,0.08)" : theme.colors.primaryContainer,
+        }}
+        selectedItemLabelStyle={{
+          color: theme.colors.primary,
+          fontWeight: "600",
+        }}
+        listMessageTextStyle={{
+          color: theme.colors.onSurfaceVariant,
+          fontSize: 14,
+        }}
+        itemSeparatorStyle={{
+          backgroundColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+        }}
+        maxHeight={280}
         searchPlaceholder="Search..."
+        listMode="SCROLLVIEW"
       />
-      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        {Array.isArray(value) &&
-          value.map((v: string | number) => {
+      {/* Selected chips for multiple selection */}
+      {Array.isArray(value) && value.length > 0 && (
+        <View style={styles.chipContainer}>
+          {value.map((v: string | number) => {
             const item = items.find(
               (itemLocal: T) => itemLocal[schema.value] === v,
             );
@@ -108,15 +170,33 @@ const CustomDropDown = <T,>({
               <Chip
                 key={v}
                 onClose={() => handleDelete(v)}
-                style={{ margin: 4 }}
+                style={[styles.chip, { backgroundColor: theme.colors.primaryContainer }]}
+                textStyle={{ color: theme.colors.onPrimaryContainer, fontSize: 13 }}
+                closeIconAccessibilityLabel="Remove"
               >
                 {item ? item[schema.label] : "Loading..."}
               </Chip>
             );
           })}
-      </View>
+        </View>
+      )}
     </>
   );
 };
 
+const styles = StyleSheet.create({
+  chipContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  chip: {
+    marginRight: 6,
+    marginBottom: 6,
+    borderRadius: 16,
+  },
+});
+
 export default CustomDropDown;
+

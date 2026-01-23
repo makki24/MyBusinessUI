@@ -20,7 +20,7 @@ const LoginScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false); // New loading state
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId,
-    clientId: expoClientId, // Web client ID for fallback
+    clientId: expoClientId,
   });
 
   useEffect(() => {

@@ -1,16 +1,17 @@
-import CustomHeader from "../common/CustomHeader";
-import React from "react";
+import * as React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import DashboardScreen from "./DashboardScreen";
-import TagsSelector from "../tags/TagsSelector";
+import ModernDashboardScreen from "./ModernDashboardScreen";
+import LineChartScreen from "./LineChartScreen";
+import SummaryByType from "./SummaryByType";
 
 const Stack = createStackNavigator();
 
 const DashboardStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
-      <Stack.Screen name="Dashboard" component={DashboardScreen} />
-      <Stack.Screen name={"TagsSelector"} component={TagsSelector} />
+    <Stack.Navigator id="DashboardStack" screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Dashboard" component={ModernDashboardScreen} />
+      <Stack.Screen name="LineChart" component={LineChartScreen} />
+      <Stack.Screen name="SummaryByType" component={SummaryByType} />
     </Stack.Navigator>
   );
 };
