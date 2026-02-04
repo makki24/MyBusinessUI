@@ -26,5 +26,6 @@ export interface User {
   id?: string;
   roles: Role[]; // Assuming you have a Role interface defined
   notificationToken?: string;
+  currency?: string;
   // Add other methods or properties if needed
 }

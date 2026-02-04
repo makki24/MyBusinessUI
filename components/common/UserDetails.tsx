@@ -1,17 +1,20 @@
 // src/components/UserDetails.tsx
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import { Avatar, Text } from "react-native-paper";
+import { Avatar, Text, useTheme } from "react-native-paper";
 import { DEFAULT_AVATAR_URL } from "../../constants/mybusiness.constants";
 import { User } from "../../types";
-import { HEADING_SIZE, UI_ELEMENTS_GAP } from "../../src/styles/constants";
+import { UI_ELEMENTS_GAP } from "../../src/styles/constants";
 
 interface UserDetailsProps {
   user: User;
+  compact?: boolean;
 }
 
-const UserDetails: React.FC<UserDetailsProps> = ({ user }) => {
+const UserDetails: React.FC<UserDetailsProps> = ({ user, compact = false }) => {
+  const theme = useTheme();
   const [imageExists, setImageExists] = useState(true);
+  const avatarSize = compact ? 24 : 40;
 
   const checkImageExists = async () => {
     try {
@@ -30,13 +33,18 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user }) => {
   return (
     <View style={styles.userContainer}>
       <Avatar.Image
-        size={HEADING_SIZE * 2}
+        size={avatarSize}
         source={{
           uri: imageExists && user.picture ? user.picture : DEFAULT_AVATAR_URL,
         }}
         style={styles.avatar}
       />
-      <Text variant="titleMedium">{user.name}</Text>
+      <Text
+        variant={compact ? "bodySmall" : "titleMedium"}
+        style={{ color: theme.colors.onSurfaceVariant }}
+      >
+        {user.name}
+      </Text>
     </View>
   );
 };
@@ -47,10 +55,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   avatar: {
-    marginRight: UI_ELEMENTS_GAP,
-  },
-  username: {
-    fontWeight: "bold",
+    marginRight: UI_ELEMENTS_GAP / 2,
   },
 });
 
