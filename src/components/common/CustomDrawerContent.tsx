@@ -1,30 +1,29 @@
-import type {
-  DrawerDescriptorMap,
-  DrawerNavigationHelpers,
-} from "@react-navigation/drawer/src/types";
-import { DrawerNavigationState, ParamListBase } from "@react-navigation/native";
+import {
+  DrawerContentComponentProps,
+  DrawerContentScrollView,
+  DrawerItemList,
+} from "@react-navigation/drawer";
 import { User } from "../../../types";
 import React from "react";
 import { useRecoilState } from "recoil";
 import { userState } from "../../../recoil/atom";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  DrawerContentScrollView,
-  DrawerItemList,
-} from "@react-navigation/drawer";
 import { TouchableOpacity, View } from "react-native";
 import {
   CONTAINER_PADDING,
   DRAWER_CONTENT_MARGIN,
   MAIN_PROFILE_PIC,
 } from "../../styles/constants";
-import { Avatar, Caption, IconButton, Text } from "react-native-paper";
+import {
+  Avatar,
+  Caption,
+  IconButton,
+  Text,
+  useTheme,
+} from "react-native-paper";
 import { DEFAULT_AVATAR_URL } from "../../../constants/mybusiness.constants";
 
-interface CustomDrawerContentProps {
-  navigation: DrawerNavigationHelpers;
-  state: DrawerNavigationState<ParamListBase>; // Adjust this type based on your navigation stack
-  descriptors: DrawerDescriptorMap;
+interface CustomDrawerContentProps extends DrawerContentComponentProps {
   userInfo: User;
 }
 
@@ -34,6 +33,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
   descriptors,
   ...props
 }) => {
+  const theme = useTheme();
   const userInfo = props.userInfo as User;
   const [_, setUserInfo] = useRecoilState(userState);
 
@@ -73,43 +73,73 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
 
   return (
     <DrawerContentScrollView {...props}>
+      {/* User Profile Section */}
       <View
         style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginLeft: DRAWER_CONTENT_MARGIN,
+          padding: DRAWER_CONTENT_MARGIN,
+          paddingBottom: CONTAINER_PADDING,
+          borderBottomWidth: 1,
+          borderBottomColor: theme.colors.outlineVariant,
         }}
       >
-        <TouchableOpacity onPress={toggleDrawer}>
-          <Avatar.Image
-            source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }}
-            size={MAIN_PROFILE_PIC}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={navigateToEditAccount}>
-          <IconButton icon="account-edit" size={MAIN_PROFILE_PIC / 2} />
-        </TouchableOpacity>
-
+        {/* Avatar Row */}
         <View
-          style={{ marginLeft: "auto", marginRight: DRAWER_CONTENT_MARGIN }}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
         >
-          <TouchableOpacity onPress={navigateToContributionScreen}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <IconButton icon="wallet" style={{ margin: 0, padding: 0 }} />
-              <Caption>{userInfo?.amountHolding}</Caption>
-            </View>
+          <TouchableOpacity onPress={toggleDrawer}>
+            <Avatar.Image
+              source={{ uri: userInfo?.picture || DEFAULT_AVATAR_URL }}
+              size={MAIN_PROFILE_PIC}
+            />
           </TouchableOpacity>
-          <TouchableOpacity onPress={navigateToManageAmounts}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <IconButton
-                icon="hand-extended"
-                style={{ margin: 0, padding: 0 }}
-              />
-              <Caption>{userInfo?.amountToReceive}</Caption>
-            </View>
+          <TouchableOpacity onPress={navigateToEditAccount}>
+            <IconButton icon="account-edit" size={MAIN_PROFILE_PIC / 2} />
           </TouchableOpacity>
+
+          <View
+            style={{ marginLeft: "auto", marginRight: DRAWER_CONTENT_MARGIN }}
+          >
+            <TouchableOpacity onPress={navigateToContributionScreen}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <IconButton icon="wallet" style={{ margin: 0, padding: 0 }} />
+                <Caption>{userInfo?.amountHolding}</Caption>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={navigateToManageAmounts}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <IconButton
+                  icon="hand-extended"
+                  style={{ margin: 0, padding: 0 }}
+                />
+                <Caption>{userInfo?.amountToReceive}</Caption>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
+
+        {/* Username on new line */}
+        <Text
+          variant="titleMedium"
+          style={{
+            marginTop: 8,
+            color: theme.colors.onSurface,
+            flexShrink: 1,
+          }}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
+          {userInfo?.name}
+        </Text>
+        {userInfo?.phoneNumber && (
+          <Caption style={{ color: theme.colors.onSurfaceVariant }}>
+            {userInfo.phoneNumber}
+          </Caption>
+        )}
       </View>
+
       <DrawerItemList
         state={state}
         descriptors={descriptors}
@@ -121,10 +151,10 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
           style={{
             padding: CONTAINER_PADDING,
             borderTopWidth: 1,
-            borderTopColor: "#ccc",
+            borderTopColor: theme.colors.outlineVariant,
           }}
         >
-          <Text>Logout</Text>
+          <Text style={{ color: theme.colors.onSurface }}>Logout</Text>
         </View>
       </TouchableOpacity>
     </DrawerContentScrollView>

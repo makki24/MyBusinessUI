@@ -25,6 +25,16 @@ interface SummaryProps {
 }
 
 const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
+  const userParam = route.params?.user;
+
+  if (!userParam) {
+    return (
+      <View style={commonStyles.container}>
+        <Text>No user data provided.</Text>
+      </View>
+    );
+  }
+
   const thisMonth = new Date();
   thisMonth.setDate(1);
   const rangeState = React.useState({
@@ -32,7 +42,7 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
     endDate: new Date(),
   });
   const [range] = rangeState;
-  const [user] = useState<User>(route.params.user);
+  const [user] = useState<User>(userParam);
   const toRecieve = user.amountHolding > user.amountToReceive;
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

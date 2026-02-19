@@ -139,6 +139,7 @@ const AppContent = () => {
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
       {userInfo ? (
         <Drawer.Navigator
+          id="DrawerNavigator"
           screenOptions={{
             drawerPosition: "right",
           }}
@@ -226,6 +227,7 @@ const AppContent = () => {
         </Drawer.Navigator>
       ) : (
         <Drawer.Navigator
+          id="LoginDrawerNavigator"
           initialRouteName="Login"
           screenOptions={{ drawerPosition: "right" }}
           drawerContent={(props) => (

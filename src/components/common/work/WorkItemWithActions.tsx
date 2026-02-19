@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import ConfirmationModal from "../../../../components/common/ConfirmationModal";
 import { Work } from "../../../../types";
 import WorkService from "../../../../services/WorkService";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { worksState } from "../../../../recoil/atom";
+import { canDelete as canDeleteSelector } from "../../../../recoil/selectors";
 import LoadingError from "../../../../components/common/LoadingError";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -30,6 +31,7 @@ interface WorkItemWithActionsProps {
 const WorkItemWithActions: React.FC<WorkItemWithActionsProps> = ({ item }) => {
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [selectedWork, setSelectedWork] = useState<Work>(null);
+  const userCanDelete = useRecoilValue(canDeleteSelector);
   const [_works, setWorks] = useRecoilState(worksState);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -83,6 +85,7 @@ const WorkItemWithActions: React.FC<WorkItemWithActionsProps> = ({ item }) => {
         work={item}
         onPress={() => handleEditWork(item)}
         onDelete={() => handleDeleteWork(item)}
+        canDelete={userCanDelete}
       />
       <ConfirmationModal
         warningMessage={"Are you sure you want to delete this work?"}

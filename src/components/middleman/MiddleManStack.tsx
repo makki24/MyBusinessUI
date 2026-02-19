@@ -14,7 +14,10 @@ const Stack = createStackNavigator();
 
 const MiddleManStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+    <Stack.Navigator
+      id="MiddleManStack"
+      screenOptions={{ header: () => <CustomHeader /> }}
+    >
       <Stack.Screen name={"TagsSelector"} component={TagsSelector} />
       <Stack.Screen name="AddSender" component={AddSender} />
       <Stack.Screen name={"AddReceiver"} component={AddReceiver} />

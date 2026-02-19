@@ -21,3 +21,11 @@ export const isAdmin = selector({
     );
   },
 });
+
+export const canDelete = selector({
+  key: "canDelete",
+  get: ({ get }): boolean => {
+    const currentUser = get(userState);
+    return currentUser?.roles?.some((role) => role.name === "DELETER") ?? false;
+  },
+});
