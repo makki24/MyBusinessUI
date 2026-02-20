@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Text, useTheme, Chip, Menu, Button } from "react-native-paper";
 import { LineChart } from "react-native-gifted-charts";
@@ -25,6 +25,7 @@ const EnhancedLineChart: React.FC = () => {
   const theme = useTheme();
   const users = useRecoilValue(usersState);
 
+  const chartScrollRef = useRef<ScrollView>(null);
   const [lineData1, setLineData1] = useState([]);
   const [lineData2, setLineData2] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -60,6 +61,8 @@ const EnhancedLineChart: React.FC = () => {
 
       setLineData1(res.toPay || []);
       setLineData2(res.toReceive || []);
+      // Scroll to end after a brief layout pass so the chart has rendered
+      setTimeout(() => chartScrollRef.current?.scrollToEnd({ animated: false }), 100);
     } catch (e) {
       setError(e.message ?? "Cannot draw graph");
     } finally {
@@ -177,12 +180,15 @@ const EnhancedLineChart: React.FC = () => {
               </View>
             </View>
 
-            <View onStartShouldSetResponder={() => true}>
+            <View
+              onMoveShouldSetResponder={() => true}
+              onMoveShouldSetResponderCapture={() => true}
+            >
               <ScrollView
+                ref={chartScrollRef}
                 horizontal
                 showsHorizontalScrollIndicator={true}
                 nestedScrollEnabled={true}
-                scrollEventThrottle={16}
                 directionalLockEnabled={true}
               >
                 <LineChart
@@ -263,6 +269,9 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     minHeight: 320,
+  },
+  chartWrapper: {
+    overflow: "hidden",
   },
   legendContainer: {
     flexDirection: "row",
