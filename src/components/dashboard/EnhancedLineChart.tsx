@@ -177,40 +177,48 @@ const EnhancedLineChart: React.FC = () => {
               </View>
             </View>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <LineChart
-                data={lineData1}
-                data2={lineData2}
-                color1={theme.colors.error}
-                color2={theme.colors.primary}
-                height={280}
-                textColor1={theme.colors.onBackground}
-                textColor2={theme.colors.onSurfaceVariant}
-                dataPointsColor1={theme.colors.error}
-                dataPointsColor2={theme.colors.primary}
-                textFontSize={12}
-                hideYAxisText
-                maxValue={21}
-                curved={true}
-                areaChart
-                startFillColor1={theme.colors.error}
-                endFillColor1="transparent"
-                startOpacity1={0.3}
-                endOpacity1={0}
-                startFillColor2={theme.colors.primary}
-                endFillColor2="transparent"
-                startOpacity2={0.3}
-                endOpacity2={0}
-                rotateLabel={true}
-                xAxisLabelsVerticalShift={10}
-                xAxisLabelTextStyle={{
-                  color: theme.colors.onSurface,
-                  fontSize: 10,
-                }}
-                spacing={50}
-                initialSpacing={20}
-              />
-            </ScrollView>
+            <View onStartShouldSetResponder={() => true}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={true}
+                nestedScrollEnabled={true}
+                scrollEventThrottle={16}
+                directionalLockEnabled={true}
+              >
+                <LineChart
+                  data={lineData1}
+                  data2={lineData2}
+                  color1={theme.colors.error}
+                  color2={theme.colors.primary}
+                  height={280}
+                  textColor1={theme.colors.onBackground}
+                  textColor2={theme.colors.onSurfaceVariant}
+                  dataPointsColor1={theme.colors.error}
+                  dataPointsColor2={theme.colors.primary}
+                  textFontSize={12}
+                  hideYAxisText
+                  maxValue={21}
+                  curved={true}
+                  areaChart
+                  startFillColor1={theme.colors.error}
+                  endFillColor1="transparent"
+                  startOpacity1={0.3}
+                  endOpacity1={0}
+                  startFillColor2={theme.colors.primary}
+                  endFillColor2="transparent"
+                  startOpacity2={0.3}
+                  endOpacity2={0}
+                  rotateLabel={true}
+                  xAxisLabelsVerticalShift={10}
+                  xAxisLabelTextStyle={{
+                    color: theme.colors.onSurface,
+                    fontSize: 10,
+                  }}
+                  spacing={50}
+                  initialSpacing={20}
+                />
+              </ScrollView>
+            </View>
           </>
         )}
 

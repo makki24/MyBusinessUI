@@ -219,6 +219,7 @@ const AppContent = () => {
               headerShown: false,
               drawerLabel: "",
               drawerItemStyle: { height: 0 },
+              swipeEnabled: false,
             }}
             name="DashboardStack"
             component={DashboardStack}
