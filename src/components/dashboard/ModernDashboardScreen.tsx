@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { ScrollView, StyleSheet, View, RefreshControl } from "react-native";
-import { Text, useTheme, SegmentedButtons } from "react-native-paper";
+import { useTheme, SegmentedButtons } from "react-native-paper";
 import QuickStatsSection from "./QuickStatsSection";
 import EnhancedLineChart from "./EnhancedLineChart";
 import PieChartSection from "./PieChartSection";
@@ -131,26 +131,8 @@ const ModernDashboardScreen: React.FC = () => {
   return (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: theme.colors.background }]}
-      edges={["top"]}
+      edges={[]}
     >
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text
-            variant="headlineMedium"
-            style={[styles.headerTitle, { color: theme.colors.onBackground }]}
-          >
-            Dashboard
-          </Text>
-          <Text
-            variant="bodySmall"
-            style={{ color: theme.colors.onSurfaceVariant }}
-          >
-            Welcome back! Here&apos;s your complete overview
-          </Text>
-        </View>
-      </View>
-
       {/* Tab Navigation */}
       <View style={styles.tabContainer}>
         <SegmentedButtons
@@ -190,16 +172,8 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  header: {
-    paddingHorizontal: UI_ELEMENTS_GAP,
-    paddingVertical: UI_ELEMENTS_GAP,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  headerTitle: {
-    fontWeight: "bold",
-  },
+  header: {},
+  headerTitle: {},
   tabContainer: {
     paddingHorizontal: UI_ELEMENTS_GAP,
     paddingBottom: UI_ELEMENTS_GAP / 2,
