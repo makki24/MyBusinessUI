@@ -24,7 +24,22 @@ interface UserReportScreenProps {
   };
 }
 const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
-  const { userId } = route.params;
+  const userId = route.params?.userId;
+
+  if (!userId) {
+    return (
+      <View
+        style={{
+          ...commonStyles.container,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text>No user ID provided</Text>
+      </View>
+    );
+  }
+
   const [reports, setReports] = useRecoilState(userReportsState);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);

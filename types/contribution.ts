@@ -7,6 +7,7 @@ export interface Contribution {
   amount: number;
   receiver: User;
   tags: Tag[];
+  sender?: User;
   quantity: number;
   pricePerUnit: number;
   description?: string;

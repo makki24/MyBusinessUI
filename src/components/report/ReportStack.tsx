@@ -8,7 +8,10 @@ const Stack = createStackNavigator();
 
 const ReportStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+    <Stack.Navigator
+      id="ReportStack"
+      screenOptions={{ header: () => <CustomHeader /> }}
+    >
       <Stack.Screen name="Report" component={ReportScreen} />
       <Stack.Screen name="Calculator" component={Calculator} />
     </Stack.Navigator>

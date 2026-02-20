@@ -10,7 +10,10 @@ const Stack = createStackNavigator();
 
 const AdminStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+    <Stack.Navigator
+      id="AdminStack"
+      screenOptions={{ header: () => <CustomHeader /> }}
+    >
       <Stack.Screen name="AdminScreen" component={AdminScreen} />
       <Stack.Screen name="WorkTypeList" component={WorkTypeScreen} />
       <Stack.Screen name="AddWorkType" component={AddWorkTypeScreen} />

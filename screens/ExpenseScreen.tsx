@@ -1,7 +1,7 @@
 // src/screens/ExpenseScreen.tsx
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import ExpenseService from "../services/ExpenseService";
 import ExpenseItem from "../components/ExpenseItem";
 import { expensesState } from "../recoil/atom";
@@ -16,6 +16,7 @@ import filterService from "../src/service/FilterService";
 import ItemsList from "../src/components/common/ItemsList";
 import LoadingError from "../components/common/LoadingError";
 import { DEFAULT_SORT } from "../src/constants/filter";
+import { canDelete as canDeleteSelector } from "../recoil/selectors";
 
 type ExpenseScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -23,6 +24,7 @@ type ExpenseScreenProps = {
 
 const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
   const [expenses, setExpenses] = useRecoilState(expensesState);
+  const userCanDelete = useRecoilValue(canDeleteSelector);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
@@ -166,6 +168,7 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
             expense={item}
             onPress={() => handleEditExpense(item)}
             onDelete={() => handleDeleteExpense(item)}
+            canDelete={userCanDelete}
           />
         )}
         transFormData={transformedData}
