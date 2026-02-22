@@ -9,7 +9,7 @@
       "channel": "development",
       "env": {
         "EXPO_PUBLIC_URL": "http://192.168.1.146:9191",
-        "APP_VARIANT": "development",
+        "EXPO_PUBLIC_APP_VARIANT": "development",
         "EXPO_PUBLIC_ANDROID_CLIENT_ID": "82740835529-a19jnqjanlffvd06ceqfol0hkoqe2k0h.apps.googleusercontent.com",
         "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com"
       }
@@ -21,7 +21,7 @@
       "channel": "dev",
       "env": {
         "EXPO_PUBLIC_URL": "http://129.213.146.93:9083",
-        "APP_VARIANT": "development",
+        "EXPO_PUBLIC_APP_VARIANT": "dev",
         "EXPO_PUBLIC_ANDROID_CLIENT_ID": "82740835529-a19jnqjanlffvd06ceqfol0hkoqe2k0h.apps.googleusercontent.com",
         "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com"
       },
@@ -33,7 +33,7 @@
       "channel": "qa",
       "env": {
         "EXPO_PUBLIC_URL": "http://129.213.146.93:9083",
-        "APP_VARIANT": "qa",
+        "EXPO_PUBLIC_APP_VARIANT": "qa",
         "EXPO_PUBLIC_ANDROID_CLIENT_ID": "82740835529-qc6eh8vj9f65l3gkin360p86n2u67okq.apps.googleusercontent.com",
         "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com"
       },
@@ -45,7 +45,7 @@
       "channel": "production",
       "env": {
         "EXPO_PUBLIC_URL": "http://140.245.21.83:8090",
-        "APP_VARIANT": "prod",
+        "EXPO_PUBLIC_APP_VARIANT": "prod",
         "EXPO_PUBLIC_ANDROID_CLIENT_ID": "82740835529-o5ahaetmhfilc8ot561hp8hnhmvtfpp2.apps.googleusercontent.com",
         "EXPO_PUBLIC_CLIENT_ID": "82740835529-m96lhvjc8lgaj73liqurra8eksrebalu.apps.googleusercontent.com"
       },
