@@ -86,4 +86,8 @@ coverage/**/*
 coverage/
 
 build-*.*
+# env files - eas.json is the source of truth for builds; these are local only
+.env
 .env.local
+.env.development
+.env.test
