@@ -61,11 +61,11 @@ jobs:
           COMMIT_MESSAGE: ${{ env.commit_message }}
         run: |
           if [[ "${GITHUB_REF_NAME}" == 'main' ]]; then
-            NODE_ENV=development APP_VARIANT=development eas update --branch dev --message "${COMMIT_MESSAGE}"
+            NODE_ENV=development EXPO_PUBLIC_APP_VARIANT=dev eas update --branch dev --message "${COMMIT_MESSAGE}"
           elif [[ "${GITHUB_REF_NAME}" == 'qa' ]]; then
-            NODE_ENV=test APP_VARIANT=qa eas update --auto
+            NODE_ENV=test EXPO_PUBLIC_APP_VARIANT=qa eas update --auto
           elif [[ "${GITHUB_REF_NAME}" == 'production' ]]; then
-            NODE_ENV=production APP_VARIANT=production eas update --auto
+            NODE_ENV=production EXPO_PUBLIC_APP_VARIANT=prod eas update --auto
           else
             echo "Branch not configured for EAS update."
           fi
