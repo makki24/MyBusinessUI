@@ -8,7 +8,7 @@ jobs:
     name: Install, test, and build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
@@ -24,12 +24,11 @@ jobs:
         run: npm test
       - name: Build on EAS
         run: |
-          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)  # Get the current branch name
-          if [ "$BRANCH_NAME" = "main" ]; then
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
              PROFILE="dev"
           else
-             PROFILE="$BRANCH_NAME"
-          fi          
+             PROFILE="$GITHUB_REF_NAME"
+          fi
           BUILD_URL=$(eas build --profile $PROFILE --platform android --non-interactive --no-wait | grep -o 'https://expo.dev/accounts/[^ ]*')
           echo $BUILD_URL > build_url.txt
       - name: Get build URL
