@@ -1,7 +1,7 @@
 // src/screens/SaleScreen.tsx
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import SaleService from "../services/SaleService";
 import SaleItem from "../components/SaleItem";
 import { salesState } from "../recoil/atom";
@@ -13,6 +13,7 @@ import ConfirmationModal from "../components/common/ConfirmationModal";
 import ItemsList from "../src/components/common/ItemsList";
 import saleService from "../services/SaleService";
 import filterService from "../src/service/FilterService";
+import { canDelete as canDeleteSelector } from "../recoil/selectors";
 
 type SaleScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -20,6 +21,7 @@ type SaleScreenProps = {
 
 const SaleScreen: React.FC<SaleScreenProps> = ({ navigation }) => {
   const [sales, setSales] = useRecoilState(salesState);
+  const userCanDelete = useRecoilValue(canDeleteSelector);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedSale, setSelectedSale] = useState<Sale>(null);
@@ -102,6 +104,7 @@ const SaleScreen: React.FC<SaleScreenProps> = ({ navigation }) => {
             sale={item}
             onPress={() => handleEditSale(item)}
             onDelete={() => handleDeleteSale(item)}
+            canDelete={userCanDelete}
           />
         )}
         transFormData={transformedData}

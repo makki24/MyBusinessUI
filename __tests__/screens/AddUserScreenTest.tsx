@@ -13,7 +13,6 @@ import UserService from "../../services/UserService";
 import { Role } from "../../types";
 import { rolesState } from "../../recoil/atom";
 import { NavigationContainer } from "@react-navigation/native";
-jest.useFakeTimers();
 
 // Enable fetch mocks
 fetchMock.enableMocks();
@@ -41,6 +40,21 @@ jest.mock("@react-native-async-storage/async-storage", () => {
 });
 
 jest.mock("../../services/UserService");
+
+jest.mock(
+  "@expo/vector-icons",
+  () => ({
+    AntDesign: "AntDesign",
+  }),
+  { virtual: true },
+);
+
+jest.mock("expo-image-picker", () => ({
+  launchImageLibraryAsync: jest.fn(),
+  MediaTypeOptions: {
+    Images: "Images",
+  },
+}));
 
 describe("AddUserScreen", () => {
   beforeEach(() => {});

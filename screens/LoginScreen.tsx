@@ -20,7 +20,7 @@ const LoginScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false); // New loading state
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId,
-    expoClientId,
+    clientId: expoClientId,
   });
 
   useEffect(() => {
@@ -46,7 +46,6 @@ const LoginScreen = ({ navigation }) => {
     try {
       const user = await loginService.login(token, url);
       setUserInfo(user);
-      navigation.navigate("Home");
     } catch (loginError) {
       setUserInfo(null);
       throw new Error(loginError.message);

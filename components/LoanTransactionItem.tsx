@@ -13,16 +13,16 @@ interface LoanTransactionItemProps {
   testID?: string;
 }
 
-const LoanTransactionItem: React.FC<LoanTransactionItemProps> = ({
-  transaction,
-  onDelete,
-  onPress,
-}) => {
+const LoanTransactionItem: React.FC<LoanTransactionItemProps> = (props) => {
+  const { transaction, onDelete, onPress } = props;
   const renderUserDetails = () =>
     transaction.user && <UserDetails user={transaction.user} />;
 
   return (
-    <TouchableOpacity onPress={onPress} testID={"transaction-item"}>
+    <TouchableOpacity
+      onPress={onPress}
+      testID={props.testID || "transaction-item"}
+    >
       <Card style={commonItemStyles.card}>
         <Card.Content>
           <View style={commonItemStyles.titleContainer}>

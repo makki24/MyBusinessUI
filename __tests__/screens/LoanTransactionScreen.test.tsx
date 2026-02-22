@@ -36,7 +36,7 @@ describe("LoanTransactionScreen", () => {
   afterEach(cleanup);
 
   it("renders correctly", async () => {
-    const { getByTestId, getByText } = render(
+    const { findByTestId, findByText } = render(
       <RecoilRoot>
         <PaperProvider>
           <LoanTransactionScreen
@@ -50,21 +50,17 @@ describe("LoanTransactionScreen", () => {
       </RecoilRoot>,
     );
 
-    await waitFor(() => {
-      act(() => {
-        const card = getByTestId("delete");
-        fireEvent.press(card);
+    const card = await findByTestId("delete");
+    fireEvent.press(card);
 
-        const deleteModalText = getByText(
-          "Are you sure you want to delete this loan transaction?",
-        );
-        expect(deleteModalText).toBeTruthy();
-      });
-    });
+    const deleteModalText = await findByText(
+      "Are you sure you want to delete this loan transaction?",
+    );
+    expect(deleteModalText).toBeTruthy();
   });
 
   it("shows Snackbar after confirming transaction deletion", async () => {
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <RecoilRoot>
         <PaperProvider>
           <LoanTransactionScreen
@@ -79,22 +75,16 @@ describe("LoanTransactionScreen", () => {
     );
 
     // Trigger the action that leads to confirming transaction deletion
-    await waitFor(() => {
-      const deleteButton = getByTestId("delete");
-      fireEvent.press(deleteButton);
-    });
+    const deleteButton = await findByTestId("delete");
+    fireEvent.press(deleteButton);
 
     // Confirm the transaction deletion
-    await waitFor(() => {
-      const confirmDeleteButton = getByTestId("confirm-delete-button");
-      fireEvent.press(confirmDeleteButton);
-    });
+    const confirmDeleteButton = await findByTestId("confirm-delete-button");
+    fireEvent.press(confirmDeleteButton);
 
     // Check that the Snackbar appears
-    await waitFor(() => {
-      const snackbar = getByTestId("snackbar");
-      expect(snackbar).toBeTruthy();
-    });
+    const snackbar = await findByTestId("snackbar");
+    expect(snackbar).toBeTruthy();
   });
 
   it("navigates to Edit screen when editing a transaction", async () => {
@@ -109,7 +99,7 @@ describe("LoanTransactionScreen", () => {
         navigate: mockNavigate,
       });
 
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <RecoilRoot>
         <PaperProvider>
           <LoanTransactionScreen navigation={nav} />
@@ -117,10 +107,8 @@ describe("LoanTransactionScreen", () => {
       </RecoilRoot>,
     );
 
-    await waitFor(() => {
-      const editButton = getByTestId("transaction-item");
-      fireEvent.press(editButton);
-    });
+    const editButton = await findByTestId("transaction-item-1");
+    fireEvent.press(editButton);
 
     expect(mockNavigate).toHaveBeenCalledWith("ProfileStack", {
       screen: "ManageAmounts",
@@ -130,7 +118,6 @@ describe("LoanTransactionScreen", () => {
           id: 1,
           amount: 100,
           date: "2023-12-10T00:00:00.000Z",
-          // Add other properties as needed
         }),
         isEditMode: true,
       }),

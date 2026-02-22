@@ -9,7 +9,10 @@ const Stack = createStackNavigator();
 
 const TagsStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+    <Stack.Navigator
+      id="TagsStack"
+      screenOptions={{ header: () => <CustomHeader /> }}
+    >
       <Stack.Screen name="ManageTags" component={TagsScreen} />
       <Stack.Screen name="AddTag" component={AddTagScreen} />
       <Stack.Screen name={"TagsSelector"} component={TagsSelector} />

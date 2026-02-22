@@ -79,6 +79,8 @@ describe("AddWorkScreen", () => {
         workType: { pricePerUnit: 5.39 } as WorkType, // Mocking the pricePerUnit for workType
         work: null,
         tags: [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        user: { id: "1", name: "Mock User" } as any, // Mock User for route params
       },
     };
 
@@ -152,6 +154,8 @@ describe("AddWorkScreen", () => {
         workType: { pricePerUnit: 5 } as WorkType, // Mocking the pricePerUnit for workType
         work: null,
         tags: [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        user: { id: "1", name: "Mock User" } as any,
       },
     };
 

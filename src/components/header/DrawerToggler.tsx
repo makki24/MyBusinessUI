@@ -19,7 +19,7 @@ const DrawerToggler = () => {
           height: HEADING_SIZE * 2,
           borderRadius: HEADING_SIZE,
         }}
-        size={40}
+        size={HEADING_SIZE * 2}
         picture={userInfo?.picture}
       />
     </TouchableOpacity>

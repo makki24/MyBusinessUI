@@ -68,6 +68,8 @@ const CombinedDarkTheme = {
   },
 };
 
+import { StatusBar } from "expo-status-bar";
+
 const AppContent = () => {
   const userInfo = useRecoilValue(userState);
   const [_users, setUsers] = useRecoilState(usersState);
@@ -134,8 +136,10 @@ const AppContent = () => {
         subscribe,
       }}
     >
+      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
       {userInfo ? (
         <Drawer.Navigator
+          id="DrawerNavigator"
           screenOptions={{
             drawerPosition: "right",
           }}
@@ -215,6 +219,7 @@ const AppContent = () => {
               headerShown: false,
               drawerLabel: "",
               drawerItemStyle: { height: 0 },
+              swipeEnabled: false,
             }}
             name="DashboardStack"
             component={DashboardStack}
@@ -223,6 +228,7 @@ const AppContent = () => {
         </Drawer.Navigator>
       ) : (
         <Drawer.Navigator
+          id="LoginDrawerNavigator"
           initialRouteName="Login"
           screenOptions={{ drawerPosition: "right" }}
           drawerContent={(props) => (

@@ -12,7 +12,10 @@ const Stack = createStackNavigator();
 
 const UsersStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+    <Stack.Navigator
+      id="UsersStack"
+      screenOptions={{ header: () => <CustomHeader /> }}
+    >
       <Stack.Screen name="Users" component={UsersScreen} />
       <Stack.Screen name="AddUser" component={AddUserScreen} />
       <Stack.Screen
@@ -24,7 +27,9 @@ const UsersStack = () => {
       />
       <Stack.Screen
         name={"UserSummary"}
-        options={{ header: (props) => <ReportHeader {...props} /> }}
+        options={{
+          header: (props) => <ReportHeader {...props} summary={false} />,
+        }}
         component={UserSummary}
       />
       <Stack.Screen

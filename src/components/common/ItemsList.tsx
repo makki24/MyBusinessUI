@@ -6,7 +6,7 @@ import commonScreenStyles from "../../styles/commonScreenStyles";
 import SearchAndFilter from "../../../components/common/SearchAndFilter";
 import LoadingError from "../../../components/common/LoadingError";
 import { Filter, FilterAndSort, Sort } from "../../../types";
-import type { ListRenderItem } from "@react-native/virtualized-lists";
+import type { ListRenderItem } from "react-native";
 import { RecoilState, useRecoilState } from "recoil";
 import { DEFAULT_SORT } from "../../constants/filter";
 
@@ -36,7 +36,7 @@ const ItemsList = <T extends HasDate>({
   searchBar,
   recoilState,
   transFormData,
-}: ItemsListProps<T>): JSX.Element => {
+}: ItemsListProps<T>): React.ReactElement => {
   const fromDate = new Date();
   const toDate = new Date();
   const initialFilter: Filter = {
