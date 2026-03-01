@@ -12,30 +12,38 @@ const CustomDateRange: React.FC<CustomDateRangeProps> = ({ rangeState }) => {
   const [range, setRange] = rangeState;
 
   return (
-    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-      <DatePickerInput
-        locale="en-GB"
-        label={"Start Date"}
-        withDateFormatInLabel={false}
-        value={range.startDate}
-        onChange={(d) => {
-          if (range.endDate && range.endDate < d) range.endDate = d;
-          setRange({ ...range, startDate: d });
-        }}
-        inputMode="start"
-      />
-      <DatePickerInput
-        style={{ marginLeft: UI_ELEMENTS_GAP / 2 }}
-        locale="en-GB"
-        value={range.endDate}
-        validRange={{ startDate: range.startDate }}
-        onChange={(d) => {
-          setRange({ ...range, endDate: d });
-        }}
-        inputMode="start"
-        label={"End Date"}
-        withDateFormatInLabel={false}
-      />
+    <View
+      style={{
+        flexDirection: "row",
+        gap: UI_ELEMENTS_GAP / 2,
+      }}
+    >
+      <View style={{ flex: 1 }}>
+        <DatePickerInput
+          locale="en-GB"
+          label={"Start Date"}
+          withDateFormatInLabel={false}
+          value={range.startDate}
+          onChange={(d) => {
+            if (range.endDate && range.endDate < d) range.endDate = d;
+            setRange({ ...range, startDate: d });
+          }}
+          inputMode="start"
+        />
+      </View>
+      <View style={{ flex: 1 }}>
+        <DatePickerInput
+          locale="en-GB"
+          value={range.endDate}
+          validRange={{ startDate: range.startDate }}
+          onChange={(d) => {
+            setRange({ ...range, endDate: d });
+          }}
+          inputMode="start"
+          label={"End Date"}
+          withDateFormatInLabel={false}
+        />
+      </View>
     </View>
   );
 };
