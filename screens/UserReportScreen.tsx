@@ -1,19 +1,31 @@
 // src/screens/ReportScreen.tsx
 import React, { useEffect, useState } from "react";
-import { View, FlatList } from "react-native";
-import { useRecoilState } from "recoil";
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { useRecoilState, useRecoilValue } from "recoil";
 import ReportItem from "../components/ReportItem";
-import { userReportsState } from "../recoil/atom";
+import {
+  userReportsState,
+  userState,
+  usersState,
+  expenseTypesState,
+} from "../recoil/atom";
 import ReportService from "../services/ReportService";
+import ExpenseService from "../services/ExpenseService";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { IconButton, Text, TextInput } from "react-native-paper";
+import { IconButton, Text, TextInput, useTheme } from "react-native-paper";
 import Loading from "../src/components/common/Loading";
-import NumberInput from "../components/common/NumberInput";
-import SwitchInputDynamicLabel from "../src/components/common/SwitchInputDynamicLabel";
-import { UI_ELEMENTS_GAP } from "../src/styles/constants";
+import { UI_ELEMENTS_GAP, BORDER_RADIUS } from "../src/styles/constants";
 import { REPORT_BACKGROUND_COLOR } from "../src/styles/colors";
+import { Expense, ExpenseType, User } from "../types";
 
 interface UserReportScreenProps {
   navigation: NavigationProp<ParamListBase>;
@@ -40,16 +52,36 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
     );
   }
 
+  const theme = useTheme();
   const [reports, setReports] = useRecoilState(userReportsState);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const limit = 10; // Number of reports to load per request
+  const limit = 10;
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
-  const isCashState = useState(true);
-  const isPaidState = useState(true);
+  const [showMessage, setShowMessage] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+
+  const loggedInUser = useRecoilValue(userState);
+  const users = useRecoilValue(usersState);
+  const expenseTypes = useRecoilValue(expenseTypesState);
+
+  // Find the receiver user from the users list
+  const receiverUser = users.find(
+    (u: User) => u.id?.toString() === userId.toString(),
+  );
+
+  // Check if viewing own report
+  const isSameUser = loggedInUser?.id?.toString() === userId.toString();
+
+  // Find the "transfer" expense type
+  const transferType = expenseTypes.find(
+    (t: ExpenseType) =>
+      t.name?.toLowerCase().includes("transfer") ||
+      t.name?.toLowerCase().includes("Transfer"),
+  );
 
   const onReset = () => {
     setOffset(0);
@@ -66,23 +98,20 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
         onReset();
       }
 
-      if (!hasMore && !reset) return; // Prevent duplicate requests or loading beyond available data
+      if (!hasMore && !reset) return;
 
       setIsRefreshing(true);
 
-      // Fetch reports data from your service or API with pagination
       const reportsData = await ReportService.getReportByUser(
         userId,
         reset ? 0 : offset,
         limit,
       );
 
-      // If there are no more items to load, set hasMore to false
       if (reportsData.length < limit) {
         setHasMore(false);
       }
 
-      // Convert dates to Date objects and append or reset reports based on the reset flag
       const formattedData = reportsData.map((report) => ({
         ...report,
         date: new Date(report.date),
@@ -106,28 +135,77 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
   };
 
   useEffect(() => {
-    fetchReports(true); // Initial fetch with reset
+    fetchReports(true);
   }, []);
 
   const handleRefresh = () => {
-    fetchReports(true); // Refresh with reset
+    fetchReports(true);
   };
 
   const handleLoadMore = () => {
     if (error) return;
-    fetchReports(); // Load next batch without reset
+    fetchReports();
+  };
+
+  const handleSend = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      setError("Please enter a valid amount");
+      return;
+    }
+
+    if (!transferType) {
+      setError("Transfer type not found. Please check expense types.");
+      return;
+    }
+
+    setError(null);
+    setIsSending(true);
+    Keyboard.dismiss();
+
+    try {
+      const expense: Expense = {
+        date: new Date(),
+        type: { id: transferType.id, type: "expense" } as ExpenseType,
+        amount: parseFloat(amount),
+        description: description || undefined,
+        sender: loggedInUser,
+        receiver: receiverUser ? ({ id: receiverUser.id } as User) : undefined,
+        tags: [],
+      };
+
+      await ExpenseService.addExpense(expense);
+
+      // Clear fields and refresh
+      setAmount("");
+      setDescription("");
+      setShowMessage(false);
+      fetchReports(true);
+    } catch (err) {
+      setError(
+        err.response?.data ??
+          err.message ??
+          "An error occurred while sending the transfer",
+      );
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
-    <>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={100}
+    >
       <View
         style={{
           ...commonStyles.container,
           backgroundColor: REPORT_BACKGROUND_COLOR,
+          flex: 1,
         }}
       >
         <FlatList
-          ListHeaderComponent={() => <View></View>}
+          ListHeaderComponent={() => <View />}
           inverted={true}
           ListFooterComponent={() => {
             return (
@@ -140,69 +218,203 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
           }}
           data={reports}
           renderItem={({ item }) => <ReportItem reportData={item} />}
-          keyExtractor={(item, index) => `${index}`} // Ensure key is a string
-          onEndReached={handleLoadMore} // Load more when reaching end of the list
-          onEndReachedThreshold={0.5} // Trigger when scrolled halfway through the current data
-        />
-      </View>
-      <View style={{ ...commonStyles.row, marginRight: UI_ELEMENTS_GAP }}>
-        <SwitchInputDynamicLabel
-          valueState={isPaidState}
-          trueLabel={"You Paid"}
-          falseLabel={"You received"}
-        />
-        <Text>
-          {" "}
-          Adding{" "}
-          {isPaidState[0]
-            ? isCashState[0]
-              ? "Expense (Transfer)"
-              : "Sale"
-            : isCashState[0]
-              ? "Contribution"
-              : "Work"}
-        </Text>
-        <SwitchInputDynamicLabel
-          valueState={isCashState}
-          trueLabel={"Cash"}
-          falseLabel={"Cash less"}
+          keyExtractor={(item, index) => `${index}`}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
         />
       </View>
 
-      {amount && (
-        <TextInput
-          label="Description (optional)"
-          value={description}
-          onChangeText={setDescription}
-          multiline={true}
-          numberOfLines={2}
-        />
+      {/* PhonePe-style Payment Bar — hidden for own report */}
+      {!isSameUser && (
+        <View
+          style={[styles.paymentBar, { backgroundColor: theme.colors.surface }]}
+        >
+          <LoadingError error={error} isLoading={isSending} />
+
+          {/* Receiver info */}
+          {receiverUser && (
+            <View style={styles.receiverRow}>
+              <Text
+                variant="bodySmall"
+                style={{ color: theme.colors.onSurfaceVariant }}
+              >
+                Sending to
+              </Text>
+              <Text
+                variant="titleSmall"
+                style={{ color: theme.colors.onSurface, marginLeft: 4 }}
+              >
+                {receiverUser.name}
+              </Text>
+            </View>
+          )}
+
+          {/* Message input (toggled) */}
+          {showMessage && (
+            <TextInput
+              placeholder="Add a message..."
+              value={description}
+              onChangeText={setDescription}
+              mode="outlined"
+              dense
+              style={styles.messageInput}
+              right={
+                <TextInput.Icon
+                  icon="close"
+                  onPress={() => {
+                    setShowMessage(false);
+                    setDescription("");
+                  }}
+                />
+              }
+            />
+          )}
+
+          {/* Amount row */}
+          <View style={styles.amountRow}>
+            <IconButton
+              testID="message-toggle-button"
+              icon={showMessage ? "message-text" : "message-text-outline"}
+              mode="contained-tonal"
+              size={22}
+              onPress={() => setShowMessage(!showMessage)}
+              style={[
+                styles.messageToggle,
+                {
+                  backgroundColor: showMessage
+                    ? theme.colors.primaryContainer
+                    : theme.colors.surfaceVariant,
+                },
+              ]}
+            />
+
+            <View style={styles.amountInputWrapper}>
+              <Text
+                variant="headlineMedium"
+                style={[styles.currencySymbol, { color: theme.colors.primary }]}
+              >
+                ₹
+              </Text>
+              <TextInput
+                keyboardType="numeric"
+                placeholder="0"
+                value={amount}
+                onChangeText={setAmount}
+                mode="flat"
+                style={[styles.amountInput, { backgroundColor: "transparent" }]}
+                contentStyle={styles.amountInputContent}
+                underlineStyle={{ display: "none" }}
+                placeholderTextColor={theme.colors.outlineVariant}
+              />
+            </View>
+
+            <IconButton
+              testID="send-icon-button"
+              icon="send"
+              mode="contained"
+              size={26}
+              disabled={!amount || isSending}
+              onPress={handleSend}
+              style={[
+                styles.sendButton,
+                {
+                  backgroundColor:
+                    amount && !isSending
+                      ? theme.colors.primary
+                      : theme.colors.surfaceDisabled,
+                },
+              ]}
+              iconColor={
+                amount && !isSending
+                  ? theme.colors.onPrimary
+                  : theme.colors.onSurfaceDisabled
+              }
+            />
+
+            <IconButton
+              icon="refresh"
+              mode="contained-tonal"
+              size={22}
+              onPress={handleRefresh}
+              style={[
+                styles.refreshButton,
+                { backgroundColor: theme.colors.surfaceVariant },
+              ]}
+            />
+          </View>
+        </View>
       )}
-      <View style={commonStyles.row}>
-        <View style={{ width: "75%" }}>
-          <NumberInput
-            label="Amount"
-            value={amount}
-            onChangeText={setAmount}
-            disabled={true}
-          />
-        </View>
-        <View style={commonStyles.simpleRow}>
-          <IconButton
-            icon={"send"}
-            mode={"contained"}
-            disabled={!amount}
-            onPress={() => {}}
-          />
-          <IconButton
-            icon={"refresh"}
-            mode={"contained"}
-            onPress={handleRefresh}
-          />
-        </View>
-      </View>
-    </>
+    </KeyboardAvoidingView>
   );
 };
+
+const styles = StyleSheet.create({
+  paymentBar: {
+    paddingHorizontal: UI_ELEMENTS_GAP,
+    paddingVertical: UI_ELEMENTS_GAP,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(0,0,0,0.08)",
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  receiverRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+    paddingHorizontal: 4,
+  },
+  messageInput: {
+    marginBottom: 8,
+    fontSize: 14,
+  },
+  amountRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  messageToggle: {
+    margin: 0,
+    borderRadius: BORDER_RADIUS,
+  },
+  amountInputWrapper: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.12)",
+    borderRadius: BORDER_RADIUS,
+    paddingHorizontal: 12,
+    height: 52,
+  },
+  currencySymbol: {
+    fontWeight: "700",
+    marginRight: 4,
+  },
+  amountInput: {
+    flex: 1,
+    fontSize: 24,
+    fontWeight: "600",
+    paddingHorizontal: 0,
+    height: 52,
+  },
+  amountInputContent: {
+    fontSize: 24,
+    fontWeight: "600",
+    paddingHorizontal: 0,
+  },
+  sendButton: {
+    margin: 0,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+  },
+  refreshButton: {
+    margin: 0,
+    borderRadius: BORDER_RADIUS,
+  },
+});
 
 export default UserReportScreen;
