@@ -2,7 +2,7 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiUrl } from "../src/app-env.config";
-import { AxiosStatic } from "axios/index";
+import { AxiosStatic } from "axios";
 
 const BASE_URL = apiUrl;
 

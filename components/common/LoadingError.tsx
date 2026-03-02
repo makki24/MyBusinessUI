@@ -1,37 +1,83 @@
-import { View, useColorScheme } from "react-native";
-import commonStyles from "../../src/styles/commonStyles";
+// components/common/LoadingError.tsx
 import React from "react";
-import { MD3DarkTheme, MD3LightTheme, Text } from "react-native-paper";
-import Loading from "../../src/components/common/Loading";
+import { View, Text, StyleSheet } from "react-native";
+import { ActivityIndicator, useTheme } from "react-native-paper";
 
-type LoadingErrorProps = {
+interface LoadingErrorProps {
+  error: string | null;
   isLoading: boolean;
-  error: string;
-};
+}
 
-const LoadingError: React.FC<LoadingErrorProps> = ({ isLoading, error }) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme;
+const LoadingError = ({ error, isLoading }: LoadingErrorProps) => {
+  const theme = useTheme();
 
-  return (
-    <>
-      {error && (
-        <View
-          style={{
-            ...commonStyles.errorContainer,
-            backgroundColor: theme.colors.errorContainer,
-          }}
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator
+          animating={true}
+          color={theme.colors.primary}
+          size="large"
+        />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View
+        style={[
+          styles.errorContainer,
+          {
+            backgroundColor: theme.colors.errorContainer || "#FFEBEE",
+            borderLeftColor: theme.colors.error,
+          },
+        ]}
+      >
+        <Text
+          style={[
+            styles.errorText,
+            {
+              color:
+                theme.colors.onErrorContainer ||
+                theme.colors.error ||
+                "#B71C1C",
+            },
+          ]}
         >
-          <Text style={{ color: theme.colors.error }}>{error}</Text>
-        </View>
-      )}
-      {isLoading && (
-        <View style={commonStyles.loadingContainer}>
-          <Loading />
-        </View>
-      )}
-    </>
-  );
+          {error}
+        </Text>
+      </View>
+    );
+  }
+
+  return null;
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  errorContainer: {
+    padding: 15,
+    margin: 15,
+    borderRadius: 12,
+    borderLeftWidth: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  errorText: {
+    fontSize: 14,
+    fontWeight: "500",
+    flex: 1,
+  },
+});
 
 export default LoadingError;

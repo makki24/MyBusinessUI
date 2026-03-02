@@ -35,6 +35,10 @@ jest.mock("@react-navigation/native", () => ({
   useNavigation: jest.fn(),
 }));
 
+jest.mock("expo-notifications", () => ({
+  getLastNotificationResponseAsync: jest.fn(() => Promise.resolve(null)),
+}));
+
 const Stack = createStackNavigator();
 
 describe("ExpenseScreen", () => {
@@ -47,7 +51,7 @@ describe("ExpenseScreen", () => {
       navigate: jest.fn(),
     } as unknown as NavigationProp<ParamListBase>;
 
-    const { getByTestId, getByText } = render(
+    const { findByTestId } = render(
       <RecoilRoot
         initializeState={(snapshot) => snapshot.set(expensesState, [])}
       >
@@ -59,15 +63,12 @@ describe("ExpenseScreen", () => {
       </RecoilRoot>,
     );
 
-    await waitFor(() => {
-      act(() => {
-        fireEvent.press(getByTestId("addItem"));
+    const addItemButton = await findByTestId("addItem");
+    fireEvent.press(addItemButton);
 
-        expect(mockNavigation.navigate).toHaveBeenCalledWith("ExpenseStack", {
-          screen: "AddExpense",
-          params: { title: "Add Expense" },
-        });
-      });
+    expect(mockNavigation.navigate).toHaveBeenCalledWith("ExpenseStack", {
+      screen: "AddExpense",
+      params: { title: "Add Expense" },
     });
   });
 });

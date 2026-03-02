@@ -49,7 +49,12 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "mybusinessui",
+    "scheme": [
+      "mybusinessui",
+      "com.syedsons.mybusiness",
+      "com.syedsons.mybusiness.dev",
+      "com.syedsons.mybusiness.qa"
+    ],
     "extra": {
       "eas": {
         "projectId": "18005f4e-2007-4392-8512-60da76e2c661"

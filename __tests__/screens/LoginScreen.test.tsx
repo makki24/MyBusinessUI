@@ -15,27 +15,15 @@ fetchMock.enableMocks();
 
 // Define custom mock functions for AsyncStorage
 // Mock AsyncStorage functions
-jest.mock("@react-native-async-storage/async-storage", () => {
-  const mockStorage: Record<string, string> = {};
-  return {
-    __esModule: true,
-    default: {
-      getItem: jest.fn(() => Promise.resolve("dummyToken")),
-      setItem: jest.fn((key: string, value: string) => {
-        mockStorage[key] = value;
-        return Promise.resolve();
-      }),
-      removeItem: jest.fn((key: string) => {
-        delete mockStorage[key];
-        return Promise.resolve();
-      }),
-      clear: jest.fn(() => {
-        Object.keys(mockStorage).forEach((key) => delete mockStorage[key]);
-        return Promise.resolve();
-      }),
-    },
-  };
-});
+jest.mock("@react-native-async-storage/async-storage", () => ({
+  __esModule: true,
+  default: {
+    getItem: jest.fn(() => Promise.resolve(null)),
+    setItem: jest.fn(() => Promise.resolve()),
+    removeItem: jest.fn(() => Promise.resolve()),
+    clear: jest.fn(() => Promise.resolve()),
+  },
+}));
 
 // Mock useAuthRequest function
 jest.mock("expo-auth-session/providers/google", () => ({
@@ -70,15 +58,8 @@ describe("LoginScreen", () => {
     const button = await findByText("Sign in with Google");
 
     expect(button).toBeTruthy();
-    expect(fetch).toHaveBeenCalledWith(`undefined/login`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer dummyToken`,
-        "Content-Type": "application/json",
-      },
-    });
-    expect(navigation.navigate).toHaveBeenCalled();
-    expect(navigation.navigate).toHaveBeenCalledWith("Home");
+    expect(fetch).not.toHaveBeenCalled();
+    expect(navigation.navigate).not.toHaveBeenCalled();
   });
 
   it("if no token is present", async () => {

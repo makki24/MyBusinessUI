@@ -103,10 +103,12 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
 
   const typeSelectedListner = ({ workType }) => {
     setAddWorkType(workType);
+    navigation.goBack();
     selectUsers();
   };
 
   const attendanceSelectedListner = ({ workType }) => {
+    navigation.goBack();
     navigation.navigate("WorkStack", {
       screen: "AttendanceScreen",
       params: {
@@ -119,6 +121,7 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
 
   const userSelectedListner = ({ user }) => {
     const selectedType: WorkType = addWorkTypeRef.current;
+    navigation.goBack();
     navigation.navigate("WorkStack", {
       screen: "AddWork",
       params: {
@@ -154,6 +157,7 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
 
   const listner = (selectedType: { workType: WorkType }) => {
     setEditPayload((prev) => ({ ...prev, type: selectedType.workType }));
+    navigation.goBack();
     navigation.navigate("WorkStack", {
       screen: "WorkersList",
       params: { title: "Select User", users: [] },
