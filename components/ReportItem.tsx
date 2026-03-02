@@ -1,7 +1,7 @@
 // src/components/ReportItem.tsx
 import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { Card, Title, Paragraph, useTheme, Text } from "react-native-paper";
+import { Card, useTheme, Text } from "react-native-paper";
 import { UserReport } from "../types";
 import commonItemStyles from "../src/styles/commonItemStyles";
 import commonStyles from "../src/styles/commonStyles";
@@ -64,31 +64,56 @@ const CardItem: React.FC<CardItemProps> = ({
   amount,
   received,
 }) => {
+  const theme = useTheme();
   return (
     <TouchableOpacity>
       <Card style={[styles.card, style]}>
         <Card.Content style={commonItemStyles.cardContent}>
           <View style={commonItemStyles.titleContainer}>
-            <Title>{amount}</Title>
+            <Text variant="titleMedium">{amount}</Text>
             {received && <Text>from {reportData.sender?.name}</Text>}
           </View>
           <View
             style={reportData.receiver?.name ? {} : { ...commonStyles.row }}
           >
-            <Paragraph>
+            <Text variant="bodyMedium">
               {reportData.type}{" "}
               {reportData.receiver?.name
                 ? `to ${reportData.receiver.name}`
                 : ""}
-            </Paragraph>
-            <Paragraph>{`${reportData.date.toDateString()}`}</Paragraph>
+            </Text>
+            <Text variant="bodyMedium">{`${reportData.date.toDateString()}`}</Text>
           </View>
           {reportData.description && (
-            <Paragraph>{`${reportData.description}`}</Paragraph>
+            <Text variant="bodyMedium">{`${reportData.description}`}</Text>
           )}
           <View style={commonStyles.row}>
-            <Paragraph>{`T S ${reportData.totalSent}`}</Paragraph>
-            <Paragraph>{`T R ${reportData.totalReceived}`}</Paragraph>
+            <Text variant="bodyMedium">{`T S ${reportData.totalSent}`}</Text>
+            <Text variant="bodyMedium">{`T R ${reportData.totalReceived}`}</Text>
+          </View>
+          <View style={styles.balanceContainer}>
+            <Text variant="bodyMedium" style={styles.balanceLabel}>
+              Balance
+            </Text>
+            <Text
+              variant="titleLarge"
+              style={{
+                color:
+                  reportData.totalReceived >= reportData.totalSent
+                    ? theme.colors.primary
+                    : theme.colors.error,
+              }}
+            >
+              {new Intl.NumberFormat(undefined, {
+                style: "currency",
+                currency: "INR",
+              }).format(
+                Math.round(
+                  Math.abs(reportData.totalReceived - reportData.totalSent) *
+                    100,
+                ) / 100,
+              )}
+            </Text>
           </View>
         </Card.Content>
       </Card>
@@ -121,6 +146,19 @@ const styles = StyleSheet.create({
   cardRight: {
     marginBottom: UI_ELEMENTS_GAP,
     flexDirection: "row-reverse",
+  },
+  balanceContainer: {
+    marginTop: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(0,0,0,0.06)",
+  },
+  balanceLabel: {
+    fontWeight: "600",
+    opacity: 0.7,
   },
 });
 
