@@ -260,6 +260,9 @@ const styles = StyleSheet.create({
   searchBar: {
     flex: 1,
     marginBottom: UI_ELEMENTS_GAP,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.15)",
+    borderRadius: 8,
   },
 });
 
