@@ -59,13 +59,14 @@ jobs:
           EAS_UPDATE_URL: ${{ secrets.EAS_UPDATE_URL }}
           GOOGLE_SERVICES_JSON: "./assets/google-services.json"
           COMMIT_MESSAGE: ${{ env.commit_message }}
+          EXPO_PUBLIC_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_CLIENT_ID }}
         run: |
           if [[ "${GITHUB_REF_NAME}" == 'main' ]]; then
-            NODE_ENV=development EXPO_PUBLIC_APP_VARIANT=dev EXPO_PUBLIC_URL=http://129.213.146.93:9083 eas update --branch dev --message "${COMMIT_MESSAGE}"
+            EXPO_PUBLIC_APP_VARIANT=dev EXPO_PUBLIC_URL=http://129.213.146.93:9083 EXPO_PUBLIC_ANDROID_CLIENT_ID=${{ secrets.DEV_ANDROID_CLIENT_ID }} eas update --branch dev --message "${COMMIT_MESSAGE}"
           elif [[ "${GITHUB_REF_NAME}" == 'qa' ]]; then
-            NODE_ENV=test EXPO_PUBLIC_APP_VARIANT=qa EXPO_PUBLIC_URL=http://129.213.146.93:9083 eas update --auto
+            EXPO_PUBLIC_APP_VARIANT=qa EXPO_PUBLIC_URL=http://129.213.146.93:9083 EXPO_PUBLIC_ANDROID_CLIENT_ID=${{ secrets.QA_ANDROID_CLIENT_ID }} eas update --auto
           elif [[ "${GITHUB_REF_NAME}" == 'production' ]]; then
-            NODE_ENV=production EXPO_PUBLIC_APP_VARIANT=prod EXPO_PUBLIC_URL=http://140.245.21.83:8090 eas update --auto
+            EXPO_PUBLIC_APP_VARIANT=prod EXPO_PUBLIC_URL=http://140.245.21.83:8090 EXPO_PUBLIC_ANDROID_CLIENT_ID=${{ secrets.PROD_ANDROID_CLIENT_ID }} eas update --auto
           else
             echo "Branch not configured for EAS update."
           fi
