@@ -182,7 +182,7 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
 
     try {
       const expense: Expense = {
-        date: new Date(),
+        date: new Date(Date.now() - 1000),
         type: { id: transferType.id, type: "expense" } as ExpenseType,
         amount: parseFloat(amount),
         description: description || undefined,
