@@ -7,6 +7,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  LayoutAnimation,
 } from "react-native";
 import { useRecoilState, useRecoilValue } from "recoil";
 import ReportItem from "../components/ReportItem";
@@ -63,6 +64,7 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
   const [description, setDescription] = useState("");
   const [showMessage, setShowMessage] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const loggedInUser = useRecoilValue(userState);
   const users = useRecoilValue(usersState);
@@ -138,6 +140,22 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
     fetchReports(true);
   }, []);
 
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+    const showSub = Keyboard.addListener("keyboardDidShow", (e) => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setKeyboardHeight(0);
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
   const handleRefresh = () => {
     fetchReports(true);
   };
@@ -191,12 +209,14 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
     }
   };
 
+  const Wrapper = Platform.OS === "ios" ? KeyboardAvoidingView : View;
+  const wrapperProps =
+    Platform.OS === "ios"
+      ? { behavior: "padding" as const, keyboardVerticalOffset: 100 }
+      : {};
+
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={100}
-    >
+    <Wrapper style={{ flex: 1 }} {...wrapperProps}>
       <View
         style={{
           ...commonStyles.container,
@@ -344,7 +364,10 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
           </View>
         </View>
       )}
-    </KeyboardAvoidingView>
+      {Platform.OS === "android" && keyboardHeight > 0 && (
+        <View style={{ height: keyboardHeight + 20 }} />
+      )}
+    </Wrapper>
   );
 };
 
