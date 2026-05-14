@@ -9,6 +9,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Tag } from "../../../types";
 import { makeEventNotifier } from "../common/useEventListner";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type RootStackParamList = {
   [key: string]: {
@@ -43,6 +44,7 @@ const TagsSelector: React.FC<TagsSelectorProps> = ({ route }) => {
   const notifier = useRef(
     makeEventNotifier<{ tags: Tag[] }, unknown>(route.params.notifyId),
   ).current;
+  const insets = useSafeAreaInsets();
 
   const navigate = () => {
     notifier.notify({ tags: selectedTags });
@@ -50,7 +52,12 @@ const TagsSelector: React.FC<TagsSelectorProps> = ({ route }) => {
   };
 
   return (
-    <View style={commonStyles.container}>
+    <View
+      style={[
+        commonStyles.container,
+        { paddingBottom: Math.max(16, insets.bottom + 8) },
+      ]}
+    >
       <ScrollView>
         <Labels
           items={tags}
