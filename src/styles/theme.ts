@@ -1,7 +1,11 @@
-import { MD3LightTheme as DefaultTheme } from "react-native-paper";
+import {
+  MD3LightTheme as DefaultTheme,
+  MD3DarkTheme,
+} from "react-native-paper";
 import {
   PRIMARY,
   SECONDARY,
+  ACCENT,
   BACKGROUND,
   SURFACE,
   ERROR,
@@ -31,5 +35,16 @@ export const theme = {
       level4: SURFACE,
       level5: SURFACE,
     },
+  },
+};
+export const darkTheme = {
+  ...MD3DarkTheme,
+  roundness: BORDER_RADIUS,
+  colors: {
+    ...MD3DarkTheme.colors,
+    primary: ACCENT,
+    onPrimary: "#000000",
+    secondary: SECONDARY,
+    // We let MD3DarkTheme handle surface and text colors so they adapt correctly in dark mode
   },
 };
