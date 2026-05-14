@@ -8,7 +8,7 @@ import React from "react";
 import { useRecoilState } from "recoil";
 import { userState } from "../../../recoil/atom";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View, useColorScheme } from "react-native";
 import {
   CONTAINER_PADDING,
   DRAWER_CONTENT_MARGIN,
@@ -36,6 +36,16 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
   const theme = useTheme();
   const userInfo = props.userInfo as User;
   const [_, setUserInfo] = useRecoilState(userState);
+  const colorScheme = useColorScheme();
+
+  const isDark = colorScheme === "dark";
+  const textColor = isDark ? "#FFFFFF" : theme.colors.onSurface;
+  const subTextColor = isDark
+    ? "rgba(255, 255, 255, 0.7)"
+    : theme.colors.onSurfaceVariant;
+  const borderColor = isDark
+    ? "rgba(255, 255, 255, 0.12)"
+    : theme.colors.outlineVariant;
 
   const toggleDrawer = () => {
     navigation.toggleDrawer();
@@ -79,7 +89,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
           padding: DRAWER_CONTENT_MARGIN,
           paddingBottom: CONTAINER_PADDING,
           borderBottomWidth: 1,
-          borderBottomColor: theme.colors.outlineVariant,
+          borderBottomColor: borderColor,
         }}
       >
         {/* Avatar Row */}
@@ -104,8 +114,14 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
           >
             <TouchableOpacity onPress={navigateToContributionScreen}>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <IconButton icon="wallet" style={{ margin: 0, padding: 0 }} />
-                <Caption>{userInfo?.amountHolding}</Caption>
+                <IconButton
+                  icon="wallet"
+                  style={{ margin: 0, padding: 0 }}
+                  iconColor={textColor}
+                />
+                <Caption style={{ color: textColor }}>
+                  {userInfo?.amountHolding}
+                </Caption>
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={navigateToManageAmounts}>
@@ -113,8 +129,11 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
                 <IconButton
                   icon="hand-extended"
                   style={{ margin: 0, padding: 0 }}
+                  iconColor={textColor}
                 />
-                <Caption>{userInfo?.amountToReceive}</Caption>
+                <Caption style={{ color: textColor }}>
+                  {userInfo?.amountToReceive}
+                </Caption>
               </View>
             </TouchableOpacity>
           </View>
@@ -125,7 +144,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
           variant="titleMedium"
           style={{
             marginTop: 8,
-            color: theme.colors.onSurface,
+            color: textColor,
             flexShrink: 1,
           }}
           numberOfLines={2}
@@ -134,7 +153,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
           {userInfo?.name}
         </Text>
         {userInfo?.phoneNumber && (
-          <Caption style={{ color: theme.colors.onSurfaceVariant }}>
+          <Caption style={{ color: subTextColor }}>
             {userInfo.phoneNumber}
           </Caption>
         )}
@@ -151,10 +170,10 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
           style={{
             padding: CONTAINER_PADDING,
             borderTopWidth: 1,
-            borderTopColor: theme.colors.outlineVariant,
+            borderTopColor: borderColor,
           }}
         >
-          <Text style={{ color: theme.colors.onSurface }}>Logout</Text>
+          <Text style={{ color: textColor }}>Logout</Text>
         </View>
       </TouchableOpacity>
     </DrawerContentScrollView>
