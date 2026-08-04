@@ -29,8 +29,7 @@ const mockUser = {
   id: 1,
   name: "Test User",
   phoneNumber: "1234567890",
-  amountHolding: 100,
-  amountToReceive: 50,
+
   amountToPay: 0,
 };
 
@@ -47,12 +46,9 @@ describe("UserSummary Screen", () => {
       </RecoilRoot>,
     );
 
-    // Should show user name in "Total work... from Test User"
-    // The text in component is "Total work & amount received from {user.name}"
+    // Should show the email action and To Pay/Receive toggle
     await waitFor(() => {
-      expect(
-        screen.getByText(`Total work & amount received from ${mockUser.name}`),
-      ).toBeTruthy();
+      expect(screen.getByText("Send full report to mail")).toBeTruthy();
     });
   });
 

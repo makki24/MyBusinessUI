@@ -5,8 +5,10 @@ import {
   tagsState,
   usersState,
   userState,
+  workTypesState,
 } from "../../recoil/atom";
 import UserService from "../../services/UserService";
+import WorkService from "../../services/WorkService";
 import TagsService from "../../services/TagsService";
 import RolesService from "../../services/RolesService";
 import ExpenseTypesService from "../../services/ExpenseTypesService";
@@ -76,6 +78,7 @@ const AppContent = () => {
   const [_tags, setTags] = useRecoilState(tagsState);
   const [_roles, setRoles] = useRecoilState(rolesState);
   const [_expenseTypes, setExpenseTypes] = useRecoilState(expenseTypesState);
+  const [_workTypes, setWorkTypes] = useRecoilState(workTypesState);
 
   const fetchUsers = async () => {
     try {
@@ -113,11 +116,21 @@ const AppContent = () => {
     }
   };
 
+  const fetchWorkTypes = async () => {
+    try {
+      const fetchedWorkTypes = await WorkService.getWorkTypes();
+      setWorkTypes(fetchedWorkTypes);
+    } catch (error) {
+      error;
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
     fetchTags();
     fetchRoles();
     fetchExpenseTypes();
+    fetchWorkTypes();
   }, [userInfo]);
 
   const colorScheme = useColorScheme();

@@ -31,8 +31,6 @@ const mockLoggedInUser = {
   name: "Me",
   email: "me@test.com",
   phoneNumber: "1234567890",
-  amountToReceive: 0,
-  amountHolding: 0,
   picture: "",
   userProperties: {
     isOwnAsset: false,
@@ -47,8 +45,6 @@ const mockOtherUser = {
   name: "Alice",
   email: "alice@test.com",
   phoneNumber: "0987654321",
-  amountToReceive: 500,
-  amountHolding: 200,
   picture: "",
   userProperties: {
     isOwnAsset: false,

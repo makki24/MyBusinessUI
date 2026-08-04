@@ -134,13 +134,16 @@ describe("LoginScreen", () => {
       );
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith(`undefined/loginOrSignUp`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer mockToken`,
-            "Content-Type": "application/json",
+        expect(fetch).toHaveBeenCalledWith(
+          `http://localhost:9191/loginOrSignUp`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer mockToken`,
+              "Content-Type": "application/json",
+            },
           },
-        });
+        );
       });
     });
 

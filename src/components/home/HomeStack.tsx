@@ -25,6 +25,18 @@ const HomeStack = () => {
         name="ImpersonationScreen"
         component={ImpersonationScreen}
       />
+      <Stack.Screen
+        options={{ header: () => <CustomHeader /> }}
+        name="SettlementScreen"
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        component={require("../../../screens/SettlementScreen").default}
+      />
+      <Stack.Screen
+        options={{ header: () => <CustomHeader /> }}
+        name="AllActivityScreen"
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        component={require("../../../screens/AllActivityScreen").default}
+      />
     </Stack.Navigator>
   );
 };

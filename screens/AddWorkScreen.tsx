@@ -1,20 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useRecoilState } from "recoil";
-import { Button, Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 
-import { userState, usersState, worksState } from "../recoil/atom";
+import {
+  userState,
+  usersState,
+  worksState,
+  workTypesState,
+} from "../recoil/atom";
+import { useRecoilValue } from "recoil";
 import WorkService from "../services/WorkService";
 import { WorkType, Tag as Tags, User, Work, Tag } from "../types";
 import CustomDropDown from "../components/common/CustomDropdown";
 import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import LoadingError from "../components/common/LoadingError";
 import UserDropDownItem from "../components/common/UserDropDownItem";
+import WorkTypeDropDownItem from "../src/components/common/work/WorkTypeDropDownItem";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { AddWorkInputs } from "../src/components/common/work/AddWorkInputs";
-import WorkTypeSelectorButton from "../src/components/work/AddWork/WorkTypeSelectorButton";
 import { getAddWorkTitle } from "../src/util/Work";
 import { makeEventNotifier } from "../src/components/common/useEventListner";
+import Button from "../components/common/Button";
 
 interface AddWorkScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -32,6 +39,8 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
+  const [workTypeOpen, setWorkTypeOpen] = useState(false);
+  const workTypes = useRecoilValue(workTypesState);
 
   const workTypeState = useState<WorkType>(null);
   const tagsState = useState<Tags[]>([]);
@@ -72,7 +81,7 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
   }, [route.params?.workType]);
 
   useEffect(() => {
-    if (route.params.user?.id) setSelectedUser(route.params.user.id);
+    if (route.params?.user?.id) setSelectedUser(route.params.user.id);
   }, [route.params?.user]);
 
   useEffect(() => {
@@ -199,76 +208,108 @@ const AddWorkScreen: React.FC<AddWorkScreenProps> = ({ route, navigation }) => {
 
   // Component rendering
   return (
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
-      contentContainerStyle={commonAddScreenStyles.scrollViewContainer}
-    >
-      <LoadingError error={error} isLoading={isLoading} />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={commonAddScreenStyles.scrollViewContainer}
+      >
+        <LoadingError error={error} isLoading={isLoading} />
 
-      {/* Additional selector for users if required */}
-      {workType && (
+        {/* Additional selector for users if required */}
+        {workType && (
+          <CustomDropDown
+            schema={{
+              label: "name",
+              value: "id",
+            }}
+            zIndex={1000}
+            zIndexInverse={1000}
+            items={users.filter(
+              (user) =>
+                (user.phoneNumber || user.email) &&
+                user.email !== loggedInUser.email,
+            )}
+            searchable={true}
+            open={userOpen}
+            setOpen={setUserOpen}
+            containerStyle={{ height: 40, marginBottom: 16 }}
+            value={selectedUser}
+            setValue={handleUserChange}
+            itemSeparator={true}
+            placeholder="Select User"
+            testID={"user-select"}
+            onChangeValue={handleUserChange}
+            renderListItem={({ item }) => (
+              <UserDropDownItem
+                item={item}
+                setSelectedUser={setSelectedUser}
+                selectedUser={selectedUser}
+                setUserOpen={setUserOpen}
+              />
+            )}
+          />
+        )}
+
         <CustomDropDown
-          schema={{
-            label: "name",
-            value: "id",
-          }}
-          zIndex={1000}
-          zIndexInverse={1000}
-          items={users.filter(
-            (user) =>
-              (user.phoneNumber || user.email) &&
-              user.email !== loggedInUser.email,
-          )}
+          testID="work-type-picker"
+          schema={{ label: "name", value: "id" }}
+          zIndex={900}
+          zIndexInverse={900}
+          items={workTypes}
           searchable={true}
-          open={userOpen}
-          setOpen={setUserOpen}
+          open={workTypeOpen}
+          setOpen={setWorkTypeOpen}
           containerStyle={{ height: 40, marginBottom: 16 }}
-          value={selectedUser}
-          setValue={handleUserChange}
+          value={workType?.id || null}
+          setValue={(val) => {
+            const newId = typeof val === "function" ? val(workType?.id) : val;
+            const wt = workTypes.find((w) => w.id === newId);
+            setWorkType(wt || null);
+          }}
           itemSeparator={true}
-          placeholder="Select User"
-          testID={"user-select"}
-          onChangeValue={handleUserChange}
+          placeholder="Select Work Type"
           renderListItem={({ item }) => (
-            <UserDropDownItem
-              item={item}
-              setSelectedUser={setSelectedUser}
-              selectedUser={selectedUser}
-              setUserOpen={setUserOpen}
+            <WorkTypeDropDownItem
+              item={item as WorkType}
+              selectedWorkType={workType?.id || null}
+              setWorkType={setWorkType}
+              setOpen={setWorkTypeOpen}
             />
           )}
         />
-      )}
 
-      <WorkTypeSelectorButton workType={workTypeState} />
+        <AddWorkInputs
+          workType={workType}
+          states={{
+            tags: tagsState,
+            quantity: quantityState,
+            amount: amountState,
+            pricePerUnit: pricePerUnitState,
+            date: inputDateState,
+            time: timeState,
+            description: descriptionState,
+          }}
+          tagsSelectedNotifier={tagsSelectedNotifier.name}
+        />
 
-      <AddWorkInputs
-        workType={workType}
-        states={{
-          tags: tagsState,
-          quantity: quantityState,
-          amount: amountState,
-          pricePerUnit: pricePerUnitState,
-          date: inputDateState,
-          time: timeState,
-          description: descriptionState,
-        }}
-        tagsSelectedNotifier={tagsSelectedNotifier.name}
-      />
+        {/* Button to add the work */}
+        <Button
+          icon={isEdit ? "update" : "plus-box"}
+          mode="contained"
+          onPress={handleAddWork}
+          disabled={isLoading}
+          title={isEdit ? "Save Work" : "Add Work"}
+        />
 
-      {/* Button to add the work */}
-      <Button mode="contained" onPress={handleAddWork} disabled={isLoading}>
-        {isEdit ? "Save Work" : "Add Work"}
-      </Button>
-
-      {prevWork && (
-        <>
-          <Text variant={"titleSmall"}>
-            Successfully created above work with id {prevWork.id}
-          </Text>
-        </>
-      )}
-    </ScrollView>
+        {prevWork && (
+          <>
+            <Text variant={"titleSmall"}>
+              Successfully created above work with id {prevWork.id}
+            </Text>
+          </>
+        )}
+      </ScrollView>
+    </TouchableWithoutFeedback>
   );
 };
 

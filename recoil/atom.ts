@@ -11,7 +11,6 @@ import {
   Tag,
   Contribution,
   UserReport,
-  LoanToHoldingTransaction,
 } from "../types";
 
 export const rolesState = atom({
@@ -67,9 +66,4 @@ export const contributionsState = atom({
 export const userReportsState = atom({
   key: "userReportsState", // unique ID (with respect to other atoms/selectors)
   default: [] as UserReport[],
-});
-
-export const loanToHoldingTransactionState = atom({
-  key: "loanToHoldingTransactionState", // unique ID (with respect to other atoms/selectors)
-  default: [] as LoanToHoldingTransaction[],
 });

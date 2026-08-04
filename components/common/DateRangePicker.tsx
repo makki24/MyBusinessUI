@@ -37,6 +37,28 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
     setRange({ startDate: undefined, endDate: undefined });
   };
 
+  const formatDate = (date?: Date) => {
+    if (!date) return "";
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const d = date.getDate();
+    const m = months[date.getMonth()];
+    const y = date.getFullYear().toString().slice(-2);
+    return `${d} ${m} '${y}`;
+  };
+
   return (
     <>
       <View style={commonStyles.row}>
@@ -46,12 +68,16 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
             value={
               range.startDate
                 ? range.endDate
-                  ? `${range.startDate.toDateString()} - ${range.endDate.toDateString()}`
-                  : `${range.startDate.toDateString()} - ${new Date().toDateString()}`
+                  ? `${formatDate(range.startDate)} - ${formatDate(range.endDate)}`
+                  : `${formatDate(range.startDate)} - ${formatDate(new Date())}`
                 : ""
             }
             editable={false}
-            style={{ borderTopRightRadius: 0, borderTopLeftRadius: 0 }}
+            style={{
+              borderTopRightRadius: 0,
+              borderTopLeftRadius: 0,
+              fontSize: 14,
+            }}
           />
         </View>
         <View

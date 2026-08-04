@@ -56,13 +56,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
     setUserInfo(null);
   };
 
-  const navigateToManageAmounts = () => {
-    navigation.navigate("ProfileStack", {
-      screen: "LoanTransactionList",
-      params: { title: "Loan Clear Transactions" },
-    });
-  };
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigateToContributionScreen = () => {
     navigation.navigate("ProfileStack", {
       screen: "ContributionScreen",
@@ -108,35 +102,6 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
           <TouchableOpacity onPress={navigateToEditAccount}>
             <IconButton icon="account-edit" size={MAIN_PROFILE_PIC / 2} />
           </TouchableOpacity>
-
-          <View
-            style={{ marginLeft: "auto", marginRight: DRAWER_CONTENT_MARGIN }}
-          >
-            <TouchableOpacity onPress={navigateToContributionScreen}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <IconButton
-                  icon="wallet"
-                  style={{ margin: 0, padding: 0 }}
-                  iconColor={textColor}
-                />
-                <Caption style={{ color: textColor }}>
-                  {userInfo?.amountHolding}
-                </Caption>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={navigateToManageAmounts}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <IconButton
-                  icon="hand-extended"
-                  style={{ margin: 0, padding: 0 }}
-                  iconColor={textColor}
-                />
-                <Caption style={{ color: textColor }}>
-                  {userInfo?.amountToReceive}
-                </Caption>
-              </View>
-            </TouchableOpacity>
-          </View>
         </View>
 
         {/* Username on new line */}

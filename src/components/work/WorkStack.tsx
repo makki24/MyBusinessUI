@@ -11,6 +11,8 @@ import WorkersList from "./BatchEdit/WorkersList";
 import UserWorksList from "./BatchEdit/UserWorksList";
 import WorkTypeSelectorList from "./AddWork/WorkTypeSelectorList";
 import UserSelectorList from "../common/user/UserSelectorList";
+import WorkLedgerScreen from "../../../screens/WorkLedgerScreen";
+import ReportHeader from "../users/ReportHeader";
 
 const Stack = createStackNavigator();
 
@@ -34,8 +36,18 @@ const WorkStack = () => {
       <Stack.Screen
         name="WorkTypeSelectorList"
         component={WorkTypeSelectorList}
+        initialParams={{ title: "Select Work Type" }}
       />
       <Stack.Screen name="UserSelectorList" component={UserSelectorList} />
+      <Stack.Screen
+        name="WorkLedger"
+        component={WorkLedgerScreen}
+        options={{
+          header: (props) => (
+            <ReportHeader {...props} summary={false} subtitle="Adding work" />
+          ),
+        }}
+      />
     </Stack.Navigator>
   );
 };

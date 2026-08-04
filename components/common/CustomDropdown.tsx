@@ -58,6 +58,8 @@ const CustomDropDown = <T,>({
 
   return (
     <>
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+      {/* @ts-ignore */}
       <DropDownPicker
         testID={testID}
         loading={loading}
@@ -74,7 +76,9 @@ const CustomDropDown = <T,>({
         itemSeparator={itemSeparator}
         onChangeValue={onChangeValue}
         placeholder={placeholder}
-        multiple={multiple} // Pass the multiple prop to DropDownPicker
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - DropDownPicker has conflicting types for multiple mode
+        multiple={multiple}
         renderListItem={renderListItem}
         style={{
           borderRadius: 0,
