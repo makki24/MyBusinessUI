@@ -1,19 +1,32 @@
 // src/components/SaleItem.tsx
 import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Card, Text, useTheme } from "react-native-paper";
+import { Text, useTheme, Chip } from "react-native-paper";
 import { Sale } from "../types";
-import UserDetails from "./common/UserDetails";
-import commonItemStyles from "../src/styles/commonItemStyles";
-import Labels from "./common/Labels";
+import { Swipeable } from "react-native-gesture-handler";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface SaleItemProps {
   sale: Sale;
   onPress: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   canDelete?: boolean;
 }
+
+const formatAmount = (amount: number): string => {
+  return `₹${amount.toLocaleString("en-IN")}`;
+};
+
+const formatRelativeTime = (date: Date): string => {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+};
 
 const SaleItem: React.FC<SaleItemProps> = ({
   sale,
@@ -23,129 +36,150 @@ const SaleItem: React.FC<SaleItemProps> = ({
 }) => {
   const theme = useTheme();
 
+  const renderRightActions = () => {
+    if (!canDelete || !onDelete) return null;
+    return (
+      <TouchableOpacity style={styles.deleteAction} onPress={onDelete}>
+        <MaterialCommunityIcons name="delete-outline" size={24} color="#fff" />
+      </TouchableOpacity>
+    );
+  };
+
   return (
-    <Card
-      style={[commonItemStyles.card, { backgroundColor: theme.colors.surface }]}
-      onPress={onPress}
+    <Swipeable
+      renderRightActions={renderRightActions}
+      friction={2}
+      rightThreshold={40}
     >
-      <Card.Content style={commonItemStyles.cardContent}>
-        {/* Header Row: Amount + Delete Button */}
-        <View style={commonItemStyles.headerRow}>
-          <View style={[commonItemStyles.infoItem, { flex: 1 }]}>
-            <MaterialCommunityIcons
-              name="cash"
-              size={20}
-              color={theme.colors.primary}
-              style={commonItemStyles.infoIcon}
-            />
-            <Text variant="titleLarge" style={styles.amount}>
-              {sale.amount}
-            </Text>
-          </View>
-
-          {/* Delete Button - Top Right */}
-          {canDelete && (
-            <TouchableOpacity
-              style={[
-                commonItemStyles.deleteButton,
-                { backgroundColor: theme.colors.errorContainer },
-              ]}
-              onPress={(e) => {
-                e?.stopPropagation?.();
-                onDelete();
-              }}
-              accessibilityLabel="Delete sale"
-              accessibilityRole="button"
-            >
-              <MaterialCommunityIcons
-                name="delete"
-                size={18}
-                color={theme.colors.error}
-              />
-            </TouchableOpacity>
-          )}
+      <TouchableOpacity
+        style={[
+          styles.itemContainer,
+          { backgroundColor: theme.colors.surface },
+        ]}
+        onPress={onPress}
+        activeOpacity={0.7}
+      >
+        <View style={styles.iconContainer}>
+          <MaterialCommunityIcons
+            name="tag-outline"
+            size={20}
+            color="#009688"
+          />
         </View>
-
-        {/* User Details */}
-        {sale.user && (
-          <View style={commonItemStyles.userRow}>
-            <UserDetails user={sale.user} compact />
-          </View>
-        )}
-
-        {/* Date and Quantity Row */}
-        <View style={commonItemStyles.infoRow}>
-          <View style={commonItemStyles.infoItem}>
-            <MaterialCommunityIcons
-              name="calendar"
-              size={14}
-              color={theme.colors.onSurfaceVariant}
-              style={commonItemStyles.infoIcon}
-            />
+        <View style={styles.itemContent}>
+          <View style={styles.itemHeaderRow}>
             <Text
-              variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant }}
+              variant="bodyMedium"
+              style={{ fontWeight: "600", flex: 1 }}
+              numberOfLines={1}
             >
-              {sale.date.toDateString()}
+              {sale.user ? sale.user.name : "Sale"}
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={{ fontWeight: "700", color: theme.colors.primary }}
+            >
+              {formatAmount(sale.amount)}
             </Text>
           </View>
-          {sale.quantity && (
-            <View style={commonItemStyles.infoItem}>
-              <Text variant="bodySmall" style={{ fontWeight: "600" }}>
-                Qty: {sale.quantity}
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* Price Per Unit */}
-        {sale.pricePerUnit && (
-          <View style={styles.priceRow}>
-            <Text
-              variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant }}
-            >
-              @ {sale.pricePerUnit}/unit
-            </Text>
-          </View>
-        )}
-
-        {/* Description */}
-        {sale.description && (
-          <View style={commonItemStyles.descriptionRow}>
-            <MaterialCommunityIcons
-              name="text"
-              size={14}
-              color={theme.colors.onSurfaceVariant}
-              style={commonItemStyles.infoIcon}
-            />
+          <View style={styles.itemSubRow}>
             <Text
               variant="bodySmall"
               style={{ color: theme.colors.onSurfaceVariant, flex: 1 }}
+              numberOfLines={1}
+            >
+              {sale.quantity ? `${sale.quantity} units ` : ""}
+              {sale.pricePerUnit ? `@ ₹${sale.pricePerUnit}/unit` : ""}
+            </Text>
+            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
+              {formatRelativeTime(new Date(sale.date))}
+            </Text>
+          </View>
+          {sale.description ? (
+            <Text
+              variant="bodySmall"
+              style={{ color: theme.colors.outline, marginTop: 4 }}
               numberOfLines={2}
             >
               {sale.description}
             </Text>
-          </View>
-        )}
-
-        {/* Tags */}
-        {sale.tags.length > 0 && (
-          <View style={commonItemStyles.tagsRow}>
-            <Labels label={"Tags"} items={sale.tags} />
-          </View>
-        )}
-      </Card.Content>
-    </Card>
+          ) : null}
+          {sale.tags && sale.tags.length > 0 && (
+            <View style={styles.tagsContainer}>
+              {sale.tags.map((tag) => (
+                <Chip
+                  key={tag.id}
+                  style={styles.tagChip}
+                  textStyle={{ fontSize: 10, marginVertical: 0 }}
+                >
+                  {tag.name}
+                </Chip>
+              ))}
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+    </Swipeable>
   );
 };
 
 const styles = StyleSheet.create({
-  amount: {
-    fontWeight: "700",
+  itemContainer: {
+    flexDirection: "row",
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: "#009688", // Teal
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
-  priceRow: {
-    marginTop: 8,
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(0, 150, 136, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  itemContent: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  itemHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  itemSubRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  tagsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 6,
+    gap: 4,
+  },
+  tagChip: {
+    height: 24,
+    backgroundColor: "rgba(0, 150, 136, 0.1)",
+  },
+  deleteAction: {
+    backgroundColor: "#F44336",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 70,
+    height: "100%",
+    borderRadius: 12,
+    marginLeft: 8,
+    marginBottom: 8,
   },
 });
 

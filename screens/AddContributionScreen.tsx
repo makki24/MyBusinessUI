@@ -12,8 +12,6 @@ import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import CommonAddFormInputs from "../src/components/common/CommonAddFormInputs";
 import { makeEventNotifier } from "../src/components/common/useEventListner";
 
-let oldAmount = 0;
-
 interface AddContributionScreenProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
   route: {
@@ -28,6 +26,7 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
   navigation,
   route,
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +75,6 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
       const paramDate = new Date(extractedContribution.date);
 
       setAmount(`${extractedContribution.amount}`);
-      oldAmount = extractedContribution.amount;
       setInputDate(paramDate);
       setTime({ hours: paramDate.getHours(), minutes: paramDate.getMinutes() });
       setSelectedTags(extractedContribution.tags);
@@ -114,18 +112,11 @@ const AddContributionScreen: React.FC<AddContributionScreenProps> = ({
         description,
         tags: selectedTags,
       };
-      let newAmount = loggedInUser.amountHolding + contribution.amount;
-
       if (route.params?.isEditMode && route.params?.contribution) {
         contribution.id = route.params.contribution.id;
-        newAmount = newAmount - oldAmount;
       }
 
       await contributionService.updateContribution(contribution);
-      setLoggedInUser((user) => ({
-        ...user,
-        amountHolding: newAmount,
-      }));
       setAmount("");
       navigation.goBack();
     } catch (addError) {

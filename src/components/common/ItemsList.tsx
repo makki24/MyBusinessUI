@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, RefreshControl, View } from "react-native";
-import { FAB, IconButton, Tooltip } from "react-native-paper";
+import {
+  FAB,
+  IconButton,
+  Tooltip,
+  ActivityIndicator,
+} from "react-native-paper";
 import commonStyles from "../../styles/commonStyles";
 import commonScreenStyles from "../../styles/commonScreenStyles";
 import SearchAndFilter from "../../../components/common/SearchAndFilter";
@@ -37,11 +42,9 @@ const ItemsList = <T extends HasDate>({
   recoilState,
   transFormData,
 }: ItemsListProps<T>): React.ReactElement => {
-  const fromDate = new Date();
-  const toDate = new Date();
   const initialFilter: Filter = {
-    fromDate: new Date(fromDate.setDate(fromDate.getDate() - 7)),
-    toDate: new Date(toDate.setDate(toDate.getDate() + 1)),
+    fromDate: undefined,
+    toDate: undefined,
     sender: [],
     receiver: [],
     tags: [],
@@ -54,10 +57,24 @@ const ItemsList = <T extends HasDate>({
   const [defaultFilter, setDefaultFilter] = useState<Filter>(initialFilter);
   const [defaultSort, setDefaultSort] = useState<Sort[]>(DEFAULT_SORT);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-  const [filteredItems, setFilteredItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState<T[]>([]);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
 
-  const transformAndSetData = (itemsData: T[]) => {
-    setItems(transFormData(itemsData));
+  const PAGE_SIZE = 15;
+
+  const transformAndSetData = (itemsData: T[], append: boolean = false) => {
+    const transformed = transFormData(itemsData);
+    if (append) {
+      setItems((prev) => {
+        const newItems = transformed.filter(
+          (newItem) => !prev.some((prevItem) => prevItem.id === newItem.id),
+        );
+        return [...prev, ...newItems];
+      });
+    } else {
+      setItems(transformed);
+    }
   };
 
   useEffect(() => {
@@ -73,8 +90,14 @@ const ItemsList = <T extends HasDate>({
     setDefaultFilter(arg);
     setIsRefreshing(true);
     try {
-      const filteredData = await fetchData({ filter: arg, sort: defaultSort });
-      transformAndSetData(filteredData);
+      const filteredData = await fetchData({
+        filter: arg,
+        sort: defaultSort,
+        offset: 0,
+        limit: PAGE_SIZE,
+      });
+      setHasMore(filteredData.length >= PAGE_SIZE);
+      transformAndSetData(filteredData, false);
     } catch (e) {
       setError(e.message || "Error setting filters.");
     } finally {
@@ -84,6 +107,25 @@ const ItemsList = <T extends HasDate>({
 
   const handleRefresh = () => {
     onApply(defaultFilter);
+  };
+
+  const loadMore = async () => {
+    if (loadingMore || !hasMore || isRefreshing) return;
+    setLoadingMore(true);
+    try {
+      const filteredData = await fetchData({
+        filter: defaultFilter,
+        sort: defaultSort,
+        offset: items.length,
+        limit: PAGE_SIZE,
+      });
+      setHasMore(filteredData.length >= PAGE_SIZE);
+      transformAndSetData(filteredData, true);
+    } catch (e) {
+      setError(e.message || "Error loading more items.");
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
   return (
@@ -120,6 +162,15 @@ const ItemsList = <T extends HasDate>({
         keyExtractor={(item) => item.id.toString()}
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+        }
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          loadingMore ? (
+            <View style={{ padding: 16, alignItems: "center" }}>
+              <ActivityIndicator size="small" />
+            </View>
+          ) : null
         }
       />
       <FAB

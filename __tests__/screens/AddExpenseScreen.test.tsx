@@ -44,13 +44,13 @@ describe("AddExpenseScreen", () => {
   it("should change selected expense type and receiving user state accordingly to isReceivingUser", () => {
     const types = [
       {
-        id: "1",
+        id: 1,
         name: "Expense Type 1",
         isReceivingUser: true,
         defaultTags: [],
       },
       {
-        id: "2",
+        id: 2,
         name: "Expense Type 2",
         isReceivingUser: false,
         defaultTags: [],
@@ -71,8 +71,8 @@ describe("AddExpenseScreen", () => {
 
     const expenseTypeDropdown = getByTestId("expense-type-picker");
 
-    fireEvent(expenseTypeDropdown, "onChangeValue", "1");
-    fireEvent(expenseTypeDropdown, "setValue", "1");
+    fireEvent(expenseTypeDropdown, "onChangeValue", 1);
+    fireEvent(expenseTypeDropdown, "setValue", 1);
 
     const userPicker = queryByTestId("user-picker");
     const tagsPicker = queryByTestId("tags-picker");
@@ -84,13 +84,13 @@ describe("AddExpenseScreen", () => {
   it("should change selected expense type and receiving user state accordingly to not isReceivingUser", () => {
     const types = [
       {
-        id: "1",
+        id: 1,
         name: "Expense Type 1",
         isReceivingUser: true,
         defaultTags: [],
       },
       {
-        id: "2",
+        id: 2,
         name: "Expense Type 2",
         isReceivingUser: false,
         defaultTags: [],
@@ -111,8 +111,8 @@ describe("AddExpenseScreen", () => {
 
     const expenseTypeDropdown = getByTestId("expense-type-picker");
 
-    fireEvent(expenseTypeDropdown, "onChangeValue", "2");
-    fireEvent(expenseTypeDropdown, "setValue", "2");
+    fireEvent(expenseTypeDropdown, "onChangeValue", 2);
+    fireEvent(expenseTypeDropdown, "setValue", 2);
 
     const userPicker = queryByTestId("user-picker");
     const tagsPicker = queryByTestId("tags-picker");

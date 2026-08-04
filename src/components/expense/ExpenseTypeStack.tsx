@@ -9,7 +9,10 @@ const Stack = createStackNavigator();
 
 const ExpenseTypeStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ header: () => <CustomHeader /> }}>
+    <Stack.Navigator
+      id="ExpenseTypeStack"
+      screenOptions={{ header: () => <CustomHeader /> }}
+    >
       <Stack.Screen name="ExpenseTypes" component={ExpenseTypesScreen} />
       <Stack.Screen name="AddExpenseType" component={AddExpenseTypeScreen} />
       <Stack.Screen name={"TagsSelector"} component={TagsSelector} />

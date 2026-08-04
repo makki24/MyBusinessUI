@@ -67,8 +67,8 @@ describe("ExpenseScreen", () => {
     fireEvent.press(addItemButton);
 
     expect(mockNavigation.navigate).toHaveBeenCalledWith("ExpenseStack", {
-      screen: "AddExpense",
-      params: { title: "Add Expense" },
+      screen: "ExpenseSelection",
+      params: { title: "Select Expense" },
     });
   });
 });

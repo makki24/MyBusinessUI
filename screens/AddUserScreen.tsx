@@ -60,8 +60,7 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [picture, setPicture] = useState<string>(null);
-  const [amountToReceive, setAmountToReceive] = useState("");
-  const [amountHolding, setAmountHolding] = useState("");
+
   const [phoneNumber, setPhoneNumber] = useState("");
   const [_, setPictureUrl] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -99,8 +98,7 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
       setUsername(editingUser.name);
       setEmail(editingUser.email);
       setPicture(editingUser.picture);
-      setAmountToReceive(`${editingUser.amountToReceive}`);
-      setAmountHolding(`${editingUser.amountHolding}`);
+
       setPhoneNumber(editingUser.phoneNumber);
       if (editingUser.userProperties) {
         setWorkTypePrices(editingUser.userProperties.workTypePrices);
@@ -150,8 +148,6 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
         roles: route.params?.isEditMode
           ? route.params?.user.roles
           : [memberRole],
-        amountHolding: parseFloat(amountHolding),
-        amountToReceive: parseFloat(amountToReceive),
         userProperties: null,
       };
 

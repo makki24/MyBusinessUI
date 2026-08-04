@@ -28,4 +28,6 @@ export interface Sort {
 export interface FilterAndSort {
   filter: Filter;
   sort: Sort[];
+  offset?: number;
+  limit?: number;
 }

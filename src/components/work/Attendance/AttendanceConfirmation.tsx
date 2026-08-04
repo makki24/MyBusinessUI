@@ -1,8 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, View, KeyboardAvoidingView, Platform } from "react-native";
 import { Tag, User, Work, WorkType } from "../../../../types";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import commonStyles from "../../../styles/commonStyles";
-import { Divider, Snackbar, TextInput } from "react-native-paper";
+import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Divider,
+  Snackbar,
+  TextInput,
+  Surface,
+  useTheme,
+} from "react-native-paper";
 import Button from "../../../../components/common/Button";
 import attendanceService from "./AttendanceService";
 import LoadingError from "../../../../components/common/LoadingError";
@@ -12,6 +20,7 @@ import TagsSelectorButton from "../../common/TagsSelectorButton";
 import AttendanceConfirmationUser from "./AttendanceConfirmationUser";
 import commonAddScreenStyles from "../../../styles/commonAddScreenStyles";
 import { makeEventNotifier } from "../../common/useEventListner";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface AttendanceConfirmationProps {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -38,6 +47,8 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
   const [created, setCreated] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
   const [description, setDescription] = useState("");
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     setUsers(route.params.users);
@@ -82,12 +93,15 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
     }
   };
 
-  const renderUserItem = ({ item: work }) => (
-    <AttendanceConfirmationUser
-      date={route.params.date}
-      setWorks={setWorks}
-      work={work}
-    />
+  const renderUserItem = React.useCallback(
+    ({ item: work }) => (
+      <AttendanceConfirmationUser
+        date={route.params.date}
+        setWorks={setWorks}
+        work={work}
+      />
+    ),
+    [route.params.date, setWorks],
   );
 
   const tagsSelectedNotifier = useRef(
@@ -104,40 +118,75 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
   tagsSelectedNotifier.useEventListener(tagsSelectedListner, []);
 
   return (
-    <View style={commonStyles.container}>
-      <LoadingError error={error} isLoading={isLoading} />
-      <TagsSelectorButton
-        selectedTags={selectedTags}
-        notifyId={tagsSelectedNotifier.name}
-      />
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <View style={{ flex: 1 }}>
+        <LoadingError error={error} isLoading={isLoading} />
 
-      <TextInput
-        label="Description (optional)"
-        value={description}
-        onChangeText={setDescription}
-        style={commonAddScreenStyles.inputField}
-      />
+        <Surface
+          style={{
+            padding: 16,
+            elevation: 2,
+            marginBottom: 8,
+            marginHorizontal: 8,
+            marginTop: 8,
+            borderRadius: 12,
+          }}
+        >
+          <TagsSelectorButton
+            selectedTags={selectedTags}
+            notifyId={tagsSelectedNotifier.name}
+          />
+          <TextInput
+            label="Description (optional)"
+            value={description}
+            onChangeText={setDescription}
+            style={[commonAddScreenStyles.inputField, { marginTop: 12 }]}
+          />
+        </Surface>
 
-      <FlatList
-        data={works}
-        renderItem={renderUserItem}
-        keyExtractor={(item: User, index) => `${index}`}
-        ItemSeparatorComponent={() => <Divider />}
-      />
-      {created && (
-        <Button
-          style={{ marginBottom: UI_ELEMENTS_GAP }}
-          icon={"exit-run"}
-          title={"Back to Works"}
-          onPress={() => navigation.navigate("WorkStack", { screen: "Work" })}
+        <FlatList
+          data={works}
+          renderItem={renderUserItem}
+          keyExtractor={(item, index) => `${index}`}
+          contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 24 }}
         />
-      )}
-      <Button
-        disabled={created || isLoading}
-        icon={"calendar"}
-        title={"Submit"}
-        onPress={submitWorks}
-      />
+      </View>
+
+      <View
+        style={{
+          paddingHorizontal: 16,
+          paddingTop: 12,
+          paddingBottom: Math.max(insets.bottom, 12),
+          backgroundColor: theme.colors.surface,
+          borderTopWidth: 1,
+          borderTopColor: "rgba(0,0,0,0.08)",
+          elevation: 8,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+        }}
+      >
+        {created && (
+          <Button
+            style={{ marginBottom: UI_ELEMENTS_GAP, marginHorizontal: 0 }}
+            icon={"exit-run"}
+            title={"Back to Works"}
+            onPress={() => navigation.navigate("WorkStack", { screen: "Work" })}
+          />
+        )}
+        <Button
+          style={{ margin: 0 }}
+          disabled={created || isLoading}
+          icon={"calendar"}
+          title={"Submit"}
+          onPress={submitWorks}
+        />
+      </View>
+
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
@@ -148,7 +197,7 @@ const AttendanceConfirmation: React.FC<AttendanceConfirmationProps> = ({
       >
         {respMessage}
       </Snackbar>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

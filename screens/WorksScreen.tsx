@@ -1,9 +1,9 @@
 // src/screens/WorksScreen.tsx
 import React, { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import workService from "../services/WorkService";
-import { usersState, worksState } from "../recoil/atom";
+import { usersState, worksState, workTypesState } from "../recoil/atom";
 import { Filter, User, WorkType } from "../types";
 import commonStyles from "../src/styles/commonStyles";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
@@ -14,13 +14,16 @@ import { FAB } from "react-native-paper";
 import commonScreenStyles from "../src/styles/commonScreenStyles";
 import { makeEventNotifier } from "../src/components/common/useEventListner";
 import { batchEditPayloadState } from "../src/components/work/BatchEdit/atom";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { getAddWorkTitle } from "../src/util/Work";
 
 type WorksScreenProps = {
-  navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
+  navigation: NavigationProp<ParamListBase>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  route?: any;
 };
 
-const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
+const WorksScreen: React.FC<WorksScreenProps> = ({ navigation, route }) => {
   const notifier = useRef(
     makeEventNotifier<{ workType: WorkType }, unknown>(
       "OnWorksScreenWorkTypeSelectedAndClosed",
@@ -54,6 +57,22 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
 
   const [_editPayload, setEditPayload] = useRecoilState(batchEditPayloadState);
   const [allUsers] = useRecoilState(usersState);
+  const workTypes = useRecoilValue(workTypesState);
+
+  useEffect(() => {
+    if (route?.params?.action === "add_work") {
+      navigation.setParams({ action: undefined });
+      addWork();
+    } else if (route?.params?.action === "add_attendance") {
+      navigation.setParams({ action: undefined });
+      const supariMazoriType = workTypes.find(
+        (t) => t.name === "Supari mazori",
+      );
+      if (supariMazoriType) {
+        attendanceSelectedListner({ workType: supariMazoriType });
+      }
+    }
+  }, [route?.params?.action, workTypes]);
 
   const [works] = useRecoilState(worksState);
   const [uniqueFilters, setUniqueFilters] = useState<Filter>({
@@ -103,12 +122,10 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
 
   const typeSelectedListner = ({ workType }) => {
     setAddWorkType(workType);
-    navigation.goBack();
     selectUsers();
   };
 
   const attendanceSelectedListner = ({ workType }) => {
-    navigation.goBack();
     navigation.navigate("WorkStack", {
       screen: "AttendanceScreen",
       params: {
@@ -121,11 +138,9 @@ const WorksScreen: React.FC<WorksScreenProps> = ({ navigation }) => {
 
   const userSelectedListner = ({ user }) => {
     const selectedType: WorkType = addWorkTypeRef.current;
-    navigation.goBack();
     navigation.navigate("WorkStack", {
-      screen: "AddWork",
+      screen: "WorkLedger",
       params: {
-        title: getAddWorkTitle(selectedType),
         workType: selectedType,
         user: user,
       },

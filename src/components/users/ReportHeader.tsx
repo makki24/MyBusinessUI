@@ -18,9 +18,14 @@ interface ReportHeaderProps {
     };
   };
   summary: boolean;
+  subtitle?: string;
 }
 
-const ReportHeader: React.FC<ReportHeaderProps> = ({ route, summary }) => {
+const ReportHeader: React.FC<ReportHeaderProps> = ({
+  route,
+  summary,
+  subtitle,
+}) => {
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
   const userParam = route?.params?.user;
 
@@ -44,10 +49,7 @@ const ReportHeader: React.FC<ReportHeaderProps> = ({ route, summary }) => {
   };
 
   const navigateToSummary = () => {
-    navigation.navigate("UsersStack", {
-      screen: "UserSummary",
-      params: { title: "Summary", user },
-    });
+    navigation.navigate("UserSummary", { title: "Summary", user });
   };
 
   return (
@@ -74,8 +76,10 @@ const ReportHeader: React.FC<ReportHeaderProps> = ({ route, summary }) => {
           picture={user.picture}
         />
         <View>
-          <Text>{user.name}</Text>
-          <Text>{user.phoneNumber}</Text>
+          <Text variant="titleMedium">{user.name}</Text>
+          <Text variant="bodySmall" style={{ color: theme.colors.outline }}>
+            {subtitle !== undefined ? subtitle : user.phoneNumber}
+          </Text>
         </View>
         {summary && (
           <IconButton

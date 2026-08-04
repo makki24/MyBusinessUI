@@ -15,9 +15,17 @@ import {
   SortableProperties,
   User,
 } from "../../types";
-import { BackHandler, StyleSheet, View } from "react-native";
+import { BackHandler, StyleSheet, View, ScrollView } from "react-native";
 import commonStyles from "../../src/styles/commonStyles";
-import { IconButton, Menu, Searchbar, useTheme } from "react-native-paper";
+import {
+  IconButton,
+  Menu,
+  Searchbar,
+  useTheme,
+  Chip,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Text,
+} from "react-native-paper";
 import { DROPDOWN_HEIGHT, UI_ELEMENTS_GAP } from "../../src/styles/constants";
 
 interface SearchAndFilterProps {
@@ -55,7 +63,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
 }) => {
   const theme = useTheme();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["25%", "50%", "80%"], []);
+  const snapPoints = useMemo(() => ["90%"], []);
   const [currentFilter, setCurrentFilter] = useState<Filter | null>(
     defaultFilter,
   ); // Use a state variable
@@ -141,100 +149,198 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     });
   };
 
+  const renderActiveFilters = () => {
+    if (!currentFilter) return null;
+    const chips = [];
+
+    if (currentFilter.type && currentFilter.type.length > 0) {
+      chips.push(
+        <Chip
+          key="type"
+          style={styles.chip}
+          onClose={() => {
+            const newFilter = { ...currentFilter, type: [] };
+            onApplyFilter(newFilter);
+          }}
+        >
+          Type: {currentFilter.type.length}
+        </Chip>,
+      );
+    }
+
+    if (currentFilter.sender && currentFilter.sender.length > 0) {
+      chips.push(
+        <Chip
+          key="sender"
+          style={styles.chip}
+          onClose={() => {
+            const newFilter = { ...currentFilter, sender: [] };
+            onApplyFilter(newFilter);
+          }}
+        >
+          Sender: {currentFilter.sender.length}
+        </Chip>,
+      );
+    }
+
+    if (currentFilter.receiver && currentFilter.receiver.length > 0) {
+      chips.push(
+        <Chip
+          key="receiver"
+          style={styles.chip}
+          onClose={() => {
+            const newFilter = { ...currentFilter, receiver: [] };
+            onApplyFilter(newFilter);
+          }}
+        >
+          Receiver: {currentFilter.receiver.length}
+        </Chip>,
+      );
+    }
+
+    if (currentFilter.user && currentFilter.user.length > 0) {
+      chips.push(
+        <Chip
+          key="user"
+          style={styles.chip}
+          onClose={() => {
+            const newFilter = { ...currentFilter, user: [] };
+            onApplyFilter(newFilter);
+          }}
+        >
+          User: {currentFilter.user.length}
+        </Chip>,
+      );
+    }
+
+    if (currentFilter.tags && currentFilter.tags.length > 0) {
+      chips.push(
+        <Chip
+          key="tags"
+          style={styles.chip}
+          onClose={() => {
+            const newFilter = { ...currentFilter, tags: [] };
+            onApplyFilter(newFilter);
+          }}
+        >
+          Tags: {currentFilter.tags.length}
+        </Chip>,
+      );
+    }
+
+    if (chips.length === 0) return null;
+
+    return (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.chipContainer}
+      >
+        {chips}
+      </ScrollView>
+    );
+  };
+
   return (
-    <View style={commonStyles.row}>
-      {searchBar && (
-        <Searchbar
-          placeholder="Search"
-          onChangeText={onHandleSearch}
-          value={searchQuery}
-          style={styles.searchBar}
-          inputStyle={{ minHeight: DROPDOWN_HEIGHT }}
-        />
-      )}
-      <View style={commonStyles.simpleRow}>
-        {filter && (
-          <IconButton
-            icon={cleared ? "filter" : "filter-check"}
-            mode={"contained"}
-            onPress={openBottomSheet}
+    <View style={{ flex: 1, marginBottom: UI_ELEMENTS_GAP }}>
+      <View style={commonStyles.row}>
+        {searchBar && (
+          <Searchbar
+            placeholder="Search"
+            onChangeText={onHandleSearch}
+            value={searchQuery}
+            style={[
+              styles.searchBar,
+              { backgroundColor: theme.colors.surfaceVariant },
+            ]}
+            inputStyle={{ minHeight: DROPDOWN_HEIGHT }}
           />
         )}
+        <View style={commonStyles.simpleRow}>
+          {filter && (
+            <IconButton
+              icon={cleared ? "filter" : "filter-check"}
+              mode={"contained"}
+              onPress={openBottomSheet}
+            />
+          )}
 
-        {sort && (
-          <View>
-            <Menu
-              visible={visible}
-              onDismiss={() => setVisible(false)}
-              anchor={
-                <IconButton
-                  icon="sort"
-                  mode={"contained"}
-                  onPress={() => setVisible(true)}
-                />
-              }
-            >
-              {sender && (
+          {sort && (
+            <View>
+              <Menu
+                visible={visible}
+                onDismiss={() => setVisible(false)}
+                anchor={
+                  <IconButton
+                    icon="sort"
+                    mode={"contained"}
+                    onPress={() => setVisible(true)}
+                  />
+                }
+              >
+                {sender && (
+                  <Menu.Item
+                    leadingIcon={"send"}
+                    onPress={() => {
+                      applySort("sender");
+                    }}
+                    title="Sender"
+                    trailingIcon={icons["sender"]}
+                  />
+                )}
+                {receiver && (
+                  <Menu.Item
+                    leadingIcon={"account-check"}
+                    onPress={() => {
+                      applySort("receiver");
+                    }}
+                    title="Receiver"
+                    trailingIcon={icons["receiver"]}
+                  />
+                )}
+                {user && (
+                  <Menu.Item
+                    leadingIcon={"account"}
+                    onPress={() => {
+                      applySort("user.name");
+                    }}
+                    title="User"
+                    trailingIcon={icons["user.name"]}
+                  />
+                )}
                 <Menu.Item
-                  leadingIcon={"send"}
+                  leadingIcon={"clock-time-eight"}
                   onPress={() => {
-                    applySort("sender");
+                    applySort("date");
                   }}
-                  title="Sender"
-                  trailingIcon={icons["sender"]}
+                  title="Date"
+                  trailingIcon={icons["date"]}
                 />
-              )}
-              {receiver && (
                 <Menu.Item
-                  leadingIcon={"account-check"}
+                  leadingIcon={"cash"}
                   onPress={() => {
-                    applySort("receiver");
+                    applySort("amount");
                   }}
-                  title="Receiver"
-                  trailingIcon={icons["receiver"]}
+                  title="Amount"
+                  trailingIcon={icons["amount"]}
                 />
-              )}
-              {user && (
                 <Menu.Item
-                  leadingIcon={"account"}
+                  leadingIcon={"ab-testing"}
                   onPress={() => {
-                    applySort("user.name");
+                    applySort("type.name");
                   }}
-                  title="User"
-                  trailingIcon={icons["user.name"]}
+                  title="Type"
+                  trailingIcon={icons["type.name"]}
                 />
-              )}
-              <Menu.Item
-                leadingIcon={"clock-time-eight"}
-                onPress={() => {
-                  applySort("date");
-                }}
-                title="Date"
-                trailingIcon={icons["date"]}
-              />
-              <Menu.Item
-                leadingIcon={"cash"}
-                onPress={() => {
-                  applySort("amount");
-                }}
-                title="Amount"
-                trailingIcon={icons["amount"]}
-              />
-              <Menu.Item
-                leadingIcon={"ab-testing"}
-                onPress={() => {
-                  applySort("type.name");
-                }}
-                title="Type"
-                trailingIcon={icons["type.name"]}
-              />
-            </Menu>
-          </View>
-        )}
+              </Menu>
+            </View>
+          )}
+        </View>
       </View>
+      {renderActiveFilters()}
       <BottomSheetModal
         ref={bottomSheetModalRef}
-        index={2}
+        index={0}
         snapPoints={snapPoints}
         backdropComponent={customBackDrop}
         backgroundStyle={{ backgroundColor: theme.colors.background }}
@@ -259,10 +365,16 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
 const styles = StyleSheet.create({
   searchBar: {
     flex: 1,
-    marginBottom: UI_ELEMENTS_GAP,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.15)",
-    borderRadius: 8,
+    marginRight: 8,
+    borderRadius: 24,
+  },
+  chipContainer: {
+    flexDirection: "row",
+    paddingVertical: 8,
+    gap: 8,
+  },
+  chip: {
+    borderRadius: 16,
   },
 });
 

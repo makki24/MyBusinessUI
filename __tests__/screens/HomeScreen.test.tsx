@@ -44,6 +44,21 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
 
 jest.mock("../../src/notifications/Notification", () => "Notification");
 jest.mock("../../src/components/common/ProfilePicture", () => "ProfilePicture");
+jest.mock("../../services/DashboardService", () => ({
+  __esModule: true,
+  default: {
+    getSummary: jest.fn().mockResolvedValue({
+      month: "August 2026",
+      totalWorkAmount: 0,
+      totalExpenseAmount: 0,
+      totalContributionAmount: 0,
+      workCount: 0,
+      expenseCount: 0,
+      contributionCount: 0,
+    }),
+    getRecent: jest.fn().mockResolvedValue([]),
+  },
+}));
 
 // Mock Navigation
 const mockNavigate = jest.fn();
@@ -70,63 +85,56 @@ describe("HomeScreen UI & Navigation", () => {
     const { getByText } = setup();
     await waitFor(() => {
       expect(getByText("MyBusiness")).toBeTruthy();
-      expect(getByText("Financial Overview")).toBeTruthy();
+      expect(getByText("This Month")).toBeTruthy();
     });
   });
 
-  it("renders all dashboard cards", () => {
-    const { getByText } = setup();
-    expect(getByText("Work / Loan")).toBeTruthy();
-    expect(getByText("Sale / Lending")).toBeTruthy();
-    expect(getByText("Expense (اخراجات)")).toBeTruthy();
-    expect(getByText("Manage User")).toBeTruthy();
-    expect(getByText("Admin")).toBeTruthy();
-    expect(getByText("Dashboard")).toBeTruthy();
+  it("renders all dashboard cards", async () => {
+    const { getByText, getAllByText } = setup();
+    await waitFor(() => {
+      expect(getByText("Work")).toBeTruthy();
+      expect(getByText("Sale")).toBeTruthy();
+      expect(getAllByText("Expense").length).toBeGreaterThan(0);
+      expect(getByText("Users")).toBeTruthy();
+      expect(getByText("Admin")).toBeTruthy();
+      expect(getAllByText("Settlement").length).toBeGreaterThan(0);
+    });
   });
 
   it("navigates to WorkStack when Work card is pressed", () => {
-    const { getByText } = setup();
-    fireEvent.press(getByText("Work / Loan"));
+    const { getByLabelText } = setup();
+    fireEvent.press(getByLabelText("Work"));
     expect(mockNavigate).toHaveBeenCalledWith("WorkStack", { screen: "Work" });
   });
 
   it("navigates to SaleStack when Sale card is pressed", () => {
-    const { getByText } = setup();
-    fireEvent.press(getByText("Sale / Lending"));
+    const { getByLabelText } = setup();
+    fireEvent.press(getByLabelText("Sale"));
     expect(mockNavigate).toHaveBeenCalledWith("SaleStack", { screen: "Sale" });
   });
 
   it("navigates to ExpenseStack when Expense card is pressed", () => {
-    const { getByText } = setup();
-    fireEvent.press(getByText("Expense (اخراجات)"));
+    const { getByLabelText } = setup();
+    fireEvent.press(getByLabelText("Expense"));
     expect(mockNavigate).toHaveBeenCalledWith("ExpenseStack", {
       screen: "Expenses",
     });
   });
 
-  it("navigates to UsersStack when Manage User card is pressed", () => {
-    const { getByText } = setup();
-    fireEvent.press(getByText("Manage User"));
+  it("navigates to UsersStack when Users card is pressed", () => {
+    const { getByLabelText } = setup();
+    fireEvent.press(getByLabelText("Users"));
     expect(mockNavigate).toHaveBeenCalledWith("UsersStack", {
       screen: "Users",
     });
   });
 
   it("navigates to AdminStack when Admin card is pressed", () => {
-    const { getByText } = setup();
-    fireEvent.press(getByText("Admin"));
+    const { getByLabelText } = setup();
+    fireEvent.press(getByLabelText("Admin"));
     expect(mockNavigate).toHaveBeenCalledWith("HomeStack", {
       screen: "AdminStack",
       params: { title: "Admin" },
-    });
-  });
-
-  it("navigates to DashboardStack when Dashboard card is pressed", () => {
-    const { getByText } = setup();
-    fireEvent.press(getByText("Dashboard"));
-    expect(mockNavigate).toHaveBeenCalledWith("DashboardStack", {
-      screen: "Dashboard",
-      params: { title: "Dashboard" },
     });
   });
 });

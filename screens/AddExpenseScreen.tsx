@@ -16,6 +16,7 @@ import {
   expensesState,
   tagsState,
   usersState,
+  workTypesState,
 } from "../recoil/atom";
 import ExpenseService from "../services/ExpenseService";
 import { DateTime, Expense, ExpenseType, Tag as Tags, User } from "../types";
@@ -31,8 +32,11 @@ import UserDropDownItem from "../components/common/UserDropDownItem";
 import SwitchInput from "../components/common/SwitchInput";
 import {
   ADD_EXPENSE_DIFFERENT_SENDER_LABEL,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   AMOUNT_TO_RECEIVE_LESS_1,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   AMOUNT_TO_RECEIVE_LESS_2,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   AMOUNT_TO_RECEIVE_LESS_3,
 } from "../src/constants/labels";
 
@@ -73,6 +77,7 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   const [isReceivingUser, setIsReceivingUser] = useState<boolean>(false);
   const [_, setExpenses] = useRecoilState(expensesState);
   const [modalVisible, setModalVisible] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [modalMessage, setModalMessage] = useState("");
   const [isAmountHoldingLess, setIsAmountHoldingLess] = useState(false);
   const [tags] = useRecoilState(tagsState);
@@ -80,8 +85,22 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
   const [senderOpen, setSenderOpen] = useState(false);
   const [sender, setSender] = useState<string | null>(null);
   const [differentSender, setDifferentSender] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loggedInUser, setLoggedInUser] = useRecoilState(userState);
   const [receivers, setReceivers] = useState<User[]>([]);
+
+  // Feature 04: WorkType and Purpose
+  const workTypes = useRecoilValue(workTypesState);
+  const [workTypeOpen, setWorkTypeOpen] = useState(false);
+  const [selectedWorkType, setSelectedWorkType] = useState<number | null>(null);
+  const [purposeOpen, setPurposeOpen] = useState(false);
+  const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
+
+  const purposeOptions = [
+    { label: "Advance (Peshgi)", value: "ADVANCE" },
+    { label: "Ad-hoc (Fori)", value: "ADHOC" },
+    { label: "Settlement (Hisaab)", value: "SETTLEMENT" },
+  ];
 
   const onConfirmTime = useCallback(
     ({ hours, minutes }: DateTime) => {
@@ -151,6 +170,13 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
       setSender(extractedExpense.sender.id);
       if (loggedInUser.id !== extractedExpense.sender.id)
         setDifferentSender(true);
+
+      if (extractedExpense.workType) {
+        setSelectedWorkType(extractedExpense.workType.id);
+      }
+      if (extractedExpense.paymentPurpose) {
+        setSelectedPurpose(extractedExpense.paymentPurpose);
+      }
     }
   }, [route.params?.isEditMode, route.params?.expense]);
 
@@ -191,6 +217,12 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
         sender: differentSender ? ({ id: sender } as User) : loggedInUser,
         receiver: selectedUser ? ({ id: selectedUser } as User) : null,
         tags: selectedTags.map((tag) => ({ id: tag })) as Tags[],
+        workType: selectedWorkType
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ({ id: selectedWorkType, type: "work" } as any)
+          : undefined,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        paymentPurpose: selectedPurpose as any,
       };
       if (isEdit) newExpense.id = route.params.expense.id;
 
@@ -208,15 +240,6 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
       setAmount("");
       setValue(null);
       setAdditionalInfo("");
-      setLoggedInUser((currVal: User) => {
-        let amountHolding = currVal.amountHolding - parseFloat(amount);
-        let amountToReceive = currVal.amountToReceive;
-        if (amountHolding < 0) {
-          amountHolding = currVal.amountHolding;
-          amountToReceive = currVal.amountToReceive + parseFloat(amount);
-        }
-        return { ...currVal, amountHolding, amountToReceive };
-      });
 
       navigation.goBack();
     } catch (err) {
@@ -255,16 +278,12 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
       return;
     }
 
-    if (isReceivingUser) {
-      const receivingUser = users.filter((user) => user.id === selectedUser)[0];
-      const loan = receivingUser.amountToReceive - receivingUser.amountHolding;
-      if (parseFloat(amount) > loan) {
-        setModalMessage(
-          ` ${AMOUNT_TO_RECEIVE_LESS_1} ${receivingUser.name}  (${amount}) ${AMOUNT_TO_RECEIVE_LESS_2} (${loan}). ${AMOUNT_TO_RECEIVE_LESS_3}`,
-        );
-        setModalVisible(true);
-        return;
-      }
+    if (
+      selectedExpenseType?.name?.toLowerCase() === "accessories" &&
+      !additionalInfo.trim()
+    ) {
+      setError("Additional details are mandatory for Accessories.");
+      return;
     }
 
     submitExpense();
@@ -375,6 +394,44 @@ const AddExpenseScreen: React.FC<AddExpenseScreenProps> = ({
               />
             )}
           />
+        )}
+
+        {/* Work Type selector — only show when expense has a receiving user */}
+        {value && isReceivingUser && (
+          <>
+            <CustomDropDown
+              testID="work-type-picker"
+              schema={{ label: "name", value: "id" }}
+              zIndex={1800}
+              zIndexInverse={1800}
+              items={workTypes}
+              searchable={true}
+              open={workTypeOpen}
+              setOpen={setWorkTypeOpen}
+              containerStyle={{ height: 40, marginBottom: 16 }}
+              value={selectedWorkType}
+              setValue={setSelectedWorkType}
+              itemSeparator={true}
+              placeholder="Against Work Type (optional)"
+            />
+
+            {selectedWorkType && (
+              <CustomDropDown
+                testID="purpose-picker"
+                schema={{ label: "label", value: "value" }}
+                zIndex={1600}
+                zIndexInverse={1600}
+                items={purposeOptions}
+                open={purposeOpen}
+                setOpen={setPurposeOpen}
+                containerStyle={{ height: 40, marginBottom: 16 }}
+                value={selectedPurpose}
+                setValue={setSelectedPurpose}
+                itemSeparator={true}
+                placeholder="Purpose: Advance / Ad-hoc / Settlement"
+              />
+            )}
+          </>
         )}
 
         {/* New selector for tags */}
