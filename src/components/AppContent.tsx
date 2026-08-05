@@ -43,6 +43,9 @@ import { LinkingConfig } from "./config/linking.config";
 import { getInitialURL, subscribe } from "../util/Navigation";
 import MiddleManStack from "./middleman/MiddleManStack";
 import DashboardStack from "./dashboard/DashboardStack";
+import { SyncManager } from "../offline/SyncManager";
+import OfflineIndicator from "./common/OfflineIndicator";
+import { ReadCache } from "../offline/ReadCache";
 
 const prefix = Linking.createURL("/");
 
@@ -85,7 +88,8 @@ const AppContent = () => {
       const fetchedUsers = await UserService.getUsers();
       setUsers(fetchedUsers);
     } catch (error) {
-      error;
+      const cached = await ReadCache.getUsers();
+      if (cached) setUsers(cached);
     }
   };
 
@@ -94,7 +98,8 @@ const AppContent = () => {
       const fetchedTags = await TagsService.getTags();
       setTags(fetchedTags);
     } catch (error) {
-      error;
+      const cached = await ReadCache.getTags();
+      if (cached) setTags(cached);
     }
   };
 
@@ -103,7 +108,7 @@ const AppContent = () => {
       const fetchedRoles = await RolesService.getRoles();
       setRoles(fetchedRoles);
     } catch (error) {
-      error;
+      // no offline cache for roles needed for simple write queue right now, but can add
     }
   };
 
@@ -112,7 +117,8 @@ const AppContent = () => {
       const fetchedExpenseTypes = await ExpenseTypesService.getExpenseTypes();
       setExpenseTypes(fetchedExpenseTypes);
     } catch (error) {
-      error;
+      const cached = await ReadCache.getExpenseTypes();
+      if (cached) setExpenseTypes(cached);
     }
   };
 
@@ -121,7 +127,8 @@ const AppContent = () => {
       const fetchedWorkTypes = await WorkService.getWorkTypes();
       setWorkTypes(fetchedWorkTypes);
     } catch (error) {
-      error;
+      const cached = await ReadCache.getWorkTypes();
+      if (cached) setWorkTypes(cached);
     }
   };
 
@@ -133,129 +140,143 @@ const AppContent = () => {
     fetchWorkTypes();
   }, [userInfo]);
 
+  useEffect(() => {
+    if (_users.length > 0 && _workTypes.length > 0) {
+      ReadCache.refreshAll(_users, _workTypes, _tags, _expenseTypes);
+    }
+  }, [_users, _workTypes, _tags, _expenseTypes]);
+
+  useEffect(() => {
+    const unsub = SyncManager.init();
+    return unsub;
+  }, []);
+
   const colorScheme = useColorScheme();
 
   const paperTheme =
     colorScheme === "dark" ? CombinedDarkTheme : CombinedDefaultTheme;
 
   return (
-    <NavigationContainer
-      theme={paperTheme}
-      fallback={<Text>Loading...</Text>}
-      linking={{
-        prefixes: [prefix],
-        config: LinkingConfig,
-        getInitialURL,
-        subscribe,
-      }}
-    >
-      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-      {userInfo ? (
-        <Drawer.Navigator
-          id="DrawerNavigator"
-          screenOptions={{
-            drawerPosition: "right",
-          }}
-          initialRouteName="Home"
-          drawerContent={(props) => (
-            <CustomDrawerContent {...props} userInfo={userInfo} />
-          )}
-        >
-          <Drawer.Screen
-            options={{ headerShown: false, drawerLabel: "Home" }}
-            name="HomeStack"
-            component={HomeStack}
-          />
-          <Drawer.Screen
-            options={{
-              headerShown: false,
-              drawerLabel: "Manage profile",
-              drawerItemStyle: { height: 0 },
+    <>
+      <OfflineIndicator />
+      <NavigationContainer
+        theme={paperTheme}
+        fallback={<Text>Loading...</Text>}
+        linking={{
+          prefixes: [prefix],
+          config: LinkingConfig,
+          getInitialURL,
+          subscribe,
+        }}
+      >
+        <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+        {userInfo ? (
+          <Drawer.Navigator
+            id="DrawerNavigator"
+            screenOptions={{
+              drawerPosition: "right",
             }}
-            name="ProfileStack"
-            component={ProfileStack}
-          />
-          <Drawer.Screen
-            options={{ headerShown: false, drawerLabel: "Roles" }}
-            name="RolesStack"
-            component={RoleStack}
-          />
-          <Drawer.Screen
-            options={{ headerShown: false, drawerLabel: "Expenses" }}
-            name="ExpenseStack"
-            component={ExpenseStack}
-          />
-          <Drawer.Screen
-            options={{ headerShown: false, drawerLabel: "Expense Types" }}
-            name="ExpenseTypeStack"
-            component={ExpenseTypeStack}
-          />
-          <Drawer.Screen
-            options={{ headerShown: false, drawerLabel: "Manage tags" }}
-            name="TagsStack"
-            component={TagsStack}
-          />
-          <Drawer.Screen
-            options={{ headerShown: false, drawerLabel: "Work" }}
-            name="WorkStack"
-            component={WorkStack}
-          />
-          <Drawer.Screen
-            options={{ headerShown: false, drawerLabel: "Sale" }}
-            name="SaleStack"
-            component={SaleStack}
-          />
-          <Drawer.Screen
-            options={{ headerShown: false, drawerLabel: "Users" }}
-            name="UsersStack"
-            component={UsersStack}
-          />
-          <Drawer.Screen
-            options={{
-              headerShown: false,
-              drawerLabel: "Report by Tags",
-            }}
-            name="ReportStack"
-            component={ReportStack}
-          />
-          <Drawer.Screen
-            options={{
-              headerShown: false,
-              drawerLabel: "Middle Man",
-              drawerItemStyle: { height: 0 },
-            }}
-            name="MiddleManStack"
-            component={MiddleManStack}
-          />
-          <Drawer.Screen
-            options={{
-              headerShown: false,
-              drawerLabel: "",
-              drawerItemStyle: { height: 0 },
-              swipeEnabled: false,
-            }}
-            name="DashboardStack"
-            component={DashboardStack}
-          />
-          {/* Other screens */}
-        </Drawer.Navigator>
-      ) : (
-        <Drawer.Navigator
-          id="LoginDrawerNavigator"
-          initialRouteName="Login"
-          screenOptions={{ drawerPosition: "right" }}
-          drawerContent={(props) => (
-            <CustomDrawerContent {...props} userInfo={userInfo} />
-          )}
-        >
-          <Drawer.Screen
-            options={{ headerShown: false }}
-            name="Login"
-            component={LoginScreen}
-          />
-        </Drawer.Navigator>
-      )}
-    </NavigationContainer>
+            initialRouteName="Home"
+            drawerContent={(props) => (
+              <CustomDrawerContent {...props} userInfo={userInfo} />
+            )}
+          >
+            <Drawer.Screen
+              options={{ headerShown: false, drawerLabel: "Home" }}
+              name="HomeStack"
+              component={HomeStack}
+            />
+            <Drawer.Screen
+              options={{
+                headerShown: false,
+                drawerLabel: "Manage profile",
+                drawerItemStyle: { height: 0 },
+              }}
+              name="ProfileStack"
+              component={ProfileStack}
+            />
+            <Drawer.Screen
+              options={{ headerShown: false, drawerLabel: "Roles" }}
+              name="RolesStack"
+              component={RoleStack}
+            />
+            <Drawer.Screen
+              options={{ headerShown: false, drawerLabel: "Expenses" }}
+              name="ExpenseStack"
+              component={ExpenseStack}
+            />
+            <Drawer.Screen
+              options={{ headerShown: false, drawerLabel: "Expense Types" }}
+              name="ExpenseTypeStack"
+              component={ExpenseTypeStack}
+            />
+            <Drawer.Screen
+              options={{ headerShown: false, drawerLabel: "Manage tags" }}
+              name="TagsStack"
+              component={TagsStack}
+            />
+            <Drawer.Screen
+              options={{ headerShown: false, drawerLabel: "Work" }}
+              name="WorkStack"
+              component={WorkStack}
+            />
+            <Drawer.Screen
+              options={{ headerShown: false, drawerLabel: "Sale" }}
+              name="SaleStack"
+              component={SaleStack}
+            />
+            <Drawer.Screen
+              options={{ headerShown: false, drawerLabel: "Users" }}
+              name="UsersStack"
+              component={UsersStack}
+            />
+            <Drawer.Screen
+              options={{
+                headerShown: false,
+                drawerLabel: "Report by Tags",
+              }}
+              name="ReportStack"
+              component={ReportStack}
+            />
+            <Drawer.Screen
+              options={{
+                headerShown: false,
+                drawerLabel: "Middle Man",
+                drawerItemStyle: { height: 0 },
+              }}
+              name="MiddleManStack"
+              component={MiddleManStack}
+            />
+            <Drawer.Screen
+              options={{
+                headerShown: false,
+                drawerLabel: "",
+                drawerItemStyle: { height: 0 },
+                swipeEnabled: false,
+              }}
+              name="DashboardStack"
+              component={DashboardStack}
+            />
+            {/* Other screens */}
+          </Drawer.Navigator>
+        ) : (
+          <Drawer.Navigator
+            id="LoginDrawerNavigator"
+            initialRouteName="Login"
+            screenOptions={{ drawerPosition: "right" }}
+            drawerContent={(props) => (
+              <CustomDrawerContent {...props} userInfo={userInfo} />
+            )}
+          >
+            <Drawer.Screen
+              options={{ headerShown: false }}
+              name="Login"
+              component={LoginScreen}
+            />
+          </Drawer.Navigator>
+        )}
+      </NavigationContainer>
+    </>
   );
 };
 export default AppContent;

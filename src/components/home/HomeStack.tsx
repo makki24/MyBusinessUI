@@ -37,6 +37,12 @@ const HomeStack = () => {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         component={require("../../../screens/AllActivityScreen").default}
       />
+      <Stack.Screen
+        options={{ header: () => <CustomHeader /> }}
+        name="QuickBuyScreen"
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        component={require("../../../screens/QuickBuyScreen").default}
+      />
     </Stack.Navigator>
   );
 };
