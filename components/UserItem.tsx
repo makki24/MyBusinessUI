@@ -4,7 +4,6 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import { User } from "../types";
 import UserDetails from "./common/UserDetails";
-import commonItemStyles from "../src/styles/commonItemStyles";
 import { useRecoilValue } from "recoil";
 import { canDelete as canDeleteSelector } from "../recoil/selectors";
 import UserRemainingAmount from "../src/components/common/UserRemainingAmount";
@@ -28,22 +27,65 @@ const UserItem: React.FC<UserItemProps> = ({
 
   return (
     <Card
-      style={[commonItemStyles.card, { backgroundColor: theme.colors.surface }]}
+      mode="elevated"
+      style={[styles.card, { backgroundColor: theme.colors.surface }]}
       onPress={onPress}
     >
       <Card.Content style={styles.cardContent}>
-        {/* Header Row: UserDetails + Delete Button */}
-        <View style={commonItemStyles.headerRow}>
+        {/* Top Row: User Details (Left) + Balance (Right) */}
+        <View style={styles.headerRow}>
           <TouchableOpacity onPress={onEdit} style={{ flex: 1 }}>
             <UserDetails user={user} />
           </TouchableOpacity>
 
-          {/* Delete Button - Top Right */}
+          <View style={styles.balanceHeader}>
+            <UserRemainingAmount user={user} />
+          </View>
+        </View>
+
+        {/* Divider */}
+        <View style={styles.divider} />
+
+        {/* Bottom Row: Contact Info (Left) + Delete (Right) */}
+        <View style={styles.bottomRow}>
+          <View style={styles.contactContainer}>
+            <View style={styles.contactRow}>
+              <MaterialCommunityIcons
+                name="email-outline"
+                size={16}
+                color={theme.colors.onSurfaceVariant}
+                style={styles.contactIcon}
+              />
+              <Text
+                variant="bodySmall"
+                style={{ color: theme.colors.onSurfaceVariant }}
+                numberOfLines={1}
+              >
+                {user.email || "No email provided"}
+              </Text>
+            </View>
+
+            <View style={styles.contactRow}>
+              <MaterialCommunityIcons
+                name="phone-outline"
+                size={16}
+                color={theme.colors.onSurfaceVariant}
+                style={styles.contactIcon}
+              />
+              <Text
+                variant="bodySmall"
+                style={{ color: theme.colors.onSurfaceVariant }}
+              >
+                {user.phoneNumber || "No phone provided"}
+              </Text>
+            </View>
+          </View>
+
           {userCanDelete && (
             <TouchableOpacity
               style={[
-                commonItemStyles.deleteButton,
-                { backgroundColor: theme.colors.errorContainer, marginLeft: 8 },
+                styles.deleteButton,
+                { backgroundColor: theme.colors.errorContainer },
               ]}
               onPress={(e) => {
                 e?.stopPropagation?.();
@@ -53,54 +95,12 @@ const UserItem: React.FC<UserItemProps> = ({
               accessibilityRole="button"
             >
               <MaterialCommunityIcons
-                name="delete"
-                size={18}
+                name="delete-outline"
+                size={20}
                 color={theme.colors.error}
               />
             </TouchableOpacity>
           )}
-        </View>
-
-        {/* Info Rows */}
-        <View style={styles.infoSection}>
-          <View style={styles.infoRow}>
-            <MaterialCommunityIcons
-              name="email-outline"
-              size={16}
-              color={theme.colors.onSurfaceVariant}
-              style={styles.infoIcon}
-            />
-            <Text
-              variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant, flex: 1 }}
-              numberOfLines={1}
-            >
-              {user.email}
-            </Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <MaterialCommunityIcons
-              name="phone-outline"
-              size={16}
-              color={theme.colors.onSurfaceVariant}
-              style={styles.infoIcon}
-            />
-            <Text
-              variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant }}
-            >
-              {user.phoneNumber}
-            </Text>
-          </View>
-        </View>
-
-        {/* Balance Section */}
-        <View style={styles.balanceContainer}>
-          <Text variant="bodyMedium" style={styles.balanceLabel}>
-            Balance
-          </Text>
-          <UserRemainingAmount user={user} />
         </View>
       </Card.Content>
     </Card>
@@ -108,36 +108,53 @@ const UserItem: React.FC<UserItemProps> = ({
 };
 
 const styles = StyleSheet.create({
+  card: {
+    marginVertical: 8,
+    marginHorizontal: 4,
+    borderRadius: 16,
+    elevation: 2,
+  },
   cardContent: {
-    paddingBottom: 8,
+    padding: 16,
   },
-  infoSection: {
-    marginTop: 4,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.06)",
-  },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 6,
-  },
-  infoIcon: {
-    marginRight: 8,
-    width: 20, // Alignment
-  },
-  balanceContainer: {
-    marginTop: 12,
+  headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.06)",
   },
-  balanceLabel: {
-    fontWeight: "600",
-    opacity: 0.7,
+  balanceHeader: {
+    alignItems: "flex-end",
+    justifyContent: "center",
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "rgba(0,0,0,0.06)",
+    marginVertical: 12,
+  },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+  },
+  contactContainer: {
+    flex: 1,
+    gap: 4,
+  },
+  contactRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  contactIcon: {
+    marginRight: 8,
+    width: 20,
+  },
+  deleteButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 12,
   },
 });
 

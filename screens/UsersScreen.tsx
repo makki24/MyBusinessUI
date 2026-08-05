@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { FAB, Snackbar } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import UserService from "../services/UserService";
@@ -109,13 +110,15 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={commonStyles.container}>
-      <SearchAndFilter
-        handleSearch={handleSearch}
-        user={users}
-        onApply={() => {}}
-        filter={false}
-      />
+    <SafeAreaView style={commonStyles.container} edges={["top"]}>
+      <View style={commonStyles.simpleRow}>
+        <SearchAndFilter
+          handleSearch={handleSearch}
+          user={users}
+          onApply={() => {}}
+          filter={false}
+        />
+      </View>
 
       {
         <FlatList
@@ -170,7 +173,7 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
       >
         {`User deleted successfully`}
       </Snackbar>
-    </View>
+    </SafeAreaView>
   );
 };
 

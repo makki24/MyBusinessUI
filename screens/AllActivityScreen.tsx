@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { View, FlatList, StyleSheet, RefreshControl } from "react-native";
-import { Text, useTheme, ActivityIndicator } from "react-native-paper";
+import { Text, useTheme, ActivityIndicator, Button } from "react-native-paper";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import * as Notifications from "expo-notifications";
 import DashboardService, { RecentActivity } from "../services/DashboardService";
 import { RecentActivityItem } from "../src/components/home/RecentActivityFeed";
 
@@ -20,14 +21,24 @@ const AllActivityScreen: React.FC<AllActivityScreenProps> = ({
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [filterTypes, setFilterTypes] = useState<string[] | undefined>();
+  const [filterDate, setFilterDate] = useState<string | undefined>();
+
   const PAGE_SIZE = 20;
 
   const fetchActivities = async (
     offset: number = 0,
     append: boolean = false,
+    types?: string[],
+    date?: string,
   ) => {
     try {
-      const data = await DashboardService.getRecent(PAGE_SIZE, offset);
+      const data = await DashboardService.getRecent(
+        PAGE_SIZE,
+        offset,
+        types,
+        date,
+      );
       if (data.length < PAGE_SIZE) {
         setHasMore(false);
       } else {
@@ -56,21 +67,86 @@ const AllActivityScreen: React.FC<AllActivityScreenProps> = ({
 
   useEffect(() => {
     navigation.setOptions({ title: "All Activity" });
-    fetchActivities(0, false).finally(() => setLoading(false));
+    let isMounted = true;
+
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (!isMounted || !response?.notification) {
+        fetchActivities(0, false, filterTypes, filterDate).finally(() =>
+          setLoading(false),
+        );
+        return;
+      }
+
+      const filterAsString = (
+        response?.notification.request
+          .trigger as Notifications.PushNotificationTrigger
+      ).remoteMessage?.data.expenseFilter;
+
+      if (filterAsString) {
+        try {
+          const filter = JSON.parse(filterAsString);
+
+          const types = filter.types;
+          let dateStr;
+
+          if (filter.lastUpdateTime) {
+            const parsedDate = filter.lastUpdateTime;
+            const offset = new Date().getTimezoneOffset();
+            const date = new Date(
+              parsedDate.year,
+              parsedDate.monthValue - 1,
+              parsedDate.dayOfMonth,
+              parsedDate.hour,
+              parsedDate.minute,
+              parsedDate.second,
+            );
+            dateStr = new Date(
+              date.getTime() - offset * 60 * 1000,
+            ).toISOString();
+          }
+
+          setFilterTypes(types);
+          setFilterDate(dateStr);
+
+          fetchActivities(0, false, types, dateStr).finally(() =>
+            setLoading(false),
+          );
+        } catch (err) {
+          fetchActivities(0, false, filterTypes, filterDate).finally(() =>
+            setLoading(false),
+          );
+        }
+      } else {
+        fetchActivities(0, false, filterTypes, filterDate).finally(() =>
+          setLoading(false),
+        );
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, [navigation]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchActivities(0, false);
+    await fetchActivities(0, false, filterTypes, filterDate);
     setRefreshing(false);
-  }, []);
+  }, [filterTypes, filterDate]);
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore || loading) return;
     setLoadingMore(true);
-    await fetchActivities(activities.length, true);
+    await fetchActivities(activities.length, true, filterTypes, filterDate);
     setLoadingMore(false);
-  }, [loadingMore, hasMore, loading, activities.length]);
+  }, [
+    loadingMore,
+    hasMore,
+    loading,
+    activities.length,
+    filterTypes,
+    filterDate,
+  ]);
 
   const handleActivityPress = useCallback(
     (item: RecentActivity) => {
@@ -126,6 +202,24 @@ const AllActivityScreen: React.FC<AllActivityScreenProps> = ({
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
+      {(filterTypes || filterDate) && (
+        <View style={styles.filterBanner}>
+          <Text style={styles.filterText}>Showing filtered activities</Text>
+          <Button
+            mode="text"
+            onPress={() => {
+              setFilterTypes(undefined);
+              setFilterDate(undefined);
+              setLoading(true);
+              fetchActivities(0, false, undefined, undefined).finally(() =>
+                setLoading(false),
+              );
+            }}
+          >
+            Clear Filter
+          </Button>
+        </View>
+      )}
       <FlatList
         data={activities}
         keyExtractor={(item) => `${item.type}-${item.id}`}
@@ -158,6 +252,18 @@ const AllActivityScreen: React.FC<AllActivityScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  filterBanner: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
+  },
+  filterText: {
+    fontSize: 14,
+    fontWeight: "bold",
   },
   centerContainer: {
     flex: 1,

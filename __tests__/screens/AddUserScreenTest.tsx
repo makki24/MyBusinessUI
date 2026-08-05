@@ -123,6 +123,7 @@ describe("AddUserScreen", () => {
       expect(UserService.addUser).toHaveBeenCalledWith({
         name: "username",
         email: "email@e.com",
+        isEmailValid: false,
         picture: undefined,
         phoneNumber: "9999999999",
         roles: [{ id: "1", name: "MEMBER" }],
@@ -185,6 +186,7 @@ describe("AddUserScreen", () => {
       expect(UserService.addUser).toHaveBeenCalledWith({
         name: "usernames",
         email: "email",
+        isEmailValid: false,
         picture: "imageUrl:googleusercontent.com",
         phoneNumber: "1",
         roles: [{ id: "2" }],

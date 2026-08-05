@@ -33,10 +33,17 @@ const DashboardService = {
   getRecent: async (
     limit: number = 8,
     offset: number = 0,
+    types?: string[],
+    lastUpdateTime?: string,
   ): Promise<RecentActivity[]> => {
-    const response = await axios.get(
-      `/api/dashboard/recent?limit=${limit}&offset=${offset}`,
-    );
+    let url = `/api/dashboard/recent?limit=${limit}&offset=${offset}`;
+    if (types && types.length > 0) {
+      url += `&types=${types.join(",")}`;
+    }
+    if (lastUpdateTime) {
+      url += `&lastUpdateTime=${lastUpdateTime}`;
+    }
+    const response = await axios.get(url);
     if (!response.data) {
       throw new Error("No data in response");
     }
