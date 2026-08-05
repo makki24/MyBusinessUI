@@ -8,8 +8,9 @@ import {
   Platform,
   LayoutAnimation,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { userState, worksState } from "../recoil/atom";
 import WorkService from "../services/WorkService";
@@ -165,11 +166,10 @@ const WorkLedgerScreen: React.FC<WorkLedgerScreenProps> = ({
 }) => {
   const { workType, user } = route.params;
 
-  // Navigation options are now handled by ReportHeader in WorkStack
-
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
-  // Using worksState to potentially share or just local state. Let's use local state for this ledger view to prevent polluting global work list, or we can use global and filter.
-  // Given ExpenseTypeReport uses local state `reports`, we will use local state `ledgerWorks`.
+  const setGlobalWorks = useSetRecoilState(worksState);
+
   const [ledgerWorks, setLedgerWorks] = useState<Work[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -179,13 +179,10 @@ const WorkLedgerScreen: React.FC<WorkLedgerScreenProps> = ({
   const [hasMore, setHasMore] = useState(true);
   const limit = 15;
 
-  // Bottom bar inputs
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
   const [showMessage, setShowMessage] = useState(false);
   const [isSending, setIsSending] = useState(false);
-
-  // removed unused loggedInUser and globalWorks
 
   const [showAllWorks, setShowAllWorks] = useState(!user.lastSettlementDate);
 
@@ -215,7 +212,6 @@ const WorkLedgerScreen: React.FC<WorkLedgerScreenProps> = ({
         filterPayload.fromDate = user.lastSettlementDate;
       }
 
-      // We only want works for THIS user
       const worksData = await WorkService.filterWork({
         filter: filterPayload,
         sort: [{ property: "date", direction: "desc" }],
@@ -236,7 +232,6 @@ const WorkLedgerScreen: React.FC<WorkLedgerScreenProps> = ({
         setLedgerWorks(formattedData);
       } else {
         setLedgerWorks((prev) => {
-          // Prevent duplicate keys if backend offset hasn't restarted or overlapping records
           const existingIds = new Set(prev.map((p) => p.id));
           const newUnique = formattedData.filter((d) => !existingIds.has(d.id));
           return [...prev, ...newUnique];
@@ -256,7 +251,7 @@ const WorkLedgerScreen: React.FC<WorkLedgerScreenProps> = ({
 
   useEffect(() => {
     fetchWorks(true);
-  }, [showAllWorks]); // refetch when the toggle changes
+  }, [showAllWorks]);
 
   useEffect(() => {
     if (Platform.OS !== "android") return;
@@ -303,15 +298,12 @@ const WorkLedgerScreen: React.FC<WorkLedgerScreenProps> = ({
       const savedWork = await WorkService.addWork(newWork);
       savedWork.date = new Date(savedWork.date);
 
-      // Clear fields
       setQuantity("");
       setDescription("");
       setShowMessage(false);
 
-      // Prepend to local ledger
       setLedgerWorks((prev) => [savedWork, ...prev]);
 
-      // Prepend to global state
       setGlobalWorks((prev) => [savedWork, ...prev]);
     } catch (err) {
       setError(
@@ -396,7 +388,6 @@ const WorkLedgerScreen: React.FC<WorkLedgerScreenProps> = ({
           ListFooterComponent={() => {
             return (
               <View style={{ alignItems: "center", paddingVertical: 10 }}>
-                {/* Profile Header (renders at the top because list is inverted) */}
                 <View
                   style={{
                     marginBottom: 16,
@@ -446,13 +437,17 @@ const WorkLedgerScreen: React.FC<WorkLedgerScreenProps> = ({
         />
       </View>
 
-      {/* Input Bar */}
       <View
-        style={[styles.paymentBar, { backgroundColor: theme.colors.surface }]}
+        style={[
+          styles.paymentBar,
+          {
+            backgroundColor: theme.colors.surface,
+            paddingBottom: Math.max(insets.bottom, UI_ELEMENTS_GAP),
+          },
+        ]}
       >
         <LoadingError error={error} isLoading={isSending} />
 
-        {/* Message input (toggled) */}
         {showMessage && (
           <View style={{ marginBottom: 8 }}>
             <TextInput

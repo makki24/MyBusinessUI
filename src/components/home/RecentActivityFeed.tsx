@@ -187,8 +187,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   loadingContainer: {
-    paddingVertical: 24,
+    minHeight: 300,
     alignItems: "center",
+    justifyContent: "center",
   },
   listContainer: {
     paddingHorizontal: 12,

@@ -19,6 +19,7 @@ export interface User {
   name: string;
   picture: string;
   email: string;
+  isEmailValid?: boolean;
   phoneNumber: string;
   userProperties: UserProperties;
   id?: string;

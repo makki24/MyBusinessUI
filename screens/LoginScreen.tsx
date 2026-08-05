@@ -90,6 +90,7 @@ const LoginScreen = ({ navigation }) => {
                 promptAsync();
               }}
             />
+            <Text>{apiUrl}</Text>
             <IconButton
               icon={"refresh"}
               mode={"contained"}

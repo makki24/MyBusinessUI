@@ -125,6 +125,25 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
               </Text>
             </View>
           )}
+          {wtb.otherTaggedPaid !== 0 && (
+            <View style={styles.row}>
+              <Text
+                variant="bodyMedium"
+                style={{ color: theme.colors.outline }}
+              >
+                {wtb.otherTaggedPaid > 0
+                  ? "🔄 Other (Sales collected):"
+                  : "🔄 Other (Expenses paid by user):"}
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={[styles.value, { color: theme.colors.outline }]}
+              >
+                {wtb.otherTaggedPaid > 0 ? "" : "- "}
+                {formatCurrency(wtb.otherTaggedPaid)}
+              </Text>
+            </View>
+          )}
           <Divider style={styles.divider} />
           <View style={styles.row}>
             <Text variant="titleSmall" style={{ fontWeight: "bold" }}>
@@ -220,6 +239,78 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
                     {formatCurrency(balanceData.untaggedPayments)} in payments
                     from before advance tracking was added. These are included
                     in the overall net but not categorized by work type.
+                  </Text>
+                </Card.Content>
+              </Card>
+            )}
+
+            {(balanceData.expensesSent > 0 ||
+              balanceData.sales > 0 ||
+              balanceData.contributionsSent > 0 ||
+              balanceData.contributionsReceived > 0) && (
+              <Card style={styles.card} mode="outlined">
+                <Card.Title
+                  title="Other Activities (دیگر)"
+                  subtitle="Transactions not related to work types"
+                />
+                <Card.Content>
+                  {balanceData.expensesSent > 0 && (
+                    <View style={styles.row}>
+                      <Text variant="bodyMedium">
+                        💸 Expenses Paid by User:
+                      </Text>
+                      <Text
+                        variant="bodyMedium"
+                        style={[styles.value, { color: theme.colors.primary }]}
+                      >
+                        + {formatCurrency(balanceData.expensesSent)}
+                      </Text>
+                    </View>
+                  )}
+                  {balanceData.contributionsSent > 0 && (
+                    <View style={styles.row}>
+                      <Text variant="bodyMedium">🎁 Contributions Sent:</Text>
+                      <Text
+                        variant="bodyMedium"
+                        style={[styles.value, { color: theme.colors.primary }]}
+                      >
+                        + {formatCurrency(balanceData.contributionsSent)}
+                      </Text>
+                    </View>
+                  )}
+                  {balanceData.sales > 0 && (
+                    <View style={styles.row}>
+                      <Text variant="bodyMedium">
+                        🛒 Sales Collected by User:
+                      </Text>
+                      <Text
+                        variant="bodyMedium"
+                        style={[styles.value, { color: theme.colors.error }]}
+                      >
+                        - {formatCurrency(balanceData.sales)}
+                      </Text>
+                    </View>
+                  )}
+                  {balanceData.contributionsReceived > 0 && (
+                    <View style={styles.row}>
+                      <Text variant="bodyMedium">
+                        📥 Contributions Received:
+                      </Text>
+                      <Text
+                        variant="bodyMedium"
+                        style={[styles.value, { color: theme.colors.error }]}
+                      >
+                        - {formatCurrency(balanceData.contributionsReceived)}
+                      </Text>
+                    </View>
+                  )}
+                  <Divider style={styles.divider} />
+                  <Text
+                    variant="bodySmall"
+                    style={{ color: theme.colors.outline, marginTop: 4 }}
+                  >
+                    These amounts are factored into the Overall Net shown at the
+                    top.
                   </Text>
                 </Card.Content>
               </Card>

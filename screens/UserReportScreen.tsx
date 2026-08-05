@@ -9,6 +9,7 @@ import {
   Platform,
   LayoutAnimation,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRecoilState, useRecoilValue } from "recoil";
 import ReportItem from "../components/ReportItem";
 import {
@@ -55,6 +56,7 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
     );
   }
 
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const [reports, setReports] = useRecoilState(userReportsState);
   const [error, setError] = useState(null);
@@ -267,7 +269,13 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
       {/* PhonePe-style Payment Bar — hidden for own report */}
       {!isSameUser && (
         <View
-          style={[styles.paymentBar, { backgroundColor: theme.colors.surface }]}
+          style={[
+            styles.paymentBar,
+            {
+              backgroundColor: theme.colors.surface,
+              paddingBottom: Math.max(insets.bottom, UI_ELEMENTS_GAP),
+            },
+          ]}
         >
           <LoadingError error={error} isLoading={isSending} />
 

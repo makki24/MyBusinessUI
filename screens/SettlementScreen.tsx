@@ -106,7 +106,7 @@ const SettlementScreen = () => {
     try {
       const expense: Expense = {
         date: new Date(),
-        type: { id: transferType?.id } as ExpenseType,
+        type: { id: transferType?.id, type: "expense" } as ExpenseType,
         amount: parseFloat(amount),
         sender: loggedInUser as User,
         receiver: { id: selectedUserId } as User,
@@ -207,6 +207,25 @@ const SettlementScreen = () => {
                 style={[styles.value, { color: theme.colors.outline }]}
               >
                 {formatCurrency(wtb.untaggedPaid)}
+              </Text>
+            </View>
+          )}
+          {wtb.otherTaggedPaid !== 0 && (
+            <View style={styles.row}>
+              <Text
+                variant="bodyMedium"
+                style={{ color: theme.colors.outline }}
+              >
+                {wtb.otherTaggedPaid > 0
+                  ? "🔄 Other (Sales collected):"
+                  : "🔄 Other (Expenses paid by user):"}
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={[styles.value, { color: theme.colors.outline }]}
+              >
+                {wtb.otherTaggedPaid > 0 ? "" : "- "}
+                {formatCurrency(wtb.otherTaggedPaid)}
               </Text>
             </View>
           )}

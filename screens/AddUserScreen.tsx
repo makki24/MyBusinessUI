@@ -28,6 +28,7 @@ import commonAddScreenStyles from "../src/styles/commonAddScreenStyles";
 import LoadingError from "../components/common/LoadingError";
 import {
   BORDER_RADIUS,
+  CONTAINER_PADDING,
   IMAGE_UPLOAD_SIZE,
   UI_ELEMENTS_GAP,
 } from "../src/styles/constants";
@@ -65,6 +66,7 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
   const [_, setPictureUrl] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [emailValid, setEmailValid] = useState(true);
+  const [isEmailValidFlag, setIsEmailValidFlag] = useState(false);
   const [roles] = useRecoilState(rolesState);
   const [isOwnAsset, setIsOwnAsset] = useState(false);
   const [isOwnLiability, setIsOwnLiability] = useState(false);
@@ -100,6 +102,8 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
       setPicture(editingUser.picture);
 
       setPhoneNumber(editingUser.phoneNumber);
+      setIsEmailValidFlag(editingUser.isEmailValid || false);
+
       if (editingUser.userProperties) {
         setWorkTypePrices(editingUser.userProperties.workTypePrices);
         setIsOwnLiability(editingUser.userProperties.isOwnLiability);
@@ -143,6 +147,7 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
       let user: User = {
         name: username,
         email,
+        isEmailValid: isEmailValidFlag,
         picture: imageUrl,
         phoneNumber,
         roles: route.params?.isEditMode
@@ -248,6 +253,18 @@ const AddUserScreen: React.FC<AddUserScreenProps> = ({ route }) => {
         onValidationChange={setEmailValid}
         email={email}
       />
+      <View
+        style={{
+          marginHorizontal: CONTAINER_PADDING,
+          marginBottom: UI_ELEMENTS_GAP,
+        }}
+      >
+        <SwitchInput
+          label="Is Email Valid? (Allow sending mails)"
+          value={isEmailValidFlag}
+          onValueChange={(value) => setIsEmailValidFlag(value)}
+        />
+      </View>
       <PhoneNumberInput
         label="Phone Number*"
         phoneNumber={phoneNumber}

@@ -20,11 +20,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRecoilValue } from "recoil";
 import { userState } from "../recoil/atom";
-import {
-  BORDER_RADIUS,
-  CONTAINER_PADDING,
-  SHADOW,
-} from "../src/styles/constants";
+import { CONTAINER_PADDING, SHADOW } from "../src/styles/constants";
 import SummaryBanner from "../src/components/home/SummaryBanner";
 import QuickActions from "../src/components/home/QuickActions";
 import RecentActivityFeed from "../src/components/home/RecentActivityFeed";
@@ -213,28 +209,29 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       },
       cardContainer: {
         width: cardWidth,
-        marginBottom: CONTAINER_PADDING,
-        borderRadius: BORDER_RADIUS,
+        marginBottom: 12,
+        borderRadius: 16,
         ...SHADOW,
-        elevation: 4,
+        elevation: 2,
       },
       cardContent: {
+        flexDirection: "row",
         alignItems: "center",
-        padding: CONTAINER_PADDING,
-        justifyContent: "center",
-        minHeight: 120,
+        padding: 16,
+        minHeight: 72,
       },
       iconContainer: {
-        marginBottom: 10,
-        padding: 12,
-        borderRadius: 50,
+        width: 40,
+        height: 40,
+        borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",
+        marginRight: 12,
       },
       cardTitle: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: "600",
-        textAlign: "center",
+        flex: 1,
       },
     });
   }, [theme]);
@@ -274,6 +271,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           screen: "SettlementScreen",
           params: { title: "Settlement (حساب)" },
         }),
+    },
+    {
+      title: "Dashboard",
+      icon: "view-dashboard-outline" as keyof typeof MaterialCommunityIcons.glyphMap,
+      onPress: () =>
+        navigation.navigate("DashboardStack", { screen: "Dashboard" }),
     },
     {
       title: "Sale",

@@ -8,6 +8,7 @@ import {
   Platform,
   LayoutAnimation,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useRecoilState, useRecoilValue } from "recoil";
 import ReportItem from "../components/ReportItem";
@@ -62,6 +63,7 @@ const ExpenseTypeReportScreen: React.FC<ExpenseTypeReportScreenProps> = ({
     );
   }
 
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const [reports, setReports] = useState<UserReport[]>([]);
   const [error, setError] = useState(null);
@@ -304,7 +306,13 @@ const ExpenseTypeReportScreen: React.FC<ExpenseTypeReportScreenProps> = ({
 
       {/* Payment Bar */}
       <View
-        style={[styles.paymentBar, { backgroundColor: theme.colors.surface }]}
+        style={[
+          styles.paymentBar,
+          {
+            backgroundColor: theme.colors.surface,
+            paddingBottom: Math.max(insets.bottom, UI_ELEMENTS_GAP),
+          },
+        ]}
       >
         <LoadingError error={error} isLoading={isSending} />
 
