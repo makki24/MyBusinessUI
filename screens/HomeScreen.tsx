@@ -264,6 +264,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       onPress: () => navigation.navigate("UsersStack", { screen: "Users" }),
     },
     {
+      title: "Quick Buy",
+      icon: "shopping-outline" as keyof typeof MaterialCommunityIcons.glyphMap,
+      onPress: () =>
+        navigation.navigate("HomeStack", {
+          screen: "QuickBuyScreen",
+        }),
+    },
+    {
       title: "Settlement",
       icon: "scale-balance" as keyof typeof MaterialCommunityIcons.glyphMap,
       onPress: () =>
