@@ -21,12 +21,17 @@ const OfflineIndicator = () => {
       OfflineQueue.getCount().then(setQueueCount);
     });
 
+    const unsubQueue = OfflineQueue.addListener((count) => {
+      setQueueCount(count);
+    });
+
     // Check initial queue count
     OfflineQueue.getCount().then(setQueueCount);
 
     return () => {
       unsubNet();
       unsubSync();
+      unsubQueue();
     };
   }, []);
 
