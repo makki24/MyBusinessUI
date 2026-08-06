@@ -53,8 +53,12 @@ axiosInstance.interceptors.request.use(
       const isSmartSettle = config.url?.includes(
         "/api/expenses/bulk-settle-untagged",
       );
+      const isQueryPost =
+        config.url?.includes("/filter") ||
+        config.url?.includes("/report") ||
+        config.url?.includes("/dashboard");
 
-      if (isWrite && !isSmartSettle) {
+      if (isWrite && !isSmartSettle && !isQueryPost) {
         const isOnline = await SyncManager.isOnline();
         if (!isOnline) {
           // Queue the request for later sync

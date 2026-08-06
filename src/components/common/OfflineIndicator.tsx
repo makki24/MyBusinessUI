@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, SafeAreaView, Platform } from "react-native";
+import { View, StyleSheet, Platform, StatusBar } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import NetInfo from "@react-native-community/netinfo";
 import { SyncManager, SyncStatus } from "../../offline/SyncManager";
 import { OfflineQueue } from "../../offline/OfflineQueue";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const OfflineIndicator = () => {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const [isOffline, setIsOffline] = useState(false);
   const [queueCount, setQueueCount] = useState(0);
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
@@ -38,7 +40,17 @@ const OfflineIndicator = () => {
   if (!isOffline && queueCount === 0 && !syncStatus?.isSyncing) return null;
 
   return (
-    <SafeAreaView style={styles.safeArea} pointerEvents="none">
+    <View
+      style={[
+        styles.safeArea,
+        {
+          paddingTop:
+            insets.top ||
+            (Platform.OS === "android" ? StatusBar.currentHeight : 0),
+        },
+      ]}
+      pointerEvents="none"
+    >
       <View
         style={[
           styles.container,
@@ -75,14 +87,14 @@ const OfflineIndicator = () => {
           </Text>
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     position: "absolute",
-    top: Platform.OS === "ios" ? 40 : 0, // Fallback if safe area fails, but top: 0 usually works for absolute positioning when we want to overlay.
+    top: 0,
     left: 0,
     right: 0,
     zIndex: 9999, // Ensure it overlays everything globally
