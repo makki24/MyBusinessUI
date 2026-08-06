@@ -14,7 +14,28 @@ export interface QueuedRequest {
   description: string;
 }
 
+type QueueListener = (count: number) => void;
+let listeners: QueueListener[] = [];
+
 export const OfflineQueue = {
+  addListener: (listener: QueueListener): (() => void) => {
+    listeners.push(listener);
+    return () => {
+      listeners = listeners.filter((l) => l !== listener);
+    };
+  },
+
+  notifyListeners: async (): Promise<void> => {
+    const count = await OfflineQueue.getCount();
+    listeners.forEach((l) => {
+      try {
+        l(count);
+      } catch (e) {
+        // ignore
+      }
+    });
+  },
+
   /**
    * Add a request to the offline queue.
    */
@@ -30,6 +51,7 @@ export const OfflineQueue = {
     };
     queue.push(queuedRequest);
     await AsyncStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+    await OfflineQueue.notifyListeners();
     return queuedRequest;
   },
 
@@ -53,6 +75,7 @@ export const OfflineQueue = {
     const queue = await OfflineQueue.getAll();
     const filtered = queue.filter((r) => r.id !== id);
     await AsyncStorage.setItem(QUEUE_KEY, JSON.stringify(filtered));
+    await OfflineQueue.notifyListeners();
   },
 
   /**
@@ -80,5 +103,6 @@ export const OfflineQueue = {
    */
   clear: async (): Promise<void> => {
     await AsyncStorage.removeItem(QUEUE_KEY);
+    await OfflineQueue.notifyListeners();
   },
 };
