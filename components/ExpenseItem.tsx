@@ -70,14 +70,18 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({
           <View style={styles.itemHeaderRow}>
             <Text
               variant="bodyMedium"
-              style={{ fontWeight: "600", flex: 1 }}
+              style={{ fontWeight: "600", flexShrink: 1, marginRight: 8 }}
               numberOfLines={1}
             >
               {title}
             </Text>
             <Text
               variant="bodyMedium"
-              style={{ fontWeight: "700", color: theme.colors.primary }}
+              style={{
+                fontWeight: "700",
+                color: theme.colors.primary,
+                paddingRight: 2,
+              }}
             >
               {formatAmount(expense.amount)}
             </Text>
@@ -85,12 +89,19 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({
           <View style={styles.itemSubRow}>
             <Text
               variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant, flex: 1 }}
+              style={{
+                color: theme.colors.onSurfaceVariant,
+                flexShrink: 1,
+                marginRight: 8,
+              }}
               numberOfLines={1}
             >
               {expense.sender?.name}
             </Text>
-            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
+            <Text
+              variant="labelSmall"
+              style={{ color: theme.colors.outline, paddingRight: 2 }}
+            >
               {formatRelativeTime(new Date(expense.date))}
             </Text>
           </View>

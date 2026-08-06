@@ -72,14 +72,18 @@ const WorkItem: React.FC<WorkItemProps> = ({
           <View style={styles.itemHeaderRow}>
             <Text
               variant="bodyMedium"
-              style={{ fontWeight: "600", flex: 1 }}
+              style={{ fontWeight: "600", flexShrink: 1, marginRight: 8 }}
               numberOfLines={1}
             >
               {work.type.name}
             </Text>
             <Text
               variant="bodyMedium"
-              style={{ fontWeight: "700", color: theme.colors.primary }}
+              style={{
+                fontWeight: "700",
+                color: theme.colors.primary,
+                paddingRight: 2,
+              }}
             >
               {formatAmount(work.amount)}
             </Text>
@@ -87,13 +91,20 @@ const WorkItem: React.FC<WorkItemProps> = ({
           <View style={styles.itemSubRow}>
             <Text
               variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant, flex: 1 }}
+              style={{
+                color: theme.colors.onSurfaceVariant,
+                flexShrink: 1,
+                marginRight: 8,
+              }}
               numberOfLines={1}
             >
               {!hideUserDetails && work.user ? `${work.user.name} • ` : ""}
               {work.quantity} {work.type.unit} @ {work.pricePerUnit}/unit
             </Text>
-            <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
+            <Text
+              variant="labelSmall"
+              style={{ color: theme.colors.outline, paddingRight: 2 }}
+            >
               {formatRelativeTime(new Date(work.date))}
             </Text>
           </View>
