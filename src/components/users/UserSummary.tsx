@@ -73,7 +73,10 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
   }, [user.id]);
 
   const formatCurrency = (amount: number) => {
-    return `₹${Math.abs(amount).toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
+    if (amount < 0) {
+      return `-₹${Math.abs(amount).toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
+    }
+    return `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
   };
 
   const renderWorkTypeCard = (wtb: WorkTypeBalance, index: number) => {
@@ -92,7 +95,9 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
           </View>
           <Divider style={styles.divider} />
           <View style={styles.row}>
-            <Text variant="bodyMedium">💰 Advance:</Text>
+            <Text variant="bodyMedium">
+              {wtb.advancePaid < 0 ? "💰 Old balance:" : "💰 Advance:"}
+            </Text>
             <Text variant="bodyMedium" style={styles.value}>
               {formatCurrency(wtb.advancePaid)}
             </Text>

@@ -18,7 +18,7 @@ import {
   Avatar,
 } from "react-native-paper";
 import ProfilePicture from "../src/components/common/ProfilePicture";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   usersState,
   userState,
@@ -30,6 +30,7 @@ import BalanceService, {
   WorkTypeBalance,
 } from "../services/BalanceService";
 import ExpenseService from "../services/ExpenseService";
+import UserService from "../services/UserService";
 import CustomDropDown from "../components/common/CustomDropdown";
 import UserDropDownItem from "../components/common/UserDropDownItem";
 import Button from "../components/common/Button";
@@ -42,7 +43,7 @@ import SmartBulkSettleModal from "../components/expense/SmartBulkSettleModal";
 
 const SettlementScreen = () => {
   const theme = useTheme();
-  const users = useRecoilValue(usersState);
+  const [users, setUsers] = useRecoilState(usersState);
   const loggedInUser = useRecoilValue(userState);
   const expenseTypes = useRecoilValue(expenseTypesState);
   const workTypes = useRecoilValue(workTypesState);
@@ -132,7 +133,10 @@ const SettlementScreen = () => {
   };
 
   const formatCurrency = (amount: number) => {
-    return `₹${Math.abs(amount).toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
+    if (amount < 0) {
+      return `-₹${Math.abs(amount).toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
+    }
+    return `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
   };
 
   const renderWorkTypeCard = (wtb: WorkTypeBalance) => {
@@ -177,7 +181,9 @@ const SettlementScreen = () => {
 
           {/* Payment Breakdown */}
           <View style={styles.row}>
-            <Text variant="bodyMedium">💰 Advance:</Text>
+            <Text variant="bodyMedium">
+              {wtb.advancePaid < 0 ? "💰 Old balance:" : "💰 Advance:"}
+            </Text>
             <Text variant="bodyMedium" style={styles.value}>
               {formatCurrency(wtb.advancePaid)}
             </Text>
@@ -576,8 +582,14 @@ const SettlementScreen = () => {
             }
             workTypeBalances={balance.workTypeBalances}
             workTypes={workTypes}
-            onSettlementComplete={() => {
+            onSettlementComplete={async () => {
               if (selectedUserId) fetchBalance(selectedUserId);
+              try {
+                const updatedUsers = await UserService.getUsers();
+                setUsers(updatedUsers);
+              } catch (err) {
+                console.log("Failed to update users after settlement:", err);
+              }
             }}
           />
         </View>
