@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { userState, worksState } from "../recoil/atom";
+import { usersState, userState, worksState } from "../recoil/atom";
 import WorkService from "../services/WorkService";
 import commonStyles from "../src/styles/commonStyles";
 import LoadingError from "../components/common/LoadingError";
@@ -164,7 +164,10 @@ const WorkLedgerScreen: React.FC<WorkLedgerScreenProps> = ({
   navigation,
   route,
 }) => {
-  const { workType, user } = route.params;
+  const { workType, user: initialUser } = route.params;
+  const allUsers = useRecoilValue(usersState);
+  const user =
+    allUsers.find((u: User) => u.id === initialUser?.id) || initialUser;
 
   const insets = useSafeAreaInsets();
   const theme = useTheme();
@@ -184,7 +187,11 @@ const WorkLedgerScreen: React.FC<WorkLedgerScreenProps> = ({
   const [showMessage, setShowMessage] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
-  const [showAllWorks, setShowAllWorks] = useState(!user.lastSettlementDate);
+  const [showAllWorks, setShowAllWorks] = useState(!user?.lastSettlementDate);
+
+  useEffect(() => {
+    setShowAllWorks(!user?.lastSettlementDate);
+  }, [user?.lastSettlementDate]);
 
   const fetchWorks = async (reset = false) => {
     setError("");
