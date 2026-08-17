@@ -93,15 +93,23 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
               {formatCurrency(wtb.totalWorkAmount)}
             </Text>
           </View>
+          {wtb.advancePaid < 0 && (
+            <View style={styles.row}>
+              <Text variant="bodyMedium">💰 Old balance:</Text>
+              <Text variant="bodyMedium" style={styles.value}>
+                {formatCurrency(wtb.advancePaid)}
+              </Text>
+            </View>
+          )}
           <Divider style={styles.divider} />
-          <View style={styles.row}>
-            <Text variant="bodyMedium">
-              {wtb.advancePaid < 0 ? "💰 Old balance:" : "💰 Advance:"}
-            </Text>
-            <Text variant="bodyMedium" style={styles.value}>
-              {formatCurrency(wtb.advancePaid)}
-            </Text>
-          </View>
+          {wtb.advancePaid >= 0 && (
+            <View style={styles.row}>
+              <Text variant="bodyMedium">💰 Advance:</Text>
+              <Text variant="bodyMedium" style={styles.value}>
+                {formatCurrency(wtb.advancePaid)}
+              </Text>
+            </View>
+          )}
           <View style={styles.row}>
             <Text variant="bodyMedium">💸 Ad-hoc:</Text>
             <Text variant="bodyMedium" style={styles.value}>
@@ -215,7 +223,7 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
                 }}
               >
                 Last settled on:{" "}
-                {new Date(user.lastSettlementDate).toLocaleDateString()}
+                {new Date(user.lastSettlementDate).toLocaleDateString("en-GB")}
               </Text>
             ) : (
               <Text

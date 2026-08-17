@@ -18,6 +18,8 @@ import { TouchableOpacity } from "react-native";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { UI_ELEMENTS_GAP } from "../../src/styles/constants";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 interface FilterScreenProps {
   user: User[];
   sender: User[];
@@ -39,6 +41,7 @@ const FilterScreen: React.FC<FilterScreenProps> = ({
   onClose,
 }) => {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const [range, setRange] = React.useState(
     defaultFilter && defaultFilter.fromDate && defaultFilter.toDate
       ? { startDate: defaultFilter.fromDate, endDate: defaultFilter.toDate }
@@ -176,7 +179,9 @@ const FilterScreen: React.FC<FilterScreenProps> = ({
 
         {/* Right Content */}
         <View style={{ width: "65%", backgroundColor: theme.colors.surface }}>
-          <BottomSheetScrollView contentContainerStyle={{ padding: 16 }}>
+          <BottomSheetScrollView
+            contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+          >
             {activeTab === "Date Range" && (
               <>
                 <DateRangePicker range={range} setRange={handleSetRange} />
@@ -234,7 +239,8 @@ const FilterScreen: React.FC<FilterScreenProps> = ({
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
-          paddingVertical: 12,
+          paddingTop: 12,
+          paddingBottom: Math.max(insets.bottom, 16),
           paddingHorizontal: 16,
           backgroundColor: theme.colors.surface,
           borderTopWidth: 1,
