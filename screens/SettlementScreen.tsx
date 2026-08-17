@@ -188,6 +188,18 @@ const SettlementScreen = () => {
             </View>
           )}
 
+          {wtb.otherTaggedPaid < 0 && (
+            <View style={styles.row}>
+              <Text variant="bodyMedium">💸 Expenses Paid by User:</Text>
+              <Text
+                variant="bodyMedium"
+                style={[styles.value, { color: theme.colors.primary }]}
+              >
+                + {formatCurrency(Math.abs(wtb.otherTaggedPaid))}
+              </Text>
+            </View>
+          )}
+
           <Divider style={styles.divider} />
 
           {wtb.advancePaid >= 0 && (
@@ -226,21 +238,18 @@ const SettlementScreen = () => {
               </Text>
             </View>
           )}
-          {wtb.otherTaggedPaid !== 0 && (
+          {wtb.otherTaggedPaid > 0 && (
             <View style={styles.row}>
               <Text
                 variant="bodyMedium"
                 style={{ color: theme.colors.outline }}
               >
-                {wtb.otherTaggedPaid > 0
-                  ? "🔄 Other (Sales collected):"
-                  : "🔄 Other (Expenses paid by user):"}
+                🔄 Sales Collected by User:
               </Text>
               <Text
                 variant="bodyMedium"
                 style={[styles.value, { color: theme.colors.outline }]}
               >
-                {wtb.otherTaggedPaid > 0 ? "" : "- "}
                 {formatCurrency(wtb.otherTaggedPaid)}
               </Text>
             </View>
@@ -498,23 +507,32 @@ const SettlementScreen = () => {
           {/* Per Work Type Cards */}
           {balance.workTypeBalances.map(renderWorkTypeCard)}
 
-          {/* Untagged Payments */}
-          {balance.untaggedPayments > 0 && (
+          {/* Untagged Payments / Activities */}
+          {(balance.untaggedPayments > 0 ||
+            balance.sales > 0 ||
+            balance.contributionsReceived > 0) && (
             <Card style={styles.card} mode="outlined">
               <Card.Content>
                 <Text
                   variant="titleMedium"
                   style={{ fontWeight: "bold", marginBottom: 8 }}
                 >
-                  📎 Untagged Payments (Old)
+                  📎 Untagged Payments & Activities (Old)
                 </Text>
                 <Text
                   variant="bodyMedium"
                   style={{ color: theme.colors.outline, marginBottom: 16 }}
                 >
-                  {formatCurrency(balance.untaggedPayments)} in payments from
-                  before advance tracking was added. These are included in the
-                  overall net but not categorized by work type.
+                  {formatCurrency(
+                    balance.untaggedPayments +
+                      balance.sales +
+                      balance.contributionsReceived -
+                      balance.expensesSent -
+                      balance.contributionsSent,
+                  )}{" "}
+                  in transactions from before advance tracking was added. These
+                  are included in the overall net but not categorized by work
+                  type.
                 </Text>
                 <Button
                   mode="contained"

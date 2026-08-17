@@ -150,10 +150,9 @@ const SmartBulkSettleModal: React.FC<Props> = ({
             Smart Bulk Settlement
           </Text>
           <Text variant="bodyMedium" style={{ marginBottom: 16 }}>
-            Automatically allocate your untagged payments and other activities
-            (Net:
-            {formatCurrency(Math.round(untaggedTotal))}) to settle pending work
-            types.
+            Automatically allocate your untagged payments and out-of-pocket
+            expenses (Net: {formatCurrency(Math.round(untaggedTotal))}) to
+            settle pending work types.
           </Text>
 
           {error && (

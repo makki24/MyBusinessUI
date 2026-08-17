@@ -101,6 +101,17 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
               </Text>
             </View>
           )}
+          {wtb.otherTaggedPaid < 0 && (
+            <View style={styles.row}>
+              <Text variant="bodyMedium">💸 Expenses Paid by User:</Text>
+              <Text
+                variant="bodyMedium"
+                style={[styles.value, { color: theme.colors.primary }]}
+              >
+                + {formatCurrency(Math.abs(wtb.otherTaggedPaid))}
+              </Text>
+            </View>
+          )}
           <Divider style={styles.divider} />
           {wtb.advancePaid >= 0 && (
             <View style={styles.row}>
@@ -138,21 +149,18 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
               </Text>
             </View>
           )}
-          {wtb.otherTaggedPaid !== 0 && (
+          {wtb.otherTaggedPaid > 0 && (
             <View style={styles.row}>
               <Text
                 variant="bodyMedium"
                 style={{ color: theme.colors.outline }}
               >
-                {wtb.otherTaggedPaid > 0
-                  ? "🔄 Other (Sales collected):"
-                  : "🔄 Other (Expenses paid by user):"}
+                🔄 Sales Collected by User:
               </Text>
               <Text
                 variant="bodyMedium"
                 style={[styles.value, { color: theme.colors.outline }]}
               >
-                {wtb.otherTaggedPaid > 0 ? "" : "- "}
                 {formatCurrency(wtb.otherTaggedPaid)}
               </Text>
             </View>
