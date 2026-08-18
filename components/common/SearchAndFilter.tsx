@@ -70,6 +70,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   const [visible, setVisible] = React.useState(false);
   const [cleared, setIsCleared] = React.useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const onHandleSearch = (query) => {
     setSearchQuery(query);
@@ -80,20 +81,28 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     setCurrentFilter(defaultFilter);
   }, [defaultFilter]);
 
-  const openBottomSheet = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-
-    const backAction = () => {
-      bottomSheetModalRef.current.dismiss();
-      return true;
-    };
+  // Properly manage BackHandler: only active while sheet is open
+  useEffect(() => {
+    if (!isSheetOpen) return;
 
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
-      backAction,
+      () => {
+        bottomSheetModalRef.current?.dismiss();
+        return true;
+      },
     );
 
     return () => backHandler.remove();
+  }, [isSheetOpen]);
+
+  const handleSheetChange = useCallback((index: number) => {
+    // index === -1 means the sheet is fully closed
+    setIsSheetOpen(index >= 0);
+  }, []);
+
+  const openBottomSheet = useCallback(() => {
+    bottomSheetModalRef.current?.present();
   }, []);
 
   const compareDeep = (f) => {
@@ -347,6 +356,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
         enablePanDownToClose={true}
         enableDismissOnClose={true}
         enableDynamicSizing={false}
+        onChange={handleSheetChange}
       >
         <FilterScreen
           user={user}
