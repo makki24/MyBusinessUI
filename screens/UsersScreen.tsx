@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, FlatList, RefreshControl } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { FAB, Snackbar } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import UserService from "../services/UserService";
@@ -26,8 +27,6 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [members, setMembers] = useState<User[]>([]);
-  const [_totalAmount, setTotalAmount] = useState<number>();
-  const [_toRecieve, setToReceive] = useState<boolean>(true);
 
   const fetchUsers = async () => {
     try {
@@ -44,13 +43,6 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     setMembers(users);
-    let amount = 0;
-    users.forEach((user) => {
-      amount += user.amountHolding - user.amountToReceive;
-    });
-    if (amount < 0) setToReceive(false);
-    else setToReceive(true);
-    setTotalAmount(Math.abs(amount));
   }, [users]);
 
   useEffect(() => {
@@ -118,13 +110,15 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={commonStyles.container}>
-      <SearchAndFilter
-        handleSearch={handleSearch}
-        user={users}
-        onApply={() => {}}
-        filter={false}
-      />
+    <SafeAreaView style={commonStyles.container} edges={["top"]}>
+      <View style={commonStyles.simpleRow}>
+        <SearchAndFilter
+          handleSearch={handleSearch}
+          user={users}
+          onApply={() => {}}
+          filter={false}
+        />
+      </View>
 
       {
         <FlatList
@@ -179,7 +173,7 @@ const UsersScreen: React.FC<UsersScreenProps> = ({ navigation }) => {
       >
         {`User deleted successfully`}
       </Snackbar>
-    </View>
+    </SafeAreaView>
   );
 };
 

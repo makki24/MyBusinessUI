@@ -1,19 +1,32 @@
 // src/components/ExpenseItem.tsx
 import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Card, Text, useTheme } from "react-native-paper";
+import { Text, useTheme, Chip } from "react-native-paper";
 import { Expense } from "../types";
-import commonItemStyles from "../src/styles/commonItemStyles";
-import UserDetails from "./common/UserDetails";
-import Labels from "./common/Labels";
+import { Swipeable } from "react-native-gesture-handler";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface ExpenseItemProps {
   expense: Expense;
   onPress: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   canDelete?: boolean;
 }
+
+const formatAmount = (amount: number): string => {
+  return `₹${amount.toLocaleString("en-IN")}`;
+};
+
+const formatRelativeTime = (date: Date): string => {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+};
 
 const ExpenseItem: React.FC<ExpenseItemProps> = ({
   expense,
@@ -27,139 +40,156 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({
     ? `${expense.type.name} → ${expense.receiver?.name}`
     : expense.type.name;
 
+  const renderRightActions = () => {
+    if (!canDelete || !onDelete) return null;
+    return (
+      <TouchableOpacity style={styles.deleteAction} onPress={onDelete}>
+        <MaterialCommunityIcons name="delete-outline" size={24} color="#fff" />
+      </TouchableOpacity>
+    );
+  };
+
   return (
-    <Card
-      style={[commonItemStyles.card, { backgroundColor: theme.colors.surface }]}
-      onPress={onPress}
+    <Swipeable
+      renderRightActions={renderRightActions}
+      friction={2}
+      rightThreshold={40}
     >
-      <Card.Content style={commonItemStyles.cardContent}>
-        {/* Header Row: Expense Type + Delete Button */}
-        <View style={commonItemStyles.headerRow}>
-          <Text
-            variant="titleMedium"
-            style={[styles.title, { flex: 1 }]}
-            numberOfLines={2}
-          >
-            {title}
-          </Text>
-
-          {canDelete && (
-            <TouchableOpacity
-              style={[
-                commonItemStyles.deleteButton,
-                { backgroundColor: theme.colors.errorContainer },
-              ]}
-              onPress={(e) => {
-                e?.stopPropagation?.();
-                onDelete();
+      <TouchableOpacity
+        style={[
+          styles.itemContainer,
+          { backgroundColor: theme.colors.surface },
+        ]}
+        onPress={onPress}
+        activeOpacity={0.7}
+      >
+        <View style={styles.iconContainer}>
+          <MaterialCommunityIcons name="wallet" size={20} color="#FF9800" />
+        </View>
+        <View style={styles.itemContent}>
+          <View style={styles.itemHeaderRow}>
+            <Text
+              variant="bodyMedium"
+              style={{ fontWeight: "600", flexShrink: 1, marginRight: 8 }}
+              numberOfLines={1}
+            >
+              {title}
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={{
+                fontWeight: "700",
+                color: theme.colors.primary,
+                paddingRight: 2,
               }}
-              accessibilityLabel="Delete expense"
-              accessibilityRole="button"
             >
-              <MaterialCommunityIcons
-                name="delete"
-                size={18}
-                color={theme.colors.error}
-              />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* Sender */}
-        {expense.sender && (
-          <View style={commonItemStyles.userRow}>
-            <UserDetails user={expense.sender} compact />
-          </View>
-        )}
-
-        {/* Date and Time Row */}
-        <View style={commonItemStyles.infoRow}>
-          <View style={commonItemStyles.infoItem}>
-            <MaterialCommunityIcons
-              name="calendar"
-              size={14}
-              color={theme.colors.onSurfaceVariant}
-              style={commonItemStyles.infoIcon}
-            />
-            <Text
-              variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant }}
-            >
-              {expense.date.toDateString()}
+              {formatAmount(expense.amount)}
             </Text>
           </View>
-          <View style={commonItemStyles.infoItem}>
-            <MaterialCommunityIcons
-              name="clock-outline"
-              size={14}
-              color={theme.colors.onSurfaceVariant}
-              style={commonItemStyles.infoIcon}
-            />
+          <View style={styles.itemSubRow}>
             <Text
               variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant }}
+              style={{
+                color: theme.colors.onSurfaceVariant,
+                flexShrink: 1,
+                marginRight: 8,
+              }}
+              numberOfLines={1}
             >
-              {expense.date.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {expense.sender?.name}
+            </Text>
+            <Text
+              variant="labelSmall"
+              style={{ color: theme.colors.outline, paddingRight: 2 }}
+            >
+              {formatRelativeTime(new Date(expense.date))}
             </Text>
           </View>
-        </View>
-
-        {/* Amount Row */}
-        <View style={commonItemStyles.amountRow}>
-          <View style={commonItemStyles.infoItem}>
-            <MaterialCommunityIcons
-              name="cash"
-              size={16}
-              color={theme.colors.primary}
-              style={commonItemStyles.infoIcon}
-            />
-            <Text variant="bodyLarge" style={commonItemStyles.amount}>
-              {expense.amount}
-            </Text>
-          </View>
-          {/* Receiver if applicable */}
-          {expense.type.isReceivingUser && expense.receiver && (
-            <UserDetails user={expense.receiver} compact />
-          )}
-        </View>
-
-        {/* Description */}
-        {expense.description && (
-          <View style={commonItemStyles.descriptionRow}>
-            <MaterialCommunityIcons
-              name="text"
-              size={14}
-              color={theme.colors.onSurfaceVariant}
-              style={commonItemStyles.infoIcon}
-            />
+          {expense.description ? (
             <Text
               variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant, flex: 1 }}
+              style={{ color: theme.colors.outline, marginTop: 4 }}
               numberOfLines={2}
             >
               {expense.description}
             </Text>
-          </View>
-        )}
-
-        {/* Tags */}
-        {expense.tags.length > 0 && (
-          <View style={commonItemStyles.tagsRow}>
-            <Labels label={"Tags"} items={expense.tags} />
-          </View>
-        )}
-      </Card.Content>
-    </Card>
+          ) : null}
+          {expense.tags && expense.tags.length > 0 && (
+            <View style={styles.tagsContainer}>
+              {expense.tags.map((tag) => (
+                <Chip
+                  key={tag.id}
+                  style={styles.tagChip}
+                  textStyle={{ fontSize: 10, marginVertical: 0 }}
+                >
+                  {tag.name}
+                </Chip>
+              ))}
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+    </Swipeable>
   );
 };
 
 const styles = StyleSheet.create({
-  title: {
-    fontWeight: "600",
-    marginRight: 8,
+  itemContainer: {
+    flexDirection: "row",
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: "#FF9800",
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#FF980015",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  itemContent: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  itemHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  itemSubRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  tagsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 6,
+    gap: 4,
+  },
+  tagChip: {
+    height: 24,
+    backgroundColor: "rgba(255, 152, 0, 0.1)",
+  },
+  deleteAction: {
+    backgroundColor: "#F44336",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 70,
+    height: "100%",
+    borderRadius: 12,
+    marginLeft: 8,
+    marginBottom: 8,
   },
 });
 

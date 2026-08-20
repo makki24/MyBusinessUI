@@ -1,4 +1,5 @@
 import { StyleSheet, View } from "react-native";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import commonStyles from "../../../styles/commonStyles";
 import { IconButton, Switch, Text, useTheme } from "react-native-paper";
 import React, { useState } from "react";
@@ -52,23 +53,31 @@ const AttendanceEditor: React.FC<AttendanceEditorProps> = ({
   };
 
   return (
-    <View style={commonStyles.simpleRow}>
+    <View
+      style={{ flexDirection: "row", alignItems: "center", paddingVertical: 4 }}
+    >
       <Switch
         value={fullDay}
-        onValueChange={(value) => {
-          halfWork(value);
-        }}
+        onValueChange={(value) => halfWork(value)}
+        disabled={deleted}
       />
-      <Text style={deleted ? styles.deleted : {}}>
-        {fullDay ? `Full D` : `Half D`} {formattedDate}
+      <Text
+        style={[
+          { flex: 1, marginLeft: 12 },
+          deleted ? styles.deleted : { color: theme.colors.onSurface },
+        ]}
+      >
+        {fullDay ? `Full Day` : `Half Day`} • {formattedDate}
       </Text>
       <IconButton
         onPress={() => deleteWork()}
-        icon={"delete"}
-        mode={"contained"}
-        containerColor={theme.colors.tertiaryContainer}
-        iconColor={theme.colors.tertiary}
-        size={16}
+        icon={deleted ? "restore" : "delete"}
+        mode={"contained-tonal"}
+        containerColor={
+          deleted ? theme.colors.surfaceVariant : theme.colors.errorContainer
+        }
+        iconColor={deleted ? theme.colors.onSurfaceVariant : theme.colors.error}
+        size={18}
       />
     </View>
   );

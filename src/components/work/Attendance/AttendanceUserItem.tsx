@@ -1,12 +1,8 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { IconButton, useTheme, Text } from "react-native-paper";
+import { IconButton, useTheme, Text, Avatar } from "react-native-paper";
 import ProfilePicture from "../../common/ProfilePicture";
 import { User } from "../../../../types";
-import {
-  ATTENDANCE_USER_RADIUS,
-  UI_ELEMENTS_GAP,
-} from "../../../styles/constants";
 
 interface AttendanceUserItemProps {
   item: User;
@@ -27,59 +23,69 @@ const AttendanceUserItem: React.FC<AttendanceUserItemProps> = ({
     setSelected(selectedUsers.some((user) => user === item.id));
   }, [selectedUsers]);
 
+  const getInitials = (name: string) => {
+    return name ? name.charAt(0).toUpperCase() : "?";
+  };
+
   return (
-    <TouchableOpacity
-      style={{
-        ...styles.userCard,
-        backgroundColor: theme.colors.surfaceVariant,
-      }}
-      onPress={() => {
-        onSelect(item.id);
-      }}
-    >
-      {selected && (
-        <View style={styles.icon}>
-          <IconButton
-            mode={"contained"}
-            containerColor={theme.colors.primary}
-            iconColor={theme.colors.onPrimary}
-            icon="account-check"
-            size={24}
+    <TouchableOpacity style={styles.gridItem} onPress={() => onSelect(item.id)}>
+      <View>
+        {item.picture ? (
+          <ProfilePicture
+            size={56}
+            picture={item.picture}
+            style={{ marginBottom: 4 }}
           />
-        </View>
-      )}
-      <ProfilePicture
-        size={100}
-        style={styles.userImage}
-        picture={item.picture}
-      />
-      <Text style={styles.userName}>{item.name}</Text>
+        ) : (
+          <Avatar.Text
+            size={56}
+            label={getInitials(item.name)}
+            style={{
+              backgroundColor: theme.colors.primaryContainer,
+              marginBottom: 4,
+            }}
+            color={theme.colors.onPrimaryContainer}
+          />
+        )}
+
+        {selected && (
+          <IconButton
+            icon="check"
+            size={16}
+            iconColor={theme.colors.onPrimary}
+            containerColor={theme.colors.primary}
+            style={styles.checkIcon}
+          />
+        )}
+      </View>
+      <Text style={styles.gridText} numberOfLines={2}>
+        {item.name}
+      </Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  userCard: {
-    flex: 1,
-    margin: UI_ELEMENTS_GAP,
-    padding: UI_ELEMENTS_GAP,
-    backgroundColor: "#f8f8f8",
+  gridItem: {
+    width: "25%",
     alignItems: "center",
-    position: "relative", // Add this
+    marginBottom: 20,
+    paddingHorizontal: 4,
   },
-  icon: {
-    position: "absolute", // Change this
-    top: 0, // Add this
-    right: 0, // Add this
-    zIndex: 1, // Add this
+  checkIcon: {
+    position: "absolute",
+    top: -8,
+    right: -8,
+    margin: 0,
+    width: 24,
+    height: 24,
+    zIndex: 1,
   },
-  userImage: {
-    width: 100,
-    height: 100,
-    borderRadius: ATTENDANCE_USER_RADIUS,
-  },
-  userName: {
-    marginTop: UI_ELEMENTS_GAP,
+  gridText: {
+    marginTop: 4,
+    fontSize: 12,
+    textAlign: "center",
+    lineHeight: 16,
   },
 });
 

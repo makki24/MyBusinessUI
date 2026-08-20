@@ -1,7 +1,13 @@
 // src/screens/ContributionScreen.tsx
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import { useRecoilState } from "recoil";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { useRecoilState, useRecoilValue } from "recoil";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Swipeable from "react-native-gesture-handler/Swipeable";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useTheme } from "react-native-paper";
 import ContributionService from "../services/ContributionService";
 import ContributionItem from "../components/ContributionItem";
 import { contributionsState, userState } from "../recoil/atom";
@@ -12,6 +18,7 @@ import ConfirmationModal from "../components/common/ConfirmationModal";
 import ItemsList from "../src/components/common/ItemsList";
 import filterService from "../src/service/FilterService";
 import LoadingError from "../components/common/LoadingError";
+import { canDelete as canDeleteSelector } from "../recoil/selectors";
 
 type ContributionScreenProps = {
   navigation: NavigationProp<ParamListBase>; // Adjust this type based on your navigation stack
@@ -20,12 +27,16 @@ type ContributionScreenProps = {
 const ContributionScreen: React.FC<ContributionScreenProps> = ({
   navigation,
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const theme = useTheme();
   const [contributions, setContributions] = useRecoilState(contributionsState);
+  const userCanDelete = useRecoilValue(canDeleteSelector);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedContribution, setSelectedContribution] =
     useState<Contribution>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setLoggedInUser] = useRecoilState(userState);
   const [uniqueFilters, setUniqueFilters] = useState<Filter>({
     sender: [],
@@ -83,10 +94,6 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
           (contribution) => contribution.id !== selectedContribution.id,
         ),
       );
-      setLoggedInUser((currVal) => ({
-        ...currVal,
-        amountHolding: currVal.amountHolding - selectedContribution.amount,
-      }));
     } catch (deleteError) {
       setError(
         deleteError.message || "Error deleting contribution. Please try again.",
@@ -119,6 +126,7 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
             contribution={item}
             onPress={() => handleEditContribution(item)}
             onDelete={() => handleDeleteContribution(item)}
+            canDelete={userCanDelete}
           />
         )}
         transFormData={transformAndSetContribution}
@@ -140,5 +148,17 @@ const ContributionScreen: React.FC<ContributionScreenProps> = ({
     </View>
   );
 };
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const styles = StyleSheet.create({
+  deleteButton: {
+    width: 80,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+    borderRadius: 12,
+    marginLeft: 8,
+  },
+});
 
 export default ContributionScreen;

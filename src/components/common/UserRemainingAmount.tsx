@@ -1,17 +1,42 @@
 import { Text, useTheme } from "react-native-paper";
-import { View } from "react-native";
-import React from "react";
+import { View, ActivityIndicator } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useState, useCallback } from "react";
 import { User } from "../../../types";
+import BalanceService from "../../../services/BalanceService";
 
 interface UserRemainingAmountProps {
   user: User;
 }
 
 const UserRemainingAmount: React.FC<UserRemainingAmountProps> = ({ user }) => {
-  let amount = Math.abs(user.amountToReceive - user.amountHolding);
-  amount = Math.round(amount * 100.0) / 100.0;
-  const toRecieve = user.amountHolding > user.amountToReceive;
+  const [balance, setBalance] = useState<number | null>(null);
   const theme = useTheme();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (user.id) {
+        BalanceService.getUserBalance(user.id)
+          .then((res) => {
+            setBalance(res.netBalance);
+          })
+          .catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error("Failed to fetch balance for user:", user.id, err);
+            setBalance(0);
+          });
+      }
+    }, [user.id]),
+  );
+
+  if (balance === null) {
+    return <ActivityIndicator size="small" />;
+  }
+
+  // balance > 0 means Family owes User (Business has to pay)
+  // balance < 0 means User owes Family (Business has to receive)
+  const toRecieve = balance < 0;
+  const amount = Math.abs(balance);
 
   return (
     <View>

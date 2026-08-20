@@ -15,6 +15,12 @@ import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 
 interface ReportItemProps {
   reportData: UserReport;
+  hideBalance?: boolean;
+  bottomText?: string;
+  bottomValue?: number;
+  hideBottomSection?: boolean;
+  bottomValueColor?: string;
+  alwaysShowSender?: boolean;
 }
 
 interface CardItemProps {
@@ -22,16 +28,30 @@ interface CardItemProps {
   style: StyleProp<ViewStyle>;
   amount: string;
   received: boolean;
+  hideBalance?: boolean;
+  bottomText?: string;
+  bottomValue?: number;
+  hideBottomSection?: boolean;
+  bottomValueColor?: string;
+  alwaysShowSender?: boolean;
 }
 
-const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
+const ReportItem: React.FC<ReportItemProps> = ({
+  reportData,
+  hideBalance,
+  bottomText,
+  bottomValue,
+  hideBottomSection,
+  bottomValueColor,
+  alwaysShowSender,
+}) => {
   const theme = useTheme();
   // Derived state for better performance and correctness
   const received = !reportData.received;
 
   return (
     <View style={received ? styles.cardLeft : styles.cardRight}>
-      {!received && (
+      {(!received || alwaysShowSender) && (
         <ProfilePicture
           size={40}
           style={received ? styles.userImageLeft : styles.userImageRight}
@@ -53,6 +73,12 @@ const ReportItem: React.FC<ReportItemProps> = ({ reportData }) => {
               }
         }
         received={!received}
+        hideBalance={hideBalance}
+        bottomText={bottomText}
+        bottomValue={bottomValue}
+        hideBottomSection={hideBottomSection}
+        bottomValueColor={bottomValueColor}
+        alwaysShowSender={alwaysShowSender}
       />
     </View>
   );
@@ -63,6 +89,12 @@ const CardItem: React.FC<CardItemProps> = ({
   style,
   amount,
   received,
+  hideBalance,
+  bottomText,
+  bottomValue,
+  hideBottomSection,
+  bottomValueColor,
+  alwaysShowSender,
 }) => {
   const theme = useTheme();
   return (
@@ -71,7 +103,9 @@ const CardItem: React.FC<CardItemProps> = ({
         <Card.Content style={commonItemStyles.cardContent}>
           <View style={commonItemStyles.titleContainer}>
             <Text variant="titleMedium">{amount}</Text>
-            {received && <Text>from {reportData.sender?.name}</Text>}
+            {(received || alwaysShowSender) && reportData.sender?.name && (
+              <Text>from {reportData.sender?.name}</Text>
+            )}
           </View>
           <View
             style={reportData.receiver?.name ? {} : { ...commonStyles.row }}
@@ -87,34 +121,45 @@ const CardItem: React.FC<CardItemProps> = ({
           {reportData.description && (
             <Text variant="bodyMedium">{`${reportData.description}`}</Text>
           )}
-          <View style={commonStyles.row}>
-            <Text variant="bodyMedium">{`T S ${reportData.totalSent}`}</Text>
-            <Text variant="bodyMedium">{`T R ${reportData.totalReceived}`}</Text>
-          </View>
-          <View style={styles.balanceContainer}>
-            <Text variant="bodyMedium" style={styles.balanceLabel}>
-              Balance
-            </Text>
-            <Text
-              variant="titleLarge"
-              style={{
-                color:
-                  reportData.totalReceived >= reportData.totalSent
-                    ? theme.colors.primary
-                    : theme.colors.error,
-              }}
-            >
-              {new Intl.NumberFormat(undefined, {
-                style: "currency",
-                currency: "INR",
-              }).format(
-                Math.round(
-                  Math.abs(reportData.totalReceived - reportData.totalSent) *
-                    100,
-                ) / 100,
-              )}
-            </Text>
-          </View>
+          {!hideBalance && (
+            <View style={commonStyles.row}>
+              <Text variant="bodyMedium">{`T S ${reportData.totalSent}`}</Text>
+              <Text variant="bodyMedium">{`T R ${reportData.totalReceived}`}</Text>
+            </View>
+          )}
+
+          {!hideBottomSection && (
+            <View style={styles.balanceContainer}>
+              <Text variant="bodyMedium" style={styles.balanceLabel}>
+                {bottomText || "Balance"}
+              </Text>
+              <Text
+                variant="titleLarge"
+                style={{
+                  color: bottomValueColor
+                    ? bottomValueColor
+                    : hideBalance
+                      ? theme.colors.primary
+                      : reportData.totalReceived >= reportData.totalSent
+                        ? theme.colors.primary
+                        : theme.colors.error,
+                }}
+              >
+                {new Intl.NumberFormat(undefined, {
+                  style: "currency",
+                  currency: "INR",
+                }).format(
+                  bottomValue !== undefined
+                    ? bottomValue
+                    : Math.round(
+                        Math.abs(
+                          reportData.totalReceived - reportData.totalSent,
+                        ) * 100,
+                      ) / 100,
+                )}
+              </Text>
+            </View>
+          )}
         </Card.Content>
       </Card>
     </TouchableOpacity>

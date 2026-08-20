@@ -73,8 +73,7 @@ describe("AddUserScreen", () => {
       picture: "imageUrl",
       phoneNumber: "1",
       roles: [{ id: "1" }] as Role[],
-      amountHolding: 0,
-      amountToReceive: 0,
+
       userProperties: {
         isOwnAsset: false,
         isOwnLiability: false,
@@ -124,11 +123,11 @@ describe("AddUserScreen", () => {
       expect(UserService.addUser).toHaveBeenCalledWith({
         name: "username",
         email: "email@e.com",
+        isEmailValid: false,
         picture: undefined,
         phoneNumber: "9999999999",
         roles: [{ id: "1", name: "MEMBER" }],
-        amountHolding: NaN,
-        amountToReceive: NaN,
+
         userProperties: null,
       });
     });
@@ -142,8 +141,7 @@ describe("AddUserScreen", () => {
       picture: "imageUrl:googleusercontent.com",
       phoneNumber: "1",
       roles: [{ id: "2" }] as Role[],
-      amountHolding: 0,
-      amountToReceive: 0,
+
       id: "5",
       userProperties: {
         isOwnAsset: false,
@@ -188,11 +186,11 @@ describe("AddUserScreen", () => {
       expect(UserService.addUser).toHaveBeenCalledWith({
         name: "usernames",
         email: "email",
+        isEmailValid: false,
         picture: "imageUrl:googleusercontent.com",
         phoneNumber: "1",
         roles: [{ id: "2" }],
-        amountHolding: 0,
-        amountToReceive: 0,
+
         id: "5",
         userProperties: {
           isOwnAsset: false,

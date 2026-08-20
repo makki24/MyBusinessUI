@@ -15,7 +15,7 @@ export const getInitialURL = async () => {
   const response = await Notifications.getLastNotificationResponseAsync();
 
   return (response?.notification.request.trigger as PushNotificationTrigger)
-    ?.remoteMessage.data.url;
+    ?.remoteMessage?.data?.url;
 };
 
 export const subscribe = (listener) => {
@@ -33,9 +33,6 @@ export const subscribe = (listener) => {
       const url = (
         response?.notification.request.trigger as PushNotificationTrigger
       )?.remoteMessage?.data?.url;
-
-      // Any custom logic to see whether the URL needs to be handled
-      //...
 
       // Let React Navigation handle the URL
       listener(url);

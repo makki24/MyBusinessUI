@@ -2,7 +2,8 @@ import { ExpoConfig, ConfigContext } from "@expo/config";
 
 const IS_DEV =
   process.env.EXPO_PUBLIC_APP_VARIANT === "development" ||
-  process.env.EXPO_PUBLIC_APP_VARIANT === "dev";
+  process.env.EXPO_PUBLIC_APP_VARIANT === "dev" ||
+  process.env.NODE_ENV === "local";
 const IS_QA = process.env.EXPO_PUBLIC_APP_VARIANT === "qa";
 
 const ICON_PATH = IS_QA

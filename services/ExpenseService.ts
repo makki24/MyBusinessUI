@@ -57,6 +57,14 @@ const ExpenseService = {
   },
 
   // Add other expense-related API functions here
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  bulkSettleUntagged: async (bulkSettlementRequest: any) => {
+    const response = await axios.post(
+      `/api/expenses/bulk-settle-untagged`,
+      bulkSettlementRequest,
+    );
+    return response.data;
+  },
 };
 
 export default ExpenseService;

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { androidClientId, expoClientId } from "../src/app-env.config";
 import { useRecoilState } from "recoil";
 import { userState } from "../recoil/atom";
@@ -46,7 +47,23 @@ const LoginScreen = ({ navigation }) => {
     try {
       const user = await loginService.login(token, url);
       setUserInfo(user);
+      await AsyncStorage.setItem("@user", JSON.stringify(user));
     } catch (loginError) {
+      // Check if it's a network error (offline)
+      const msg = loginError.message?.toLowerCase() || "";
+      const isNetworkError =
+        msg.includes("network") ||
+        msg.includes("failed to fetch") ||
+        !loginError.response;
+
+      if (isNetworkError) {
+        const cachedUserStr = await AsyncStorage.getItem("@user");
+        if (cachedUserStr) {
+          const cachedUser = JSON.parse(cachedUserStr);
+          setUserInfo(cachedUser);
+          return;
+        }
+      }
       setUserInfo(null);
       throw new Error(loginError.message);
     } finally {
@@ -72,6 +89,7 @@ const LoginScreen = ({ navigation }) => {
 
   const logout = async () => {
     await AsyncStorage.removeItem("@token");
+    await AsyncStorage.removeItem("@user");
     setUserInfo(null);
   };
 

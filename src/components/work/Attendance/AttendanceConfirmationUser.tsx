@@ -1,9 +1,9 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { View } from "react-native";
-import commonStyles from "../../../styles/commonStyles";
-import { Text } from "react-native-paper";
+import { Card, Text, Avatar, useTheme } from "react-native-paper";
 import AttendanceEditor from "./AttendanceEditor";
 import NumberInput from "../../../../components/common/NumberInput";
+import ProfilePicture from "../../common/ProfilePicture";
 import { User, Work } from "../../../../types";
 
 interface AttendanceConfirmationUserProps {
@@ -20,6 +20,7 @@ const AttendanceConfirmationUser: React.FC<AttendanceConfirmationUserProps> = ({
   const [userPricePerUnit, setUserPricePerUnit] = useState<string>(
     `${work.pricePerUnit}`,
   );
+  const theme = useTheme();
 
   const editWork = (user: User, key: string, value) => {
     value = parseFloat(value);
@@ -41,9 +42,49 @@ const AttendanceConfirmationUser: React.FC<AttendanceConfirmationUserProps> = ({
   }, [userPricePerUnit]);
 
   return (
-    <View style={commonStyles.row}>
-      <Text>{work?.user?.name}</Text>
-      <View style={{ width: "50%" }}>
+    <Card
+      style={{
+        marginBottom: 12,
+        elevation: 1,
+        backgroundColor: theme.colors.surface,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center", padding: 12 }}>
+        {work?.user?.picture ? (
+          <ProfilePicture size={40} picture={work.user.picture} />
+        ) : (
+          <Avatar.Text
+            size={40}
+            label={work?.user?.name?.charAt(0).toUpperCase() || "?"}
+          />
+        )}
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text variant="titleMedium">{work?.user?.name}</Text>
+        </View>
+        <View style={{ width: 110 }}>
+          <NumberInput
+            label={`Per ${work?.type.unit}`}
+            value={userPricePerUnit}
+            onChangeText={(value) => {
+              setUserPricePerUnit(value);
+              editWork(work?.user, "pricePerUnit", value);
+            }}
+            dense
+            style={{ marginBottom: 0, height: 44 }}
+          />
+        </View>
+      </View>
+
+      <View
+        style={{
+          backgroundColor: "rgba(0,0,0,0.015)",
+          paddingHorizontal: 12,
+          paddingBottom: 8,
+          paddingTop: 4,
+          borderTopWidth: 1,
+          borderTopColor: "rgba(0,0,0,0.05)",
+        }}
+      >
         {date.map((item) => (
           <AttendanceEditor
             key={`${work?.user.id}${new Date(item).toDateString()}`}
@@ -54,17 +95,7 @@ const AttendanceConfirmationUser: React.FC<AttendanceConfirmationUserProps> = ({
           />
         ))}
       </View>
-      <View>
-        <NumberInput
-          label={`Per ${work?.type.unit}`}
-          value={userPricePerUnit}
-          onChangeText={(value) => {
-            setUserPricePerUnit(value);
-            editWork(work?.user, "pricePerUnit", value);
-          }}
-        />
-      </View>
-    </View>
+    </Card>
   );
 };
 

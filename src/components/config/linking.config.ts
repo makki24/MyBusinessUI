@@ -9,6 +9,7 @@ export const LinkingConfig: {
     HomeStack: {
       screens: {
         AdminScreen: "admin",
+        AllActivityScreen: "all-activity",
       },
     },
     ExpenseStack: {
