@@ -50,7 +50,7 @@ const WorkTypeList: React.FC<WorkTypeListProps> = ({ navigation }) => {
   };
 
   const useAttendanceConfirmationListner = ({ type, date, users }) => {
-    const description = `Added by attendance & sale \n${date.map((d: string) => new Date(d).toLocaleDateString()).join(", ")}`;
+    const description = `Added by attendance & sale \n${date.map((d: string) => new Date(d).toLocaleDateString("en-GB")).join(", ")}`;
     const works: Work[] = [];
 
     users.forEach((user) => {

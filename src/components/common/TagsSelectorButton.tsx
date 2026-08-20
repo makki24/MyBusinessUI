@@ -1,6 +1,7 @@
 import Labels from "../../../components/common/Labels";
 import { Button, Icon, useTheme } from "react-native-paper";
 import React from "react";
+import { View } from "react-native";
 import { Tag } from "../../../types";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
@@ -32,13 +33,28 @@ const TagsSelectorButton: React.FC<TagsSelectorButtonProps> = ({
   };
 
   return (
-    <>
-      <>{selectedTags && <Labels label={""} items={selectedTags} />}</>
-      <Button style={{ alignSelf: "flex-start" }} onPress={openTags}>
+    <View
+      style={{
+        flexDirection: "row",
+        flexWrap: "wrap",
+        alignItems: "flex-start",
+        minHeight: 40,
+      }}
+    >
+      <Button
+        style={{ alignSelf: "flex-start", marginLeft: -8, marginTop: -4 }}
+        compact
+        onPress={openTags}
+      >
         {label ?? "Select Tags"}
         <Icon source="tag" size={20} color={theme.colors.primary} />
       </Button>
-    </>
+      {selectedTags && selectedTags.length > 0 && (
+        <View style={{ flex: 1, marginTop: -8 }}>
+          <Labels label={""} items={selectedTags} />
+        </View>
+      )}
+    </View>
   );
 };
 

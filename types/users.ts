@@ -19,13 +19,13 @@ export interface User {
   name: string;
   picture: string;
   email: string;
+  isEmailValid?: boolean;
   phoneNumber: string;
-  amountToReceive: number;
-  amountHolding: number;
   userProperties: UserProperties;
   id?: string;
   roles: Role[]; // Assuming you have a Role interface defined
   notificationToken?: string;
   currency?: string;
+  lastSettlementDate?: string | Date;
   // Add other methods or properties if needed
 }

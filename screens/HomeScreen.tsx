@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   ScrollView,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   StyleSheet,
+  RefreshControl,
 } from "react-native";
 import { Title, useTheme } from "react-native-paper";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
@@ -19,11 +20,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRecoilValue } from "recoil";
 import { userState } from "../recoil/atom";
-import {
-  BORDER_RADIUS,
-  CONTAINER_PADDING,
-  SHADOW,
-} from "../src/styles/constants";
+import { CONTAINER_PADDING, SHADOW } from "../src/styles/constants";
+import SummaryBanner from "../src/components/home/SummaryBanner";
+import QuickActions from "../src/components/home/QuickActions";
+import RecentActivityFeed from "../src/components/home/RecentActivityFeed";
+import DashboardService, {
+  DashboardSummary,
+  RecentActivity,
+} from "../services/DashboardService";
 
 type HomeScreenProps = {
   navigation: NavigationProp<ParamListBase>;
@@ -33,6 +37,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const linkTo = useLinkTo();
   const theme = useTheme();
   const loggedInUser = useRecoilValue(userState);
+
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [recentActivities, setRecentActivities] = useState<RecentActivity[]>(
+    [],
+  );
+  const [summaryLoading, setSummaryLoading] = useState(true);
+  const [recentLoading, setRecentLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -58,25 +70,129 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     };
   }, []);
 
+  const loadDashboardData = useCallback(async () => {
+    try {
+      setSummaryLoading(true);
+      setRecentLoading(true);
+
+      const [summaryData, recentData] = await Promise.all([
+        DashboardService.getSummary(),
+        DashboardService.getRecent(5),
+      ]);
+
+      setSummary(summaryData);
+      setRecentActivities(recentData);
+    } catch (error) {
+      // Silently handle errors — dashboard is non-critical
+      // eslint-disable-next-line no-console
+      console.warn("Dashboard load error:", error);
+    } finally {
+      setSummaryLoading(false);
+      setRecentLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadDashboardData();
+    setRefreshing(false);
+  }, [loadDashboardData]);
+
+  const handleActivityPress = useCallback(
+    (item: RecentActivity) => {
+      switch (item.type) {
+        case "WORK":
+          navigation.navigate("WorkStack", { screen: "Work" });
+          break;
+        case "EXPENSE":
+          navigation.navigate("ExpenseStack", { screen: "Expenses" });
+          break;
+        case "CONTRIBUTION":
+          navigation.navigate("ProfileStack", {
+            screen: "ContributionScreen",
+            params: { title: "My Contributions" },
+          });
+          break;
+      }
+    },
+    [navigation],
+  );
+
+  const quickActions = useMemo(
+    () => [
+      {
+        label: "+ Expense",
+        icon: "wallet-plus" as keyof typeof MaterialCommunityIcons.glyphMap,
+        color: "#FF9800",
+        onPress: () =>
+          navigation.navigate("ExpenseStack", {
+            screen: "ExpenseSelection",
+            params: { title: "Select Expense" },
+          }),
+      },
+      {
+        label: "+ Work",
+        icon: "briefcase-plus" as keyof typeof MaterialCommunityIcons.glyphMap,
+        color: "#2196F3",
+        onPress: () =>
+          navigation.navigate("WorkStack", {
+            screen: "Work",
+            params: { action: "add_work" },
+          }),
+      },
+      {
+        label: "+ Contrib",
+        icon: "bank-transfer-in" as keyof typeof MaterialCommunityIcons.glyphMap,
+        color: "#4CAF50",
+        onPress: () =>
+          navigation.navigate("ProfileStack", {
+            screen: "AddContribution",
+            params: { title: "Create Contribution" },
+          }),
+      },
+      {
+        label: "Attd",
+        icon: "calendar-check" as keyof typeof MaterialCommunityIcons.glyphMap,
+        color: "#795548",
+        onPress: () =>
+          navigation.navigate("WorkStack", {
+            screen: "Work",
+            params: { action: "add_attendance" },
+          }),
+      },
+      {
+        label: "Settlement",
+        icon: "scale-balance" as keyof typeof MaterialCommunityIcons.glyphMap,
+        color: "#9C27B0",
+        onPress: () =>
+          navigation.navigate("HomeStack", {
+            screen: "SettlementScreen",
+            params: { title: "Settlement (حساب)" },
+          }),
+      },
+    ],
+    [navigation],
+  );
+
   const styles = useMemo(() => {
     const { width } = Dimensions.get("window");
     const cardWidth = (width - CONTAINER_PADDING * 3) / 2;
 
     return StyleSheet.create({
       container: {
-        padding: CONTAINER_PADDING,
-        paddingTop: CONTAINER_PADDING + 10,
         backgroundColor: theme.colors.background,
         minHeight: "100%",
       },
       headerGradient: {
-        marginBottom: CONTAINER_PADDING * 1.5,
         padding: CONTAINER_PADDING,
-        paddingTop: CONTAINER_PADDING * 2,
+        paddingTop: CONTAINER_PADDING,
+        paddingBottom: CONTAINER_PADDING * 1.5,
         borderBottomLeftRadius: 30,
         borderBottomRightRadius: 30,
-        marginTop: -CONTAINER_PADDING - 10,
-        marginHorizontal: -CONTAINER_PADDING,
       },
       welcomeText: {
         fontSize: 28,
@@ -84,83 +200,107 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         color: "#FFFFFF",
         marginBottom: 4,
       },
-      subtitleText: {
-        fontSize: 16,
-        color: "#E0E0E0",
-      },
       cardsContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "space-between",
+        paddingHorizontal: CONTAINER_PADDING,
         paddingBottom: CONTAINER_PADDING,
-        marginTop: -30,
       },
       cardContainer: {
         width: cardWidth,
-        marginBottom: CONTAINER_PADDING,
-        borderRadius: BORDER_RADIUS,
+        marginBottom: 12,
+        borderRadius: 16,
         ...SHADOW,
-        elevation: 4,
+        elevation: 2,
       },
       cardContent: {
+        flexDirection: "row",
         alignItems: "center",
-        padding: CONTAINER_PADDING,
-        justifyContent: "center",
-        minHeight: 140,
+        padding: 16,
+        minHeight: 72,
       },
       iconContainer: {
-        marginBottom: 12,
-        padding: 15,
-        borderRadius: 50,
+        width: 40,
+        height: 40,
+        borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",
+        marginRight: 12,
       },
       cardTitle: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: "600",
-        textAlign: "center",
+        flex: 1,
       },
     });
   }, [theme]);
 
-  // Reusable Modern Card Component (Defined inside to access styles)
-  const DashboardCard = ({
-    title,
-    icon,
-    onPress,
-    accessibilityLabel,
-  }: {
-    title: string;
-    icon: keyof typeof MaterialCommunityIcons.glyphMap;
-    onPress: () => void;
-    accessibilityLabel: string;
-  }) => (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.cardContainer, { backgroundColor: theme.colors.surface }]}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityRole="button"
-      accessibilityHint={`Navigates to ${title}`}
-    >
-      <View style={styles.cardContent}>
-        <LinearGradient
-          colors={
-            [theme.colors.background, theme.colors.surface] as [string, string]
-          }
-          style={styles.iconContainer}
-        >
-          <MaterialCommunityIcons
-            name={icon}
-            size={40}
-            color={theme.colors.primary}
-          />
-        </LinearGradient>
-        <Text style={[styles.cardTitle, { color: theme.colors.onSurface }]}>
-          {title}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+  // Navigation card data
+  const navCards = [
+    {
+      title: "Work",
+      icon: "briefcase-variant-outline" as keyof typeof MaterialCommunityIcons.glyphMap,
+      onPress: () => navigation.navigate("WorkStack", { screen: "Work" }),
+    },
+    {
+      title: "Expense",
+      icon: "wallet-outline" as keyof typeof MaterialCommunityIcons.glyphMap,
+      onPress: () =>
+        navigation.navigate("ExpenseStack", { screen: "Expenses" }),
+    },
+    {
+      title: "Contribution",
+      icon: "bank-transfer-in" as keyof typeof MaterialCommunityIcons.glyphMap,
+      onPress: () =>
+        navigation.navigate("ProfileStack", {
+          screen: "ContributionScreen",
+          params: { title: "My Contributions" },
+        }),
+    },
+    {
+      title: "Users",
+      icon: "account-group-outline" as keyof typeof MaterialCommunityIcons.glyphMap,
+      onPress: () => navigation.navigate("UsersStack", { screen: "Users" }),
+    },
+    {
+      title: "Quick Buy",
+      icon: "shopping-outline" as keyof typeof MaterialCommunityIcons.glyphMap,
+      onPress: () =>
+        navigation.navigate("HomeStack", {
+          screen: "QuickBuyScreen",
+        }),
+    },
+    {
+      title: "Settlement",
+      icon: "scale-balance" as keyof typeof MaterialCommunityIcons.glyphMap,
+      onPress: () =>
+        navigation.navigate("HomeStack", {
+          screen: "SettlementScreen",
+          params: { title: "Settlement (حساب)" },
+        }),
+    },
+    {
+      title: "Dashboard",
+      icon: "view-dashboard-outline" as keyof typeof MaterialCommunityIcons.glyphMap,
+      onPress: () =>
+        navigation.navigate("DashboardStack", { screen: "Dashboard" }),
+    },
+    {
+      title: "Sale",
+      icon: "cash-register" as keyof typeof MaterialCommunityIcons.glyphMap,
+      onPress: () => navigation.navigate("SaleStack", { screen: "Sale" }),
+    },
+    {
+      title: "Admin",
+      icon: "shield-account-outline" as keyof typeof MaterialCommunityIcons.glyphMap,
+      onPress: () =>
+        navigation.navigate("HomeStack", {
+          screen: "AdminStack",
+          params: { title: "Admin" },
+        }),
+    },
+  ];
 
   // Gradient Colors
   const gradientColors = [
@@ -172,8 +312,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     <ScrollView
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
-      {/* Header Section */}
+      {/* Header + Summary Banner */}
       <LinearGradient
         colors={gradientColors}
         start={{ x: 0, y: 0 }}
@@ -185,67 +328,75 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             ? `Welcome, ${loggedInUser.name.split(" ")[0]}`
             : "MyBusiness"}
         </Title>
-        <Title style={styles.subtitleText}>Financial Overview</Title>
+        <SummaryBanner summary={summary} loading={summaryLoading} />
       </LinearGradient>
 
-      {/* Cards Grid */}
-      <View style={styles.cardsContainer}>
-        <DashboardCard
-          title="Work / Loan"
-          icon="briefcase-variant-outline"
-          onPress={() => navigation.navigate("WorkStack", { screen: "Work" })}
-          accessibilityLabel="Work and Loan Management"
-        />
+      {/* Quick Actions */}
+      <QuickActions actions={quickActions} />
 
-        <DashboardCard
-          title="Sale / Lending"
-          icon="cash-register"
-          onPress={() => navigation.navigate("SaleStack", { screen: "Sale" })}
-          accessibilityLabel="Sale and Lending Management"
-        />
+      {/* Recent Activity Feed */}
+      <RecentActivityFeed
+        activities={recentActivities}
+        loading={recentLoading}
+        onItemPress={handleActivityPress}
+        onViewAll={() =>
+          navigation.navigate("HomeStack", { screen: "AllActivityScreen" })
+        }
+      />
 
-        <DashboardCard
-          title="Expense (اخراجات)"
-          icon="wallet-outline"
-          onPress={() =>
-            navigation.navigate("ExpenseStack", { screen: "Expenses" })
-          }
-          accessibilityLabel="Expense Management"
-        />
-
-        <DashboardCard
-          title="Manage User"
-          icon="account-group-outline"
-          onPress={() => navigation.navigate("UsersStack", { screen: "Users" })}
-          accessibilityLabel="User Management"
-        />
-
-        <DashboardCard
-          title="Admin"
-          icon="shield-account-outline"
-          onPress={() =>
-            navigation.navigate("HomeStack", {
-              screen: "AdminStack",
-              params: { title: "Admin" },
-            })
-          }
-          accessibilityLabel="Admin Settings"
-        />
-
-        <DashboardCard
-          title="Dashboard"
-          icon="view-dashboard-outline"
-          onPress={() =>
-            navigation.navigate("DashboardStack", {
-              screen: "Dashboard",
-              params: { title: "Dashboard" },
-            })
-          }
-          accessibilityLabel="Analytics Dashboard"
-        />
-
-        <Notification />
+      {/* Navigation Grid */}
+      <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: "600",
+            color: theme.colors.onSurfaceVariant,
+            letterSpacing: 0.3,
+            marginBottom: 10,
+          }}
+        >
+          Navigate
+        </Text>
       </View>
+      <View style={styles.cardsContainer}>
+        {navCards.map((card) => (
+          <TouchableOpacity
+            key={card.title}
+            onPress={card.onPress}
+            style={[
+              styles.cardContainer,
+              { backgroundColor: theme.colors.surface },
+            ]}
+            accessibilityLabel={card.title}
+            accessibilityRole="button"
+          >
+            <View style={styles.cardContent}>
+              <LinearGradient
+                colors={
+                  [theme.colors.background, theme.colors.surface] as [
+                    string,
+                    string,
+                  ]
+                }
+                style={styles.iconContainer}
+              >
+                <MaterialCommunityIcons
+                  name={card.icon}
+                  size={32}
+                  color={theme.colors.primary}
+                />
+              </LinearGradient>
+              <Text
+                style={[styles.cardTitle, { color: theme.colors.onSurface }]}
+              >
+                {card.title}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <Notification />
     </ScrollView>
   );
 };

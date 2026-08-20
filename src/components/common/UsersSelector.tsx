@@ -72,7 +72,7 @@ const UsersSelector: React.FC<UsersSelectorProps> = ({
         data={filteredUsers}
         renderItem={renderItem}
         keyExtractor={(item) => item.id!}
-        numColumns={3}
+        numColumns={4}
       />
     </>
   );

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { User } from "../../../types";
-import { Icon, Text, useTheme } from "react-native-paper";
+import { Icon, Text, useTheme, Card, Divider } from "react-native-paper";
 import commonStyles from "../../styles/commonStyles";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import { ScrollView, TouchableOpacity, View, StyleSheet } from "react-native";
 import UserRemainingAmount from "../common/UserRemainingAmount";
 import { REPORT_ICON_SIZE, UI_ELEMENTS_GAP } from "../../styles/constants";
 import userService from "./UserService";
 import LoadingError from "../../../components/common/LoadingError";
-import CustomDateRange from "../common/CustomDateRange";
-import { UserSummaryByType } from "./report-summary.model";
+import BalanceService, {
+  UserBalance,
+  WorkTypeBalance,
+} from "../../../services/BalanceService";
 
 interface UserSummaryProps {
   route: {
@@ -16,12 +18,6 @@ interface UserSummaryProps {
       user: User;
     };
   };
-}
-
-interface SummaryProps {
-  summary: UserSummaryByType[];
-  total: number;
-  testId: string;
 }
 
 const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
@@ -35,31 +31,19 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
     );
   }
 
-  const thisMonth = new Date();
-  thisMonth.setDate(1);
-  const rangeState = React.useState({
-    startDate: thisMonth,
-    endDate: new Date(),
-  });
-  const [range] = rangeState;
   const [user] = useState<User>(userParam);
-  const toRecieve = user.amountHolding > user.amountToReceive;
+  const [balanceData, setBalanceData] = useState<UserBalance | null>(null);
+  const toRecieve = balanceData ? balanceData.netBalance < 0 : false;
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const theme = useTheme();
   const [snackMessage, setSnackMessage] = useState("");
-  const [receivedSummary, setReceivedSummary] = useState<UserSummaryByType[]>(
-    [],
-  );
-  const [sentSummary, setSentSummary] = useState<UserSummaryByType[]>([]);
-  const [totalSent, setTotalSent] = useState<number>();
-  const [totalReceived, setTotalReceived] = useState<number>();
 
   const downloadReport = async () => {
     try {
       setIsLoading(true);
       const res = await userService.sendSummaryToMail({
-        range,
+        range: { startDate: new Date(0), endDate: new Date() }, // Default to all time
         user,
       });
       setSnackMessage(res);
@@ -70,22 +54,13 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
     }
   };
 
-  const getUserSummary = async () => {
+  const getBalanceData = async () => {
     try {
       setIsLoading(true);
-      const res = await userService.getSummaryByUser({
-        range,
-        user,
-      });
-      setReceivedSummary(res.received);
-      setSentSummary(res.sent);
-      const newTotalReceived: number = res.received.reduce(
-        (a, b) => a + b.amount,
-        0,
-      );
-      const newTotalSent: number = res.sent.reduce((a, b) => a + b.amount, 0);
-      setTotalReceived(newTotalReceived);
-      setTotalSent(newTotalSent);
+      if (user.id) {
+        const res = await BalanceService.getUserBalance(user.id);
+        setBalanceData(res);
+      }
     } catch (e) {
       setError(e.message);
     } finally {
@@ -94,25 +69,122 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
   };
 
   useEffect(() => {
-    getUserSummary();
-  }, [range]);
+    getBalanceData();
+  }, [user.id]);
 
-  const Summary: React.FC<SummaryProps> = ({ summary, total, testId }) => {
+  const formatCurrency = (amount: number) => {
+    if (amount < 0) {
+      return `-₹${Math.abs(amount).toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
+    }
+    return `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
+  };
+
+  const renderWorkTypeCard = (wtb: WorkTypeBalance, index: number) => {
+    const isOwed = wtb.netBalance > 0;
+
     return (
-      <>
-        {summary.map((item, index) => {
-          return (
-            <View key={index + testId} style={commonStyles.row}>
-              <Text>{item.type.name}</Text>
-              <Text>{item.amount}</Text>
+      <Card key={index} style={styles.card} mode="outlined">
+        <Card.Title title={wtb.workTypeName} />
+        <Card.Content>
+          <View style={styles.row}>
+            <Text variant="bodyMedium">📦 Work Done:</Text>
+            <Text variant="bodyMedium" style={styles.value}>
+              {wtb.totalWorkQty} {wtb.unit} ={" "}
+              {formatCurrency(wtb.totalWorkAmount)}
+            </Text>
+          </View>
+          {wtb.advancePaid < 0 && (
+            <View style={styles.row}>
+              <Text variant="bodyMedium">💰 Old balance:</Text>
+              <Text variant="bodyMedium" style={styles.value}>
+                {formatCurrency(wtb.advancePaid)}
+              </Text>
             </View>
-          );
-        })}
-        <View style={commonStyles.row}>
-          <Text variant={"titleSmall"}>Total</Text>
-          <Text variant={"titleSmall"}>{total}</Text>
-        </View>
-      </>
+          )}
+          {wtb.otherTaggedPaid < 0 && (
+            <View style={styles.row}>
+              <Text variant="bodyMedium">💸 Expenses Paid by User:</Text>
+              <Text
+                variant="bodyMedium"
+                style={[styles.value, { color: theme.colors.primary }]}
+              >
+                + {formatCurrency(Math.abs(wtb.otherTaggedPaid))}
+              </Text>
+            </View>
+          )}
+          <Divider style={styles.divider} />
+          {wtb.advancePaid >= 0 && (
+            <View style={styles.row}>
+              <Text variant="bodyMedium">💰 Advance:</Text>
+              <Text variant="bodyMedium" style={styles.value}>
+                {formatCurrency(wtb.advancePaid)}
+              </Text>
+            </View>
+          )}
+          <View style={styles.row}>
+            <Text variant="bodyMedium">💸 Ad-hoc:</Text>
+            <Text variant="bodyMedium" style={styles.value}>
+              {formatCurrency(wtb.adhocPaid)}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Text variant="bodyMedium">✅ Settlement:</Text>
+            <Text variant="bodyMedium" style={styles.value}>
+              {formatCurrency(wtb.settlementPaid)}
+            </Text>
+          </View>
+          {wtb.untaggedPaid > 0 && (
+            <View style={styles.row}>
+              <Text
+                variant="bodyMedium"
+                style={{ color: theme.colors.outline }}
+              >
+                📎 Untagged:
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={[styles.value, { color: theme.colors.outline }]}
+              >
+                {formatCurrency(wtb.untaggedPaid)}
+              </Text>
+            </View>
+          )}
+          {wtb.otherTaggedPaid > 0 && (
+            <View style={styles.row}>
+              <Text
+                variant="bodyMedium"
+                style={{ color: theme.colors.outline }}
+              >
+                🔄 Sales Collected by User:
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={[styles.value, { color: theme.colors.outline }]}
+              >
+                {formatCurrency(wtb.otherTaggedPaid)}
+              </Text>
+            </View>
+          )}
+          <Divider style={styles.divider} />
+          <View style={styles.row}>
+            <Text variant="titleSmall" style={{ fontWeight: "bold" }}>
+              Net for {wtb.workTypeName}:
+            </Text>
+            <Text
+              variant="titleSmall"
+              style={[
+                styles.value,
+                {
+                  fontWeight: "bold",
+                  color: isOwed ? theme.colors.error : theme.colors.primary,
+                },
+              ]}
+            >
+              {formatCurrency(wtb.netBalance)} {isOwed ? "(owed)" : "(advance)"}
+            </Text>
+          </View>
+        </Card.Content>
+      </Card>
     );
   };
 
@@ -120,13 +192,14 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
     <View style={commonStyles.container}>
       <LoadingError error={error} isLoading={isLoading} />
       <Text>{snackMessage}</Text>
+
       <View style={commonStyles.simpleRow}>
         <Text variant={"titleLarge"}>
           {toRecieve ? "To Receive" : "To Pay"} :{" "}
         </Text>
         <UserRemainingAmount user={user} />
       </View>
-      <CustomDateRange rangeState={rangeState} />
+
       <ScrollView>
         <View
           style={{ ...commonStyles.simpleRow, marginVertical: UI_ELEMENTS_GAP }}
@@ -136,36 +209,158 @@ const UserSummary: React.FC<UserSummaryProps> = ({ route }) => {
             style={{ ...commonStyles.simpleRow, marginLeft: UI_ELEMENTS_GAP }}
           >
             <Icon
-              source={"email-send"}
+              source={"email"}
               color={theme.colors.primary}
               size={REPORT_ICON_SIZE}
             />
-            <Text>Send report to mail</Text>
+            <Text>Send full report to mail</Text>
           </TouchableOpacity>
         </View>
-        <Text variant={"titleMedium"}>
-          Total work & amount received from {user.name}
-        </Text>
-        <Summary
-          summary={sentSummary}
-          total={totalSent}
-          testId={"sentSummary"}
-        />
-        <Text>{""}</Text>
-        <Text variant={"titleMedium"}>Total paid to {user.name}</Text>
-        <Summary
-          summary={receivedSummary}
-          total={totalReceived}
-          testId={"receivedSummary"}
-        />
-        <Text>{""}</Text>
-        <View style={commonStyles.row}>
-          <Text variant={"titleMedium"}>Difference</Text>
-          <Text>{totalReceived - totalSent}</Text>
-        </View>
+
+        {balanceData && (
+          <View style={{ paddingHorizontal: UI_ELEMENTS_GAP }}>
+            <Text variant="titleMedium" style={{ marginBottom: 4 }}>
+              Overall Breakdown
+            </Text>
+            {user.lastSettlementDate ? (
+              <Text
+                variant="bodySmall"
+                style={{
+                  color: theme.colors.outline,
+                  marginBottom: UI_ELEMENTS_GAP,
+                }}
+              >
+                Last settled on:{" "}
+                {new Date(user.lastSettlementDate).toLocaleDateString("en-GB")}
+              </Text>
+            ) : (
+              <Text
+                variant="bodySmall"
+                style={{
+                  color: theme.colors.outline,
+                  marginBottom: UI_ELEMENTS_GAP,
+                }}
+              >
+                All Time
+              </Text>
+            )}
+
+            {balanceData.workTypeBalances?.map((wtb, idx) =>
+              renderWorkTypeCard(wtb, idx),
+            )}
+
+            {balanceData.untaggedPayments > 0 && (
+              <Card style={styles.card} mode="outlined">
+                <Card.Title title="📎 Untagged Payments (Old)" />
+                <Card.Content>
+                  <Text
+                    variant="bodyMedium"
+                    style={{ color: theme.colors.outline }}
+                  >
+                    {formatCurrency(balanceData.untaggedPayments)} in payments
+                    from before advance tracking was added. These are included
+                    in the overall net but not categorized by work type.
+                  </Text>
+                </Card.Content>
+              </Card>
+            )}
+
+            {(balanceData.expensesSent > 0 ||
+              balanceData.sales > 0 ||
+              balanceData.contributionsSent > 0 ||
+              balanceData.contributionsReceived > 0) && (
+              <Card style={styles.card} mode="outlined">
+                <Card.Title
+                  title="Other Activities (دیگر)"
+                  subtitle="Transactions not related to work types"
+                />
+                <Card.Content>
+                  {balanceData.expensesSent > 0 && (
+                    <View style={styles.row}>
+                      <Text variant="bodyMedium">
+                        💸 Expenses Paid by User:
+                      </Text>
+                      <Text
+                        variant="bodyMedium"
+                        style={[styles.value, { color: theme.colors.primary }]}
+                      >
+                        + {formatCurrency(balanceData.expensesSent)}
+                      </Text>
+                    </View>
+                  )}
+                  {balanceData.contributionsSent > 0 && (
+                    <View style={styles.row}>
+                      <Text variant="bodyMedium">🎁 Contributions Sent:</Text>
+                      <Text
+                        variant="bodyMedium"
+                        style={[styles.value, { color: theme.colors.primary }]}
+                      >
+                        + {formatCurrency(balanceData.contributionsSent)}
+                      </Text>
+                    </View>
+                  )}
+                  {balanceData.sales > 0 && (
+                    <View style={styles.row}>
+                      <Text variant="bodyMedium">
+                        🛒 Sales Collected by User:
+                      </Text>
+                      <Text
+                        variant="bodyMedium"
+                        style={[styles.value, { color: theme.colors.error }]}
+                      >
+                        - {formatCurrency(balanceData.sales)}
+                      </Text>
+                    </View>
+                  )}
+                  {balanceData.contributionsReceived > 0 && (
+                    <View style={styles.row}>
+                      <Text variant="bodyMedium">
+                        📥 Contributions Received:
+                      </Text>
+                      <Text
+                        variant="bodyMedium"
+                        style={[styles.value, { color: theme.colors.error }]}
+                      >
+                        - {formatCurrency(balanceData.contributionsReceived)}
+                      </Text>
+                    </View>
+                  )}
+                  <Divider style={styles.divider} />
+                  <Text
+                    variant="bodySmall"
+                    style={{ color: theme.colors.outline, marginTop: 4 }}
+                  >
+                    These amounts are factored into the Overall Net shown at the
+                    top.
+                  </Text>
+                </Card.Content>
+              </Card>
+            )}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  card: {
+    marginBottom: UI_ELEMENTS_GAP,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 4,
+  },
+  value: {
+    textAlign: "right",
+    flex: 1,
+    marginLeft: 16,
+  },
+  divider: {
+    marginVertical: 8,
+  },
+});
 
 export default UserSummary;

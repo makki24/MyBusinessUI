@@ -9,6 +9,7 @@ import {
   Platform,
   LayoutAnimation,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRecoilState, useRecoilValue } from "recoil";
 import ReportItem from "../components/ReportItem";
 import {
@@ -16,6 +17,7 @@ import {
   userState,
   usersState,
   expenseTypesState,
+  workTypesState,
 } from "../recoil/atom";
 import ReportService from "../services/ReportService";
 import ExpenseService from "../services/ExpenseService";
@@ -26,7 +28,8 @@ import { IconButton, Text, TextInput, useTheme } from "react-native-paper";
 import Loading from "../src/components/common/Loading";
 import { UI_ELEMENTS_GAP, BORDER_RADIUS } from "../src/styles/constants";
 import { REPORT_BACKGROUND_COLOR } from "../src/styles/colors";
-import { Expense, ExpenseType, User } from "../types";
+import { Expense, ExpenseType, User, PaymentPurpose } from "../types";
+import CustomDropDown from "../components/common/CustomDropdown";
 
 interface UserReportScreenProps {
   navigation: NavigationProp<ParamListBase>;
@@ -53,6 +56,7 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
     );
   }
 
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const [reports, setReports] = useRecoilState(userReportsState);
   const [error, setError] = useState(null);
@@ -65,10 +69,21 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [workType, setWorkType] = useState<number | null>(null);
+  const [workTypeOpen, setWorkTypeOpen] = useState(false);
+  const [purpose, setPurpose] = useState<PaymentPurpose>("ADVANCE");
+  const [purposeOpen, setPurposeOpen] = useState(false);
 
   const loggedInUser = useRecoilValue(userState);
   const users = useRecoilValue(usersState);
   const expenseTypes = useRecoilValue(expenseTypesState);
+  const workTypes = useRecoilValue(workTypesState);
+
+  const paymentPurposes = [
+    { label: "Advance", value: "ADVANCE" },
+    { label: "Ad-hoc", value: "ADHOC" },
+    { label: "Settlement", value: "SETTLEMENT" },
+  ];
 
   // Find the receiver user from the users list
   const receiverUser = users.find(
@@ -189,6 +204,11 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
         sender: loggedInUser,
         receiver: receiverUser ? ({ id: receiverUser.id } as User) : undefined,
         tags: [],
+        workType: workType
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ({ id: workType, type: "work" } as any)
+          : undefined,
+        paymentPurpose: workType ? purpose : undefined,
       };
 
       await ExpenseService.addExpense(expense);
@@ -197,6 +217,8 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
       setAmount("");
       setDescription("");
       setShowMessage(false);
+      setWorkType(null);
+      setPurpose("ADVANCE");
       fetchReports(true);
     } catch (err) {
       setError(
@@ -247,7 +269,13 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
       {/* PhonePe-style Payment Bar — hidden for own report */}
       {!isSameUser && (
         <View
-          style={[styles.paymentBar, { backgroundColor: theme.colors.surface }]}
+          style={[
+            styles.paymentBar,
+            {
+              backgroundColor: theme.colors.surface,
+              paddingBottom: Math.max(insets.bottom, UI_ELEMENTS_GAP),
+            },
+          ]}
         >
           <LoadingError error={error} isLoading={isSending} />
 
@@ -271,23 +299,58 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
 
           {/* Message input (toggled) */}
           {showMessage && (
-            <TextInput
-              placeholder="Add a message..."
-              value={description}
-              onChangeText={setDescription}
-              mode="outlined"
-              dense
-              style={styles.messageInput}
-              right={
-                <TextInput.Icon
-                  icon="close"
-                  onPress={() => {
-                    setShowMessage(false);
-                    setDescription("");
-                  }}
+            <View style={{ marginBottom: 8, zIndex: 3000 }}>
+              <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
+                <CustomDropDown
+                  testID="worktype-picker"
+                  schema={{ label: "name", value: "id" }}
+                  zIndex={3000}
+                  zIndexInverse={1000}
+                  items={workTypes}
+                  open={workTypeOpen}
+                  setOpen={setWorkTypeOpen}
+                  containerStyle={{ flex: 1, height: 40 }}
+                  value={workType}
+                  setValue={setWorkType}
+                  placeholder="Work Type (Optional)"
                 />
-              }
-            />
+                {workType && (
+                  <CustomDropDown
+                    testID="purpose-picker"
+                    schema={{ label: "label", value: "value" }}
+                    zIndex={3000}
+                    zIndexInverse={1000}
+                    items={paymentPurposes}
+                    open={purposeOpen}
+                    setOpen={setPurposeOpen}
+                    containerStyle={{ flex: 1, height: 40 }}
+                    value={purpose}
+                    setValue={setPurpose}
+                    placeholder="Purpose"
+                  />
+                )}
+              </View>
+
+              <TextInput
+                placeholder="Add a message..."
+                value={description}
+                onChangeText={setDescription}
+                mode="outlined"
+                dense
+                style={styles.messageInput}
+                right={
+                  <TextInput.Icon
+                    icon="close"
+                    onPress={() => {
+                      setShowMessage(false);
+                      setDescription("");
+                      setWorkType(null);
+                      setPurpose("ADVANCE");
+                    }}
+                  />
+                }
+              />
+            </View>
           )}
 
           {/* Amount row */}

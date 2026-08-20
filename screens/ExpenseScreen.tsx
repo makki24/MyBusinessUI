@@ -1,7 +1,13 @@
 // src/screens/ExpenseScreen.tsx
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { useRecoilState, useRecoilValue } from "recoil";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Swipeable from "react-native-gesture-handler/Swipeable";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useTheme } from "react-native-paper";
 import ExpenseService from "../services/ExpenseService";
 import ExpenseItem from "../components/ExpenseItem";
 import { expensesState } from "../recoil/atom";
@@ -23,6 +29,8 @@ type ExpenseScreenProps = {
 };
 
 const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const theme = useTheme();
   const [expenses, setExpenses] = useRecoilState(expensesState);
   const userCanDelete = useRecoilValue(canDeleteSelector);
   const [error, setError] = useState(null);
@@ -174,8 +182,8 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
         transFormData={transformedData}
         onAdd={() => {
           navigation.navigate("ExpenseStack", {
-            screen: "AddExpense",
-            params: { title: "Add Expense" },
+            screen: "ExpenseSelection",
+            params: { title: "Select Expense" },
           });
         }}
       />
@@ -188,5 +196,17 @@ const ExpenseScreen: React.FC<ExpenseScreenProps> = ({ navigation }) => {
     </View>
   );
 };
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const styles = StyleSheet.create({
+  deleteButton: {
+    width: 80,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+    borderRadius: 12,
+    marginLeft: 8,
+  },
+});
 
 export default ExpenseScreen;

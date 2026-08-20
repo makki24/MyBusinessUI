@@ -99,6 +99,28 @@ const ReportService = {
     return response.data;
   },
 
+  getReportByExpenseType: async (
+    typeId: number,
+    offset: number,
+    limit: number,
+  ): Promise<UserReport[]> => {
+    let response;
+    // eslint-disable-next-line no-useless-catch
+    try {
+      response = await axios.get(`api/report/getReportByExpenseType`, {
+        params: { typeId, offset, limit },
+      });
+    } catch (err) {
+      throw err;
+    }
+
+    if (!response.data) {
+      throw new Error(`No data in response.data`);
+    }
+
+    return response.data;
+  },
+
   downloadReport: async (filter): Promise<ExpenseReport> => {
     const response = await axios.post(`api/report/downloadReport`, filter);
 

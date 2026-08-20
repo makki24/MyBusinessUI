@@ -35,6 +35,7 @@ const UsersStack = () => {
       <Stack.Screen
         name="WorkTypeSelectorList"
         component={WorkTypeSelectorList}
+        initialParams={{ title: "Select Work Type" }}
       />
     </Stack.Navigator>
   );

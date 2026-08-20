@@ -1,4 +1,6 @@
-import { Button, Icon, Text, useTheme } from "react-native-paper";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Icon, Text, useTheme } from "react-native-paper";
+import Button from "../../../../components/common/Button";
 import React, { useRef } from "react";
 import { View } from "react-native";
 import commonStyles from "../../../styles/commonStyles";
@@ -14,6 +16,7 @@ interface WorkTypeSelectorButtonProps {
 const WorkTypeSelectorButton: React.FC<WorkTypeSelectorButtonProps> = ({
   workType,
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const theme = useTheme();
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
 
@@ -43,13 +46,17 @@ const WorkTypeSelectorButton: React.FC<WorkTypeSelectorButtonProps> = ({
   };
 
   return (
-    <View style={commonStyles.simpleRow}>
-      <Button onPress={openSelector}>
-        Select type
-        <Icon source="alpha-t-box" size={20} color={theme.colors.primary} />
-      </Button>
+    <View style={{ ...commonStyles.simpleRow, marginBottom: 16 }}>
+      <Button
+        onPress={openSelector}
+        title="Select type"
+        icon="format-list-bulleted-type"
+        mode="outlined"
+      />
       <>
-        <Text variant={"titleMedium"}>{workType[0]?.name}</Text>
+        <Text variant={"titleMedium"} style={{ marginLeft: 8 }}>
+          {workType[0]?.name}
+        </Text>
       </>
     </View>
   );

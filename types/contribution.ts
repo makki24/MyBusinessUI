@@ -12,11 +12,3 @@ export interface Contribution {
   pricePerUnit: number;
   description?: string;
 }
-
-export interface LoanToHoldingTransaction {
-  id?: number;
-  user?: User;
-  amount: number;
-  createdBy: User;
-  date: Date;
-}
