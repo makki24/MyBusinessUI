@@ -146,10 +146,19 @@ const ExpenseTypeReportScreen: React.FC<ExpenseTypeReportScreenProps> = ({
   const fetchTotalThisMonth = async () => {
     try {
       const now = new Date();
-      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
+      const endOfToday = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        23,
+        59,
+        59,
+        999,
+      );
       const res = await ReportService.getExpenseSummaryByType({
         fromDate: firstDay,
-        toDate: now,
+        toDate: endOfToday,
         type: [expenseType],
         user: [],
         sender: [],
@@ -162,6 +171,8 @@ const ExpenseTypeReportScreen: React.FC<ExpenseTypeReportScreenProps> = ({
       );
       if (summary) {
         setTotalThisMonth(summary.totalAmount);
+      } else {
+        setTotalThisMonth(0);
       }
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -192,6 +203,7 @@ const ExpenseTypeReportScreen: React.FC<ExpenseTypeReportScreenProps> = ({
 
   const handleRefresh = () => {
     fetchReports(true);
+    fetchTotalThisMonth();
   };
 
   const handleLoadMore = () => {
@@ -248,6 +260,7 @@ const ExpenseTypeReportScreen: React.FC<ExpenseTypeReportScreenProps> = ({
       setDifferentSender(false);
       setSender(null);
       fetchReports(true);
+      fetchTotalThisMonth();
     } catch (err) {
       setError(
         err.response?.data ??
