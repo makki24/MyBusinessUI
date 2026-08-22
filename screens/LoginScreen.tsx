@@ -4,7 +4,7 @@ import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { androidClientId, apiUrl, expoClientId } from "../src/app-env.config";
+import { androidClientId, expoClientId } from "../src/app-env.config";
 import { useRecoilState } from "recoil";
 import { userState } from "../recoil/atom";
 import { IconButton, Text } from "react-native-paper";
@@ -115,9 +115,6 @@ const LoginScreen = ({ navigation }) => {
                 checkUser();
               }}
             />
-          </View>
-          <View>
-            <Text>{apiUrl}</Text>
           </View>
         </View>
       ) : (

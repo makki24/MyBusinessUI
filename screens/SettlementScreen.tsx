@@ -632,7 +632,7 @@ const SettlementScreen = () => {
                 const updatedUsers = await UserService.getUsers();
                 setUsers(updatedUsers);
               } catch (err) {
-                console.log("Failed to update users after settlement:", err);
+                err;
               }
             }}
           />
