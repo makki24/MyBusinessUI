@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { Text, useTheme, Chip } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { RecentActivity } from "../../../services/DashboardService";
 
@@ -108,6 +108,36 @@ export const RecentActivityItem: React.FC<{
             {formatRelativeTime(item.date)}
           </Text>
         </View>
+
+        {item.metadata?.description ? (
+          <Text
+            testID="activity-description"
+            variant="bodySmall"
+            style={{
+              color: theme.colors.onSurfaceVariant,
+              fontStyle: "italic",
+              marginTop: 4,
+            }}
+            numberOfLines={2}
+          >
+            💬 {item.metadata.description}
+          </Text>
+        ) : null}
+
+        {item.metadata?.tags && item.metadata.tags.length > 0 ? (
+          <View style={styles.tagChipContainer} testID="activity-tags">
+            {item.metadata.tags.map((tag: string, index: number) => (
+              <Chip
+                key={index}
+                compact
+                style={styles.tagChip}
+                textStyle={styles.tagChipText}
+              >
+                {tag}
+              </Chip>
+            ))}
+          </View>
+        ) : null}
       </View>
     </TouchableOpacity>
   );
@@ -228,6 +258,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  tagChipContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 4,
+    marginTop: 6,
+  },
+  tagChip: {
+    height: 24,
+    backgroundColor: "rgba(0, 0, 0, 0.06)",
+  },
+  tagChipText: {
+    fontSize: 11,
+    marginVertical: 0,
+    marginHorizontal: 0,
   },
 });
 
