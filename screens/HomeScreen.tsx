@@ -328,7 +328,16 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             ? `Welcome, ${loggedInUser.name.split(" ")[0]}`
             : "MyBusiness"}
         </Title>
-        <SummaryBanner summary={summary} loading={summaryLoading} />
+        <SummaryBanner
+          summary={summary}
+          loading={summaryLoading}
+          onPress={() =>
+            navigation.navigate("HomeStack", {
+              screen: "MonthlyBreakdownScreen",
+              params: { title: "Monthly Summary" },
+            })
+          }
+        />
       </LinearGradient>
 
       {/* Quick Actions */}

@@ -53,6 +53,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem("@token");
+    await AsyncStorage.removeItem("@user");
     setUserInfo(null);
   };
 

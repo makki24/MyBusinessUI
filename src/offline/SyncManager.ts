@@ -65,6 +65,26 @@ export const SyncManager = {
     notifyListeners(status);
 
     const token = await AsyncStorage.getItem("@token");
+    if (!token) {
+      status.isSyncing = false;
+      notifyListeners(status);
+      isSyncing = false;
+      return;
+    }
+
+    // Validate token before processing queue
+    try {
+      await axios({
+        method: "get",
+        url: `${apiUrl}/login`,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (tokenError) {
+      status.isSyncing = false;
+      notifyListeners(status);
+      isSyncing = false;
+      return;
+    }
 
     for (const request of queue) {
       status.currentItem = request.description;
