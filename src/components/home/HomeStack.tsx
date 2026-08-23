@@ -43,6 +43,13 @@ const HomeStack = () => {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         component={require("../../../screens/QuickBuyScreen").default}
       />
+      <Stack.Screen
+        options={{ header: () => <CustomHeader /> }}
+        initialParams={{ title: "Monthly Summary" }}
+        name="MonthlyBreakdownScreen"
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        component={require("../../../screens/MonthlyBreakdownScreen").default}
+      />
     </Stack.Navigator>
   );
 };

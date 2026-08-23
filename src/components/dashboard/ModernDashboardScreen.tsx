@@ -3,7 +3,6 @@ import { ScrollView, StyleSheet, View, RefreshControl } from "react-native";
 import { useTheme, SegmentedButtons } from "react-native-paper";
 import QuickStatsSection from "./QuickStatsSection";
 import EnhancedLineChart from "./EnhancedLineChart";
-import PieChartSection from "./PieChartSection";
 import UserPerformanceChart from "./UserPerformanceChart";
 import MonthlyComparisonCard from "./MonthlyComparisonCard";
 import RecentActivityFeed from "./RecentActivityFeed";
@@ -46,17 +45,11 @@ const ModernDashboardScreen: React.FC = () => {
         onUserSelect={handleUserSelect}
       />
 
-      {/* Expense Pie Chart - The round donut chart */}
-      <PieChartSection type="expense" key={`expense-pie-${refreshKey}`} />
-
       {/* Weekly Trend with dual line chart */}
       <WeeklyTrendCard key={`weekly-${refreshKey}`} />
 
       {/* Monthly Comparison */}
       <MonthlyComparisonCard key={`monthly-${refreshKey}`} />
-
-      {/* Work Pie Chart */}
-      <PieChartSection type="work" key={`work-pie-${refreshKey}`} />
 
       {/* Balance Overview with running balance */}
       <BalanceOverviewCard key={`balance-${refreshKey}`} />
@@ -78,9 +71,6 @@ const ModernDashboardScreen: React.FC = () => {
         onUserSelect={handleUserSelect}
       />
 
-      {/* Work Pie Chart */}
-      <PieChartSection type="work" key={`work-pie-${refreshKey}`} />
-
       {/* Top Categories - Expense */}
       <TopCategoriesCard key={`cat-expense-${refreshKey}`} type="expense" />
 
@@ -90,9 +80,6 @@ const ModernDashboardScreen: React.FC = () => {
         type="expense"
         onUserSelect={handleUserSelect}
       />
-
-      {/* Expense Pie Chart */}
-      <PieChartSection type="expense" key={`expense-pie-${refreshKey}`} />
     </>
   );
 
