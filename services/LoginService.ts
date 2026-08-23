@@ -17,7 +17,7 @@ const LoginService = {
         "Token is invalid or expired / براہ کرم دوبارہ لاگ ان کریں۔",
       );
     }
-    if (url === "loginOrSignUp") saveToken(userResponse);
+    if (url === "loginOrSignUp" || url === "login") saveToken(userResponse);
     return await userResponse.json();
   },
 };
