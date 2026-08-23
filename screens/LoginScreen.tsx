@@ -49,12 +49,11 @@ const LoginScreen = ({ navigation }) => {
       setUserInfo(user);
       await AsyncStorage.setItem("@user", JSON.stringify(user));
     } catch (loginError) {
-      // Check if it's a network error (offline)
       const msg = loginError.message?.toLowerCase() || "";
       const isNetworkError =
         msg.includes("network") ||
         msg.includes("failed to fetch") ||
-        !loginError.response;
+        msg.includes("request failed");
 
       if (isNetworkError) {
         const cachedUserStr = await AsyncStorage.getItem("@user");
@@ -64,6 +63,8 @@ const LoginScreen = ({ navigation }) => {
           return;
         }
       }
+      // Auth failure (e.g. 403 / expired token) — clear stale token from storage
+      await AsyncStorage.removeItem("@token");
       setUserInfo(null);
       throw new Error(loginError.message);
     } finally {

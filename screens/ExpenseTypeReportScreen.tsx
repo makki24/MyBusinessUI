@@ -12,7 +12,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useRecoilState, useRecoilValue } from "recoil";
 import ReportItem from "../components/ReportItem";
-import { userState, usersState, expenseTypesState } from "../recoil/atom";
+import {
+  userState,
+  usersState,
+  expenseTypesState,
+  tagsState,
+} from "../recoil/atom";
 import ReportService from "../services/ReportService";
 import ExpenseService from "../services/ExpenseService";
 import commonStyles from "../src/styles/commonStyles";
@@ -22,7 +27,7 @@ import { IconButton, Text, TextInput, useTheme } from "react-native-paper";
 import Loading from "../src/components/common/Loading";
 import { UI_ELEMENTS_GAP, BORDER_RADIUS } from "../src/styles/constants";
 import { REPORT_BACKGROUND_COLOR } from "../src/styles/colors";
-import { Expense, ExpenseType, User, UserReport } from "../types";
+import { Expense, ExpenseType, User, UserReport, Tag } from "../types";
 import SwitchInput from "../components/common/SwitchInput";
 import CustomDropDown from "../components/common/CustomDropdown";
 import UserDropDownItem from "../components/common/UserDropDownItem";
@@ -87,10 +92,37 @@ const ExpenseTypeReportScreen: React.FC<ExpenseTypeReportScreenProps> = ({
   const loggedInUser = useRecoilValue(userState);
   const users = useRecoilValue(usersState);
   const expenseTypes = useRecoilValue(expenseTypesState);
+  const tags = useRecoilValue(tagsState);
 
   const expenseType = expenseTypes.find(
     (t: ExpenseType) => t.id === expenseTypeId,
   );
+
+  const isTransfer =
+    expenseType?.isReceivingUser ||
+    expenseType?.name?.toLowerCase().includes("transfer");
+
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
+  const [tagOpen, setTagOpen] = useState(false);
+
+  useEffect(() => {
+    if (expenseType?.defaultTags) {
+      setSelectedTags(expenseType.defaultTags.map((t) => t.id));
+    }
+  }, [expenseType]);
+
+  const resetForm = () => {
+    setAmount("");
+    setDescription("");
+    setShowMessage(false);
+    setDifferentSender(false);
+    setSender(null);
+    if (expenseType?.defaultTags) {
+      setSelectedTags(expenseType.defaultTags.map((t) => t.id));
+    } else {
+      setSelectedTags([]);
+    }
+  };
 
   const onReset = () => {
     setOffset(0);
@@ -248,17 +280,17 @@ const ExpenseTypeReportScreen: React.FC<ExpenseTypeReportScreenProps> = ({
         sender:
           differentSender && sender ? ({ id: sender } as User) : loggedInUser,
         receiver: undefined, // Direct expense, no receiver
-        tags: expenseType.defaultTags ? [...expenseType.defaultTags] : [],
+        tags: !isTransfer
+          ? (selectedTags.map((tagId) => ({ id: tagId })) as Tag[])
+          : expenseType.defaultTags
+            ? [...expenseType.defaultTags]
+            : [],
       };
 
       await ExpenseService.addExpense(expense);
 
       // Clear fields and refresh
-      setAmount("");
-      setDescription("");
-      setShowMessage(false);
-      setDifferentSender(false);
-      setSender(null);
+      resetForm();
       fetchReports(true);
       fetchTotalThisMonth();
     } catch (err) {
@@ -361,14 +393,36 @@ const ExpenseTypeReportScreen: React.FC<ExpenseTypeReportScreenProps> = ({
           </View>
         )}
 
-        {/* Message input (toggled) */}
+        {/* Message & Options input (toggled) */}
         {showMessage && (
-          <View style={{ marginBottom: 8 }}>
+          <View style={{ marginBottom: 8, zIndex: 3000 }}>
             <SwitchInput
               label={ADD_EXPENSE_DIFFERENT_SENDER_LABEL}
               value={differentSender}
               onValueChange={setDifferentSender}
             />
+            {!isTransfer && (
+              <View style={{ marginTop: 8, zIndex: 3000 }}>
+                <CustomDropDown
+                  testID="tags-picker"
+                  multiple={true}
+                  items={tags}
+                  zIndex={3000}
+                  zIndexInverse={2000}
+                  schema={{
+                    label: "name",
+                    value: "id",
+                  }}
+                  open={tagOpen}
+                  setOpen={setTagOpen}
+                  containerStyle={{ height: 40, marginBottom: 8 }}
+                  value={selectedTags}
+                  setValue={setSelectedTags}
+                  itemSeparator={true}
+                  placeholder="Select Tags"
+                />
+              </View>
+            )}
             <TextInput
               placeholder="Add a message..."
               value={description}
@@ -380,10 +434,7 @@ const ExpenseTypeReportScreen: React.FC<ExpenseTypeReportScreenProps> = ({
                 <TextInput.Icon
                   icon="close"
                   onPress={() => {
-                    setShowMessage(false);
-                    setDescription("");
-                    setDifferentSender(false);
-                    setSender(null);
+                    resetForm();
                   }}
                 />
               }

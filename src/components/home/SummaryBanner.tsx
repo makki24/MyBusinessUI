@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { DashboardSummary } from "../../../services/DashboardService";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -7,19 +7,24 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 interface SummaryBannerProps {
   summary: DashboardSummary | null;
   loading: boolean;
+  onPress?: () => void;
 }
 
 const formatAmount = (amount: number): string => {
   if (amount >= 100000) {
-    return `₹${(amount / 100000).toFixed(1)}L`;
+    return `₹${(amount / 100000).toFixed(2)}L`;
   }
   if (amount >= 1000) {
-    return `₹${(amount / 1000).toFixed(1)}K`;
+    return `₹${(amount / 1000).toFixed(2)}K`;
   }
   return `₹${amount.toFixed(0)}`;
 };
 
-const SummaryBanner: React.FC<SummaryBannerProps> = ({ summary, loading }) => {
+const SummaryBanner: React.FC<SummaryBannerProps> = ({
+  summary,
+  loading,
+  onPress,
+}) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const theme = useTheme();
 
@@ -39,12 +44,46 @@ const SummaryBanner: React.FC<SummaryBannerProps> = ({ summary, loading }) => {
   const totalMonthly = summary.totalWorkAmount + summary.totalExpenseAmount;
 
   return (
-    <View
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={onPress}
+      disabled={!onPress}
       style={[styles.container, { backgroundColor: "rgba(255,255,255,0.15)" }]}
+      accessibilityLabel="View Monthly Breakdown"
+      accessibilityRole="button"
     >
-      <Text style={styles.totalLabel}>This Month</Text>
-      <Text style={styles.totalAmount}>{formatAmount(totalMonthly)}</Text>
+      {/* Top Header Row: Total Monthly on Left, Contributions Pill on Right (Opposite) */}
+      <View style={styles.topRow}>
+        <View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Text style={styles.totalLabel}>This Month</Text>
+            {onPress && (
+              <MaterialCommunityIcons
+                name="chevron-right"
+                size={16}
+                color="rgba(255,255,255,0.7)"
+              />
+            )}
+          </View>
+          <Text style={styles.totalAmount}>{formatAmount(totalMonthly)}</Text>
+        </View>
 
+        <View style={styles.contribContainer}>
+          <Text style={styles.contribLabel}>Contribs</Text>
+          <View style={styles.contribBadge}>
+            <MaterialCommunityIcons
+              name="bank-transfer-in"
+              size={14}
+              color="#A5D6A7"
+            />
+            <Text style={styles.contribAmount}>
+              +{formatAmount(summary.totalContributionAmount || 0)}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Breakdown Row for Works & Expenses */}
       <View style={styles.breakdownRow}>
         <View style={styles.breakdownItem}>
           <MaterialCommunityIcons
@@ -68,6 +107,7 @@ const SummaryBanner: React.FC<SummaryBannerProps> = ({ summary, loading }) => {
         </View>
       </View>
 
+      {/* Counts Row */}
       <View style={styles.countsRow}>
         <Text style={styles.countText}>{summary.workCount} Works</Text>
         <Text style={styles.countDot}>•</Text>
@@ -77,7 +117,7 @@ const SummaryBanner: React.FC<SummaryBannerProps> = ({ summary, loading }) => {
           {summary.contributionCount} Contribs
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -92,6 +132,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
   },
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 12,
+  },
   totalLabel: {
     color: "rgba(255,255,255,0.7)",
     fontSize: 13,
@@ -101,20 +147,45 @@ const styles = StyleSheet.create({
   },
   totalAmount: {
     color: "#FFFFFF",
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "bold",
     marginTop: 2,
-    marginBottom: 12,
+  },
+  contribContainer: {
+    alignItems: "flex-end",
+  },
+  contribLabel: {
+    color: "rgba(255,255,255,0.7)",
+    fontSize: 12,
+    fontWeight: "500",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    marginBottom: 4,
+  },
+  contribBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.18)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    gap: 4,
+  },
+  contribAmount: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
   },
   breakdownRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    gap: 16,
+    alignItems: "center",
     marginBottom: 8,
   },
   breakdownItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 4,
   },
   breakdownText: {
     color: "rgba(255,255,255,0.85)",
