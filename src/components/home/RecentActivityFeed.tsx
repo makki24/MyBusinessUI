@@ -55,6 +55,41 @@ export const RecentActivityItem: React.FC<{
   const theme = useTheme();
   const config = TYPE_CONFIG[item.type] || TYPE_CONFIG.WORK;
 
+  const isTransfer =
+    item.type === "EXPENSE" &&
+    (item.title?.toLowerCase().includes("transfer") ||
+      Boolean(item.metadata?.receiver));
+
+  let displayTitle = item.title;
+  let displaySubtitle = item.subtitle;
+
+  if (isTransfer) {
+    if (item.subtitle && item.metadata?.receiver) {
+      displayTitle = `${item.subtitle} → ${item.metadata.receiver}`;
+      displaySubtitle = "";
+    } else if (item.metadata?.receiver) {
+      displayTitle = item.metadata.receiver;
+      displaySubtitle = "";
+    } else if (item.subtitle) {
+      displayTitle = item.subtitle;
+      displaySubtitle = "";
+    }
+  }
+
+  const subRowParts: string[] = [];
+  if (displaySubtitle) {
+    subRowParts.push(displaySubtitle);
+  }
+  if (item.metadata?.quantity) {
+    subRowParts.push(
+      `${item.metadata.quantity}${item.metadata.unit ? ` ${item.metadata.unit}` : ""}`,
+    );
+  }
+  if (item.metadata?.purpose) {
+    subRowParts.push(item.metadata.purpose);
+  }
+  const subRowText = subRowParts.join(" • ");
+
   return (
     <TouchableOpacity
       style={[
@@ -80,10 +115,10 @@ export const RecentActivityItem: React.FC<{
         <View style={styles.itemHeaderRow}>
           <Text
             variant="bodyMedium"
-            style={{ fontWeight: "600", flex: 1 }}
+            style={{ fontWeight: "600", flex: 1, marginRight: 8 }}
             numberOfLines={1}
           >
-            {item.title}
+            {displayTitle}
           </Text>
           <Text
             variant="bodyMedium"
@@ -98,11 +133,7 @@ export const RecentActivityItem: React.FC<{
             style={{ color: theme.colors.onSurfaceVariant, flex: 1 }}
             numberOfLines={1}
           >
-            {item.subtitle}
-            {item.metadata?.quantity
-              ? ` • ${item.metadata.quantity} ${item.metadata.unit}`
-              : ""}
-            {item.metadata?.purpose ? ` • ${item.metadata.purpose}` : ""}
+            {subRowText}
           </Text>
           <Text variant="labelSmall" style={{ color: theme.colors.outline }}>
             {formatRelativeTime(item.date)}
