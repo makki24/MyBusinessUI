@@ -50,6 +50,34 @@ describe("AllActivityScreen & RecentActivityItem", () => {
     expect(screen.getByText("FieldWork")).toBeTruthy();
   });
 
+  it("renders transfer activity item showing sender and receiver without 'Transfer' text", () => {
+    const mockTransferActivity: RecentActivity = {
+      id: 2,
+      type: "EXPENSE",
+      title: "Transfer",
+      subtitle: "Maqthyar",
+      amount: 5000,
+      date: new Date().toISOString(),
+      metadata: {
+        receiver: "Ramesh",
+        purpose: "ADVANCE",
+      },
+    };
+
+    render(
+      <PaperProvider>
+        <RecentActivityItem item={mockTransferActivity} onPress={jest.fn()} />
+      </PaperProvider>,
+    );
+
+    // "Transfer" text should NOT be rendered
+    expect(screen.queryByText("Transfer")).toBeNull();
+    // Sender -> Receiver should be rendered
+    expect(screen.getByText("Maqthyar → Ramesh")).toBeTruthy();
+    expect(screen.getByText("₹5,000")).toBeTruthy();
+    expect(screen.getByText("ADVANCE")).toBeTruthy();
+  });
+
   it("fetches and displays activities in AllActivityScreen", async () => {
     (DashboardService.getRecent as jest.Mock).mockResolvedValue([
       mockActivityWithDetails,
