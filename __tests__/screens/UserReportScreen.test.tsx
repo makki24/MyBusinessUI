@@ -61,6 +61,8 @@ const mockTransferType = {
   defaultTags: [],
 } as unknown as ExpenseType;
 
+const mockNavigate = jest.fn();
+
 const renderScreen = (userId: number, loggedInId = "10") => {
   const route = { params: { userId } };
   const loggedIn = { ...mockLoggedInUser, id: loggedInId };
@@ -75,7 +77,10 @@ const renderScreen = (userId: number, loggedInId = "10") => {
     >
       <PaperProvider>
         {/* @ts-expect-error Testing with partial route/navigation mocks */}
-        <UserReportScreen route={route} navigation={{}} />
+        <UserReportScreen
+          route={route}
+          navigation={{ navigate: mockNavigate }}
+        />
       </PaperProvider>
     </RecoilRoot>,
   );
@@ -165,6 +170,52 @@ describe("UserReportScreen", () => {
     // Amount should be cleared
     await waitFor(() => {
       expect(screen.getByPlaceholderText("0").props.value).toBe("");
+    });
+  });
+
+  it("swaps transfer direction to receive from user", async () => {
+    renderScreen(20);
+
+    expect(screen.getByText("Sending to")).toBeTruthy();
+    const swapButton = screen.getByTestId("swap-report-direction-button");
+    fireEvent.press(swapButton);
+
+    expect(screen.getByText("Receiving from")).toBeTruthy();
+    expect(screen.getByText("Alice")).toBeTruthy();
+
+    // Enter amount and send
+    const amountInput = screen.getByPlaceholderText("0");
+    fireEvent.changeText(amountInput, "750");
+
+    const sendButton = screen.getByTestId("send-icon-button");
+    fireEvent.press(sendButton);
+
+    await waitFor(() => {
+      expect(ExpenseService.addExpense).toHaveBeenCalledWith(
+        expect.objectContaining({
+          amount: 750,
+          type: expect.objectContaining({ id: 5 }),
+          sender: expect.objectContaining({ id: "20" }),
+          receiver: expect.objectContaining({ id: "10" }),
+        }),
+      );
+    });
+  });
+
+  it("shows 'Record Received Funds' on own report and navigates to AddTransfer", () => {
+    renderScreen(10);
+
+    const recordButton = screen.getByTestId(
+      "record-transfer-own-report-button",
+    );
+    expect(recordButton).toBeTruthy();
+    expect(screen.getByText("Record Received Funds")).toBeTruthy();
+
+    fireEvent.press(recordButton);
+    expect(mockNavigate).toHaveBeenCalledWith("AddTransfer", {
+      direction: "RECEIVED",
+      receiverId: "10",
+      title: "Transfer Money",
     });
   });
 });

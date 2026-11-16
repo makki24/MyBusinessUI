@@ -8,7 +8,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   LayoutAnimation,
+  TouchableOpacity,
 } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRecoilState, useRecoilValue } from "recoil";
 import ReportItem from "../components/ReportItem";
@@ -39,7 +41,10 @@ interface UserReportScreenProps {
     };
   };
 }
-const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
+const UserReportScreen: React.FC<UserReportScreenProps> = ({
+  route,
+  navigation,
+}) => {
   const userId = route.params?.userId;
 
   if (!userId) {
@@ -68,6 +73,7 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
   const [description, setDescription] = useState("");
   const [showMessage, setShowMessage] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [isIncoming, setIsIncoming] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [workType, setWorkType] = useState<number | null>(null);
   const [workTypeOpen, setWorkTypeOpen] = useState(false);
@@ -201,8 +207,12 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
         type: { id: transferType.id, type: "expense" } as ExpenseType,
         amount: parseFloat(amount),
         description: description || undefined,
-        sender: loggedInUser,
-        receiver: receiverUser ? ({ id: receiverUser.id } as User) : undefined,
+        sender: isIncoming ? receiverUser! : loggedInUser,
+        receiver: isIncoming
+          ? loggedInUser
+          : receiverUser
+            ? ({ id: receiverUser.id } as User)
+            : undefined,
         tags: [],
         workType: workType
           ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -279,21 +289,64 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
         >
           <LoadingError error={error} isLoading={isSending} />
 
-          {/* Receiver info */}
+          {/* Receiver / Sender info with direction swap */}
           {receiverUser && (
             <View style={styles.receiverRow}>
-              <Text
-                variant="bodySmall"
-                style={{ color: theme.colors.onSurfaceVariant }}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  flex: 1,
+                }}
               >
-                Sending to
-              </Text>
-              <Text
-                variant="titleSmall"
-                style={{ color: theme.colors.onSurface, marginLeft: 4 }}
+                <Text
+                  variant="bodySmall"
+                  style={{ color: theme.colors.onSurfaceVariant }}
+                >
+                  {isIncoming ? "Receiving from" : "Sending to"}
+                </Text>
+                <Text
+                  variant="titleSmall"
+                  style={{ color: theme.colors.onSurface, marginLeft: 4 }}
+                >
+                  {receiverUser.name}
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                testID="swap-report-direction-button"
+                style={[
+                  styles.directionToggle,
+                  {
+                    backgroundColor: isIncoming
+                      ? theme.colors.secondaryContainer
+                      : theme.colors.primaryContainer,
+                  },
+                ]}
+                onPress={() => setIsIncoming((prev) => !prev)}
               >
-                {receiverUser.name}
-              </Text>
+                <MaterialCommunityIcons
+                  name="swap-horizontal"
+                  size={16}
+                  color={
+                    isIncoming
+                      ? theme.colors.onSecondaryContainer
+                      : theme.colors.onPrimaryContainer
+                  }
+                />
+                <Text
+                  variant="labelSmall"
+                  style={{
+                    marginLeft: 4,
+                    color: isIncoming
+                      ? theme.colors.onSecondaryContainer
+                      : theme.colors.onPrimaryContainer,
+                    fontWeight: "600",
+                  }}
+                >
+                  {isIncoming ? "Receive" : "Pay"}
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
 
@@ -427,6 +480,49 @@ const UserReportScreen: React.FC<UserReportScreenProps> = ({ route }) => {
           </View>
         </View>
       )}
+
+      {isSameUser && (
+        <View
+          style={[
+            styles.paymentBar,
+            {
+              backgroundColor: theme.colors.surface,
+              paddingBottom: Math.max(insets.bottom, UI_ELEMENTS_GAP),
+            },
+          ]}
+        >
+          <TouchableOpacity
+            testID="record-transfer-own-report-button"
+            style={[
+              styles.ownReportTransferButton,
+              { backgroundColor: theme.colors.primaryContainer },
+            ]}
+            onPress={() => {
+              navigation.navigate("AddTransfer", {
+                direction: "RECEIVED",
+                receiverId: loggedInUser?.id,
+                title: "Transfer Money",
+              });
+            }}
+          >
+            <MaterialCommunityIcons
+              name="bank-transfer-in"
+              size={20}
+              color={theme.colors.onPrimaryContainer}
+            />
+            <Text
+              variant="labelLarge"
+              style={{
+                marginLeft: 8,
+                color: theme.colors.onPrimaryContainer,
+                fontWeight: "600",
+              }}
+            >
+              Record Received Funds
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
       {Platform.OS === "android" && keyboardHeight > 0 && (
         <View style={{ height: keyboardHeight + 20 }} />
       )}
@@ -499,6 +595,20 @@ const styles = StyleSheet.create({
   },
   refreshButton: {
     margin: 0,
+    borderRadius: BORDER_RADIUS,
+  },
+  directionToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 16,
+  },
+  ownReportTransferButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
     borderRadius: BORDER_RADIUS,
   },
 });
