@@ -1,6 +1,7 @@
 import CustomHeader from "../common/CustomHeader";
 import ExpenseScreen from "../../../screens/ExpenseScreen";
 import AddExpenseScreen from "../../../screens/AddExpenseScreen";
+import AddTransferScreen from "../../../screens/AddTransferScreen";
 import ExpenseSelectionScreen from "../../../screens/ExpenseSelectionScreen";
 import ExpenseTypeReportScreen from "../../../screens/ExpenseTypeReportScreen";
 import UserReportScreen from "../../../screens/UserReportScreen";
@@ -27,6 +28,11 @@ const ExpenseStack = () => {
         component={ExpenseTypeReportScreen}
       />
       <Stack.Screen name="AddExpense" component={AddExpenseScreen} />
+      <Stack.Screen
+        name="AddTransfer"
+        component={AddTransferScreen}
+        initialParams={{ title: "Transfer Money" }}
+      />
       <Stack.Screen
         name="UserReport"
         options={{

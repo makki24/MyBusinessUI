@@ -11,6 +11,7 @@ interface ButtonProps {
   mode?: "text" | "outlined" | "contained" | "elevated" | "contained-tonal";
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
+  testID?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -20,9 +21,11 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   mode = "contained",
   style,
+  testID,
 }) => {
   return (
     <PaperButton
+      testID={testID}
       uppercase={false}
       style={style}
       icon={icon}

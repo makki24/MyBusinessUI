@@ -135,6 +135,16 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           }),
       },
       {
+        label: "+ Transfer",
+        icon: "swap-horizontal-bold" as keyof typeof MaterialCommunityIcons.glyphMap,
+        color: "#00897B",
+        onPress: () =>
+          navigation.navigate("HomeStack", {
+            screen: "AddTransfer",
+            params: { title: "Transfer Money" },
+          }),
+      },
+      {
         label: "+ Work",
         icon: "briefcase-plus" as keyof typeof MaterialCommunityIcons.glyphMap,
         color: "#2196F3",

@@ -50,6 +50,13 @@ const HomeStack = () => {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         component={require("../../../screens/MonthlyBreakdownScreen").default}
       />
+      <Stack.Screen
+        options={{ header: () => <CustomHeader /> }}
+        initialParams={{ title: "Transfer Money" }}
+        name="AddTransfer"
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        component={require("../../../screens/AddTransferScreen").default}
+      />
     </Stack.Navigator>
   );
 };
